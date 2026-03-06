@@ -13,7 +13,6 @@ function App() {
       <Router>
         <Header />
         <Routes>
-
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/HomePage" element={<HomePage />} />
         </Routes>

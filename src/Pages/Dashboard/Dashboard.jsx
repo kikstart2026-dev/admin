@@ -7,7 +7,7 @@ export default function Dashboard() {
     
       <div className={styles.wrap}>
           <div className={styles.left}>
-            <Sidebar />
+            <Sidebar/>
           </div>
     
           <div className={styles.right}>
