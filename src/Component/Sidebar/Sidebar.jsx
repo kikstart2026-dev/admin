@@ -47,7 +47,7 @@ export default function Sidebar() {
           {/* Dashboard */}
           <li>
             <NavLink
-              to="/dashboard"
+              to="/"
               className={({ isActive }) =>
                 isActive ? styles.active : ""
               }

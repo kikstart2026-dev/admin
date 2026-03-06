@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "./Dashboard.module.scss";
-import Sidebar from "../../Controller/Sidebar/Sidebar";
+import Sidebar from "../../Component/Sidebar/Sidebar";
+
 
 export default function Dashboard() {
     return (
