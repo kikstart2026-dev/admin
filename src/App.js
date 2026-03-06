@@ -1,27 +1,40 @@
-// import logo from './logo.svg';
 import './App.css';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom'
 import Header from './Shared/Header/Header';
-import Dashboard from './Pages/Dashboard/Dashboard';
 import HomePage from './Pages/Home/HomePage';
 
+import Dashboard from './Pages/Dashboard/Dashboard';
 
+function Layout() {
 
+  const location = useLocation();
+
+  const title =
+    location.pathname === "/"
+      ? "Dashboard"
+      : location.pathname
+          .replace("/", "")
+          .replace(/[-_]/g, " ")
+          .replace(/\b\w/g, (c) => c.toUpperCase());
+
+  return (
+    <>
+      <Header title={title} />
+
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/home-page" element={<HomePage />} />
+      </Routes>
+    </>
+  );
+}
 
 function App() {
   return (
     <div className="App">
       <Router>
-        <Header />
-        <Routes>
-
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/HomePage" element={<HomePage />} />
-        </Routes>
+        <Layout />
       </Router>
-
-
-
     </div>
   );
 }

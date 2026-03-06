@@ -1,10 +1,33 @@
-.bannerWrap {
-  padding: 40px;
-}
 
 .title {
   font-size: 24px;
-  margin-bottom: 20px;
+  color: #ED1C24;
+}
+
+.bannerWrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+   padding: 20px;
+
+}
+
+.topActions button {
+  transition: 0.3s ease;
+}
+
+.topActions button:hover {
+  transform: scale(1.08);
+}
+
+.deleteSelected {
+  background: #ED1C24;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-left: 20px;
 }
 
 .createBtn {
@@ -13,9 +36,9 @@
   border: none;
   padding: 10px 18px;
   border-radius: 6px;
-  margin-bottom: 20px;
   cursor: pointer;
 }
+
 
 .formBox {
   background: white;
@@ -159,30 +182,4 @@
   padding: 8px 16px;
   border-radius: 6px;
   cursor: pointer;
-}
-
-.topActions {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-
-}
-
-.topActions button {
-  transition: 0.3s ease;
-}
-
-.topActions button:hover {
-  transform: scale(1.08);
-}
-
-.deleteSelected {
-  background: #ED1C24;
-  color: white;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 6px;
-  margin-bottom: 20px;
-  cursor: pointer;
-  margin-left: 20px;
 }

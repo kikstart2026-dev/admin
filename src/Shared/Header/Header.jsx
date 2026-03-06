@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./Header.module.scss";
+import "../../Main.scss";
 import { FaUserCircle, FaBell } from "react-icons/fa";
 import kiklogo from "../../assets/images/authLogo.png"
 export default function Header({ title = "Dashboard" }) {
@@ -17,7 +18,7 @@ export default function Header({ title = "Dashboard" }) {
 
       {/* Center - Page Title */}
       <div className={styles.pageTitle}>
-        <h5 className="mb-0">{title}</h5>
+        <h5>{title}</h5>
       </div>
 
       {/* Right - User Section */}
