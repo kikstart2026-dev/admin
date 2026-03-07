@@ -65,10 +65,10 @@ export default function Dashboard() {
                 </div>
 
                 <div className={styles['pie-legend']}>
-                  <span className="subject1">Math</span>
-                  <span className="subject2">English</span>
-                  <span className="subject3">Science</span>
-                  <span className="subject4">Art</span>
+                  <span className={styles.subject1}>Math</span>
+                  <span className={styles.subject2}>English</span>
+                  <span className={styles.subject3}>Science</span>
+                  <span className={styles.subject4}>Art</span>
                 </div>
               </div>
             </div>
