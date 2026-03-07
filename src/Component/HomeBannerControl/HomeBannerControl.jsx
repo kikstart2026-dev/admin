@@ -15,27 +15,27 @@ import "../../Main.scss";
 
 export default function HomeBannerControl() {
 
-    const [banners, setBanners] = useState([]);
-    const [selected, setSelected] = useState([]);
+    const [banners, setBanners] = useState([]); // to store banner data
+    const [selected, setSelected] = useState([]); //to store banners by checkbox
 
-    const [showForm, setShowForm] = useState(false);
-    const [showGet, setShowGet] = useState(false);
+    const [showForm, setShowForm] = useState(false); // form show / hide control
+    const [showGet, setShowGet] = useState(false); // for modal show
 
-    const [mode, setMode] = useState("create");
+    const [mode, setMode] = useState("create"); // to set the form create mode or update
 
-    const [bannerId, setBannerId] = useState(null);
-    const [headingId, setHeadingId] = useState(null);
+    const [bannerId, setBannerId] = useState(null); // to store banner id for update
+    const [headingId, setHeadingId] = useState(null); //to store heading id for update
 
-    const [preview, setPreview] = useState("");
-    const [imageFile, setImageFile] = useState(null);
+    const [preview, setPreview] = useState(""); // to show image preview
+    const [imageFile, setImageFile] = useState(null); // to store uploaded file
 
-    const [getData, setGetData] = useState(null);
+    const [getData, setGetData] = useState(null); // when click the Get button show banner details in the modal box 
 
     const [formValues, setFormValues] = useState({
         subheading: "",
         heading: "",
         description: "",
-    });
+    }); // to store form input data
 
     // =============================
     // FETCH BANNERS
@@ -45,28 +45,30 @@ export default function HomeBannerControl() {
 
         const res = await getAllHomeBanner();
 
-        const bannersData = res?.data?.data || res?.data || [];
+        const bannersData = res?.data?.data || res?.data || []; // for safe data access
 
-        const sorted = [...bannersData].sort(
-            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
+        const sorted = [...bannersData].sort( // copy banner data
 
-        setBanners(sorted);
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt) // compare by create date
+
+        ); // sort to show newest banner first 
+
+        setBanners(sorted); // banners state update
     };
 
     useEffect(() => {
-        fetchBanner();
+        fetchBanner(); //page load → banner fetch
     }, []);
 
     // =============================
     // INPUT CHANGE
     // =============================
 
-    const handleChange = (e) => {
+    const handleChange = (e) => { //form input change handle
 
         setFormValues({
             ...formValues,
-            [e.target.name]: e.target.value,
+            [e.target.name]: e.target.value, // exp: input name="heading" value="Banner" | output: { heading:"Banner" }
         });
     };
 
@@ -74,14 +76,14 @@ export default function HomeBannerControl() {
     // IMAGE CHANGE
     // =============================
 
-    const handleImageChange = (e) => {
+    const handleImageChange = (e) => { //image upload handle
 
-        const file = e.target.files[0];
+        const file = e.target.files[0]; // take selected file
 
         if (!file) return;
 
         setImageFile(file);
-        setPreview(URL.createObjectURL(file));
+        setPreview(URL.createObjectURL(file)); // generate image preview
     };
 
     // =============================
@@ -91,36 +93,36 @@ export default function HomeBannerControl() {
 
         try {
 
-            // ✅ First create heading
+            //  First create heading
             const headingRes = await createHeading(formValues);
 
-            const newHeadingId = headingRes?.data?._id;
+            const newHeadingId = headingRes?.data?._id; // find heading id and store 
 
             let imageUrl = "";
 
             if (imageFile) {
 
-                const fd = new FormData();
+                const fd = new FormData(); // use form data to upload file 
                 fd.append("file", imageFile);
 
-                const uploadRes = await createFile(fd);
+                const uploadRes = await createFile(fd); // upload in server
 
-                imageUrl = uploadRes.data[0].path;
+                imageUrl = uploadRes.data[0].path; // for image path 
             }
 
-            const BaseUrl = "http://localhost:8008";
+            const BaseUrl = "http://localhost:8008"; // base url
 
             // ✅ Then create banner
             await createHomeBanner({
                 headingId: newHeadingId,
-                image: BaseUrl + imageUrl,
-            });
+                image: BaseUrl + imageUrl, // full image path
+            }); // create banner
 
             alert("Banner Created Successfully");
 
-            fetchBanner();
+            fetchBanner(); //list refresh
 
-            setShowForm(false);
+            setShowForm(false); //clear form
 
             setImageFile(null);
 
@@ -139,7 +141,7 @@ export default function HomeBannerControl() {
 
             await updateHeading(headingId, formValues);
 
-            let imageUrl = preview;
+            let imageUrl = preview; // if not upload new image then show old one
 
             if (imageFile) {
 
@@ -155,7 +157,7 @@ export default function HomeBannerControl() {
 
             await updateHomeBanner(bannerId, {
                 headingId: headingId,
-                image: imageUrl, // ✅ same image if not changed
+                image: imageUrl, //  same image if not changed 
             });
 
             alert("Banner Updated Successfully");
@@ -174,11 +176,11 @@ export default function HomeBannerControl() {
     // DELETE
     // =============================
 
-    const handleDelete = async (id) => {
+    const handleDelete = async (id) => { // delete by id
 
-        if (!window.confirm("Delete Banner?")) return;
+        if (!window.confirm("Delete Banner?")) return; // show confirmation popup
 
-        await singleDeleteHomeBanner(id);
+        await singleDeleteHomeBanner(id); //api call -> send request to server for delete single banner  
 
         fetchBanner();
     };
@@ -189,7 +191,7 @@ export default function HomeBannerControl() {
 
     const handleSelect = (id) => {
 
-        if (selected.includes(id)) {
+        if (selected.includes(id)) { // selected is a array
 
             setSelected(selected.filter((item) => item !== id));
 
@@ -197,7 +199,7 @@ export default function HomeBannerControl() {
 
             setSelected([...selected, id]);
         }
-    };
+    }; // to manange checkbox select
 
     // =============================
     // DELETE SELECTED
@@ -221,7 +223,7 @@ export default function HomeBannerControl() {
         setSelected([]);
 
         fetchBanner();
-    };
+    }; // multiple banner delete
 
     // =============================
     // EDIT
@@ -232,29 +234,28 @@ export default function HomeBannerControl() {
         setMode("update");
         setShowForm(true);
 
-        setBannerId(item._id);
-        setHeadingId(item.headingData._id);
+        setBannerId(item._id); // set banner id to show exact banner data
+        setHeadingId(item.headingData._id); // set heading id 
 
-        setFormValues({
+        setFormValues({ // fill the form with bannerdata
             subheading: item.headingData.subheading,
             heading: item.headingData.heading,
             description: item.headingData.description,
         });
 
-        setPreview(item.image);
+        setPreview(item.image); // show exist banneer image 
 
-        // FIX
-        setImageFile(null);
+        setImageFile(null); // fix image path null
     };
 
     // =============================
     // GET
     // =============================
 
-    const handleGet = (item) => {
+    const handleGet = (item) => { // show banner details in modal
 
-        setGetData(item);
-        setShowGet(true);
+        setGetData(item); // store selected banner data in state
+        setShowGet(true); // open modal
     };
 
     return (
@@ -262,27 +263,26 @@ export default function HomeBannerControl() {
         <div className={styles.banner}>
             <div className={styles.bannerWrap}>
 
-  <h3 className={styles.title}>Home Banner Control</h3>
+                <h3 className={styles.title}>Home Banner Control</h3>
                 <div className={styles.topActions}>
 
-                  
+
                     <button
                         className={styles.createBtn}
                         onClick={() => {
 
-                            setMode("create");
+                            setMode("create"); // form create mode a jbe click korle 
                             setShowForm(true);
 
                             setFormValues({
                                 subheading: "",
                                 heading: "",
                                 description: "",
-                            });
+                            }); // remove old data and show blank form for create new
 
-                            setPreview("");
+                            setPreview(""); // preview -> null
 
-                            // FIX
-                            setImageFile(null);
+                            setImageFile(null); // make image path null
 
                         }}
                     >
@@ -352,6 +352,8 @@ export default function HomeBannerControl() {
 
                     )}
 
+                    {/* hamdle button for update and create to call exact function */}
+                    
                     <button
                         className={styles.saveBtn}
                         onClick={
@@ -476,7 +478,7 @@ export default function HomeBannerControl() {
 
                         <button
                             className={styles.closeBtn}
-                            onClick={() => setShowGet(false)}
+                            onClick={() => setShowGet(false)} // modal close
                         >
                             Close
                         </button>
