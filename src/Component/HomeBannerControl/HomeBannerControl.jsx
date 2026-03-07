@@ -9,6 +9,8 @@ import {
     createFile,
     createHomeBanner,
     singleDeleteHomeBanner,
+    selectiveDeleteHomeBanner,
+
 } from "../../apis/api";
 
 import "../../Main.scss";
@@ -152,7 +154,7 @@ export default function HomeBannerControl() {
 
                 const BaseUrl = "http://localhost:8008";
 
-                imageUrl = BaseUrl + uploadRes.data[0].path;
+                imageUrl = BaseUrl + uploadRes.data[0].path; 
             }
 
             await updateHomeBanner(bannerId, {
@@ -185,45 +187,45 @@ export default function HomeBannerControl() {
         fetchBanner();
     };
 
-    // =============================
-    // SELECT CHECKBOX
-    // =============================
+
+    // HANDLE SELECT / UNSELECT checkbox
 
     const handleSelect = (id) => {
-
-        if (selected.includes(id)) { // selected is a array
-
+        if (selected.includes(id)) {
             setSelected(selected.filter((item) => item !== id));
-
         } else {
-
             setSelected([...selected, id]);
         }
-    }; // to manange checkbox select
+    };
 
     // =============================
-    // DELETE SELECTED
+    // DELETE SELECTED (USING BULK API)
     // =============================
-
     const handleDeleteSelected = async () => {
-
         if (selected.length === 0) {
-
             alert("Select banners first");
             return;
         }
 
         if (!window.confirm("Delete Selected Banners?")) return;
 
-        for (let id of selected) {
+        try {
+            // call your bulk delete API
+            const payload = { ids: selected }; // { ids: [id1, id2, ...] }
+            const res = await selectiveDeleteHomeBanner(payload);
 
-            await singleDeleteHomeBanner(id);
+            if (res.status === "success") {
+                alert(`${res.deletedCount} banners deleted successfully`);
+                setSelected([]);   // clear selection
+                fetchBanner();     // refresh banner list
+            } else {
+                alert("Something went wrong");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Error deleting banners: " + err.message);
         }
-
-        setSelected([]);
-
-        fetchBanner();
-    }; // multiple banner delete
+    };
 
     // =============================
     // EDIT
@@ -353,7 +355,7 @@ export default function HomeBannerControl() {
                     )}
 
                     {/* hamdle button for update and create to call exact function */}
-                    
+
                     <button
                         className={styles.saveBtn}
                         onClick={
