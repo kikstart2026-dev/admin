@@ -4,6 +4,8 @@ import Header from './Shared/Header/Header';
 import HomePage from './Pages/Home/HomePage';
 
 import Dashboard from './Pages/Dashboard/Dashboard';
+import About from './Pages/About/About';
+import Contact from './Pages/Contact/Contact';
 
 function Layout() {
 
@@ -24,6 +26,8 @@ function Layout() {
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/home-page" element={<HomePage />} />
+        <Route path='/about-control' element={<About/>}/>
+         <Route path='/contact-control' element={<Contact />}/>
       </Routes>
     </>
   );
