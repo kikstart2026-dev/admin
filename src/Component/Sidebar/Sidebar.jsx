@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom"; // use for create Navigation link
 import styles from "./Sidebar.module.scss";
 import "../../Main.scss";
 
@@ -8,10 +8,10 @@ export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(true);
   const [contentOpen, setContentOpen] = useState(false);
 
-  const location = useLocation();
+  const location = useLocation(); //for current route path
 
   const toggleSidebar = () => {
-    setIsOpen(!isOpen);
+    setIsOpen(!isOpen); // for toggle open close
   };
 
   const toggleContent = () => {
@@ -24,8 +24,9 @@ export default function Sidebar() {
       location.pathname === "/home-page" ||
       location.pathname === "/about-control" ||
       location.pathname === "/contact-control"
-    ) {
-      setContentOpen(true);
+    ) //check the users current path // run after hook component render 
+    {
+      setContentOpen(true); //open dropdown automatically 
     }
   }, [location.pathname]);
 
@@ -37,10 +38,10 @@ export default function Sidebar() {
       </div>
 
       <div
-        className={`${styles.sidebar} ${
-          isOpen ? styles.open : styles.close
-        }`}
+        className={`${styles.sidebar} ${isOpen ? styles.open : styles.close
+          }`}
       >
+        {/* Bullet remove */}
         <ul className="list-unstyled">
 
           {/* Dashboard */}
@@ -69,9 +70,8 @@ export default function Sidebar() {
               </div>
 
               <i
-                className={`bi ${
-                  contentOpen ? "bi-chevron-up" : "bi-chevron-down"
-                }`}
+                className={`bi ${contentOpen ? "bi-chevron-up" : "bi-chevron-down"
+                  }`}
               ></i>
             </div>
 
