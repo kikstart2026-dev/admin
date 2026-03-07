@@ -2,8 +2,9 @@ import './App.css';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom'
 import Header from './Shared/Header/Header';
 import HomePage from './Pages/Home/HomePage';
-
 import Dashboard from './Pages/Dashboard/Dashboard';
+import About from './Pages/About/About';
+import Contact from './Pages/Contact/Contact';
 
 function Layout() {
 
@@ -13,9 +14,9 @@ function Layout() {
     location.pathname === "/"
       ? "Dashboard"
       : location.pathname
-          .replace("/", "")
-          .replace(/[-_]/g, " ")
-          .replace(/\b\w/g, (c) => c.toUpperCase());
+        .replace("/", "")
+        .replace(/[-_]/g, " ")
+        .replace(/\b\w/g, (c) => c.toUpperCase());
 
   return (
     <>
@@ -24,6 +25,8 @@ function Layout() {
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/home-page" element={<HomePage />} />
+        <Route path='/about-control' element={<About />} />
+        <Route path='/contact-control' element={<Contact />} />
       </Routes>
     </>
   );
