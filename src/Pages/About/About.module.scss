@@ -1,0 +1,13 @@
+.wrap {
+    display: flex;
+    align-items: flex-start;
+}
+
+.left {
+    width: 20%;
+}
+
+.right {
+    width: 80%;
+    margin: 0 20PX;
+}
