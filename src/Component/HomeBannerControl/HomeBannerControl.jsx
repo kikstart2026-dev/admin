@@ -11,6 +11,8 @@ import {
     singleDeleteHomeBanner,
 } from "../../apis/api";
 
+import "../../Main.scss";
+
 export default function HomeBannerControl() {
 
     const [banners, setBanners] = useState([]);
@@ -257,42 +259,44 @@ export default function HomeBannerControl() {
 
     return (
 
-        <div className={styles.bannerWrap}>
+        <div className={styles.banner}>
+            <div className={styles.bannerWrap}>
 
-            <h3 className={styles.title}>Home Banner Control</h3>
+  <h3 className={styles.title}>Home Banner Control</h3>
+                <div className={styles.topActions}>
 
-            <div className={styles.topActions}>
+                  
+                    <button
+                        className={styles.createBtn}
+                        onClick={() => {
 
-                <button
-                    className={styles.createBtn}
-                    onClick={() => {
+                            setMode("create");
+                            setShowForm(true);
 
-                        setMode("create");
-                        setShowForm(true);
+                            setFormValues({
+                                subheading: "",
+                                heading: "",
+                                description: "",
+                            });
 
-                        setFormValues({
-                            subheading: "",
-                            heading: "",
-                            description: "",
-                        });
+                            setPreview("");
 
-                        setPreview("");
+                            // FIX
+                            setImageFile(null);
 
-                        // FIX
-                        setImageFile(null);
+                        }}
+                    >
+                        Create Banner
+                    </button>
 
-                    }}
-                >
-                    Create Banner
-                </button>
+                    <button
+                        className={styles.deleteSelected}
+                        onClick={handleDeleteSelected}
+                    >
+                        Delete Selected
+                    </button>
 
-                <button
-                    className={styles.deleteSelected}
-                    onClick={handleDeleteSelected}
-                >
-                    Delete Selected
-                </button>
-
+                </div>
             </div>
 
             {/* FORM */}

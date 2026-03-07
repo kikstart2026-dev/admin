@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import styles from "./Sidebar.module.scss";
+import "../../Main.scss";
 
 export default function Sidebar() {
 
   const [isOpen, setIsOpen] = useState(true);
   const [contentOpen, setContentOpen] = useState(false);
 
-  const location = useLocation(); // ✅ current route
+  const location = useLocation();
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -17,17 +18,15 @@ export default function Sidebar() {
     setContentOpen(!contentOpen);
   };
 
-  // ✅ keep dropdown open if submenu route active
+  // ✅ submenu route active থাকলে dropdown open থাকবে
   useEffect(() => {
-
     if (
-      location.pathname === "/HomePage" ||
+      location.pathname === "/home-page" ||
       location.pathname === "/about-control" ||
       location.pathname === "/contact-control"
     ) {
       setContentOpen(true);
     }
-
   }, [location.pathname]);
 
   return (
@@ -81,7 +80,7 @@ export default function Sidebar() {
 
                 <li>
                   <NavLink
-                    to="/HomePage"
+                    to="/home-page"
                     className={({ isActive }) =>
                       isActive ? styles.active : ""
                     }
