@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styles from "./HomeBannerControl.module.scss";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
     getAllHomeBanner,
@@ -9,11 +10,15 @@ import {
     createFile,
     createHomeBanner,
     singleDeleteHomeBanner,
+    selectiveDeleteHomeBanner,
+
 } from "../../apis/api";
 
 import "../../Main.scss";
 
 export default function HomeBannerControl() {
+
+    const queryClient = useQueryClient();
 
     const [banners, setBanners] = useState([]); // to store banner data
     const [selected, setSelected] = useState([]); //to store banners by checkbox
@@ -41,24 +46,29 @@ export default function HomeBannerControl() {
     // FETCH BANNERS
     // =============================
 
-    const fetchBanner = async () => {
+    const { isLoading } = useQuery({
+        queryKey: ["homeBanners"],
+        queryFn: async () => {
 
-        const res = await getAllHomeBanner();
+            const res = await getAllHomeBanner();
 
-        const bannersData = res?.data?.data || res?.data || []; // for safe data access
+            const bannersData = res?.data?.data || res?.data || []; // for safe data access
 
-        const sorted = [...bannersData].sort( // copy banner data
+            const sorted = [...bannersData].sort( // copy banner data
 
-            (a, b) => new Date(b.createdAt) - new Date(a.createdAt) // compare by create date
+                (a, b) => new Date(b.createdAt) - new Date(a.createdAt) // compare by create date
 
-        ); // sort to show newest banner first 
+            ); // sort to show newest banner first 
 
-        setBanners(sorted); // banners state update
+            setBanners(sorted); // banners state update
+
+            return sorted;
+        },
+    });
+
+    const fetchBanner = () => {
+        queryClient.invalidateQueries(["homeBanners"]);
     };
-
-    useEffect(() => {
-        fetchBanner(); //page load → banner fetch
-    }, []);
 
     // =============================
     // INPUT CHANGE
@@ -152,7 +162,7 @@ export default function HomeBannerControl() {
 
                 const BaseUrl = "http://localhost:8008";
 
-                imageUrl = BaseUrl + uploadRes.data[0].path;
+                imageUrl = BaseUrl + uploadRes.data[0].path; 
             }
 
             await updateHomeBanner(bannerId, {
@@ -185,45 +195,45 @@ export default function HomeBannerControl() {
         fetchBanner();
     };
 
-    // =============================
-    // SELECT CHECKBOX
-    // =============================
+
+    // HANDLE SELECT / UNSELECT checkbox
 
     const handleSelect = (id) => {
-
-        if (selected.includes(id)) { // selected is a array
-
+        if (selected.includes(id)) {
             setSelected(selected.filter((item) => item !== id));
-
         } else {
-
             setSelected([...selected, id]);
         }
-    }; // to manange checkbox select
+    };
 
     // =============================
-    // DELETE SELECTED
+    // DELETE SELECTED (USING BULK API)
     // =============================
-
     const handleDeleteSelected = async () => {
-
         if (selected.length === 0) {
-
             alert("Select banners first");
             return;
         }
 
         if (!window.confirm("Delete Selected Banners?")) return;
 
-        for (let id of selected) {
+        try {
+            // call your bulk delete API
+            const payload = { ids: selected }; // { ids: [id1, id2, ...] }
+            const res = await selectiveDeleteHomeBanner(payload);
 
-            await singleDeleteHomeBanner(id);
+            if (res.status === "success") {
+                alert(`${res.deletedCount} banners deleted successfully`);
+                setSelected([]);   // clear selection
+                fetchBanner();     // refresh banner list
+            } else {
+                alert("Something went wrong");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Error deleting banners: " + err.message);
         }
-
-        setSelected([]);
-
-        fetchBanner();
-    }; // multiple banner delete
+    };
 
     // =============================
     // EDIT
@@ -257,6 +267,11 @@ export default function HomeBannerControl() {
         setGetData(item); // store selected banner data in state
         setShowGet(true); // open modal
     };
+
+    if (isLoading) return <p>Loading...</p>;
+
+   
+
 
     return (
 
@@ -353,7 +368,7 @@ export default function HomeBannerControl() {
                     )}
 
                     {/* hamdle button for update and create to call exact function */}
-                    
+
                     <button
                         className={styles.saveBtn}
                         onClick={
