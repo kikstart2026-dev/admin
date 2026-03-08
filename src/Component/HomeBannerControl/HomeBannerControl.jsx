@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styles from "./HomeBannerControl.module.scss";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
     getAllHomeBanner,
@@ -16,6 +17,8 @@ import {
 import "../../Main.scss";
 
 export default function HomeBannerControl() {
+
+    const queryClient = useQueryClient();
 
     const [banners, setBanners] = useState([]); // to store banner data
     const [selected, setSelected] = useState([]); //to store banners by checkbox
@@ -43,24 +46,29 @@ export default function HomeBannerControl() {
     // FETCH BANNERS
     // =============================
 
-    const fetchBanner = async () => {
+    const { isLoading } = useQuery({
+        queryKey: ["homeBanners"],
+        queryFn: async () => {
 
-        const res = await getAllHomeBanner();
+            const res = await getAllHomeBanner();
 
-        const bannersData = res?.data?.data || res?.data || []; // for safe data access
+            const bannersData = res?.data?.data || res?.data || []; // for safe data access
 
-        const sorted = [...bannersData].sort( // copy banner data
+            const sorted = [...bannersData].sort( // copy banner data
 
-            (a, b) => new Date(b.createdAt) - new Date(a.createdAt) // compare by create date
+                (a, b) => new Date(b.createdAt) - new Date(a.createdAt) // compare by create date
 
-        ); // sort to show newest banner first 
+            ); // sort to show newest banner first 
 
-        setBanners(sorted); // banners state update
+            setBanners(sorted); // banners state update
+
+            return sorted;
+        },
+    });
+
+    const fetchBanner = () => {
+        queryClient.invalidateQueries(["homeBanners"]);
     };
-
-    useEffect(() => {
-        fetchBanner(); //page load → banner fetch
-    }, []);
 
     // =============================
     // INPUT CHANGE
@@ -259,6 +267,11 @@ export default function HomeBannerControl() {
         setGetData(item); // store selected banner data in state
         setShowGet(true); // open modal
     };
+
+    if (isLoading) return <p>Loading...</p>;
+
+   
+
 
     return (
 
