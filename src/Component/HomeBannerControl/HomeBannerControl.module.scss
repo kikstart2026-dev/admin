@@ -1,5 +1,6 @@
-textarea{
-   resize: none;    /* user cannot manually resize */
+textarea {
+  resize: none;
+  /* user cannot manually resize */
   overflow: hidden;
   min-height: 80px;
 }
@@ -59,6 +60,11 @@ textarea{
   td {
     padding: 12px;
     text-align: center;
+
+
+    .checkbox {
+      accent-color: #ED1C24;
+    }
 
   }
 
@@ -149,23 +155,23 @@ textarea{
       // border-bottom: 1px solid #eee;
       font-size: 14px;
 
-      img{
-         width: 150px;
-      // height: 100PX;
+      img {
+        width: 150px;
+        // height: 100PX;
       }
     }
   }
 
-  .closeBtn{
+  .closeBtn {
     margin-right: 8px;
-      padding: 6px 12px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      color: white;
-      font-weight: 500;
-      transition: 0.3s ease;
-      background-color: #ED1C24;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: white;
+    font-weight: 500;
+    transition: 0.3s ease;
+    background-color: #ED1C24;
   }
 
   h4 {
@@ -195,11 +201,11 @@ textarea{
 
   .preview {
     text-align: center;
-     width: 150px;
-      // height: 300PX;
+    width: 150px;
+    // height: 300PX;
 
     img {
-     
+
       border-radius: 8px;
       margin-bottom: 15px;
     }
@@ -224,10 +230,10 @@ textarea{
     }
 
     button:nth-child(1) {
-  background: #000000;
+      background: #000000;
     }
 
- 
+
 
 
     .saveBtn {
@@ -249,6 +255,10 @@ textarea{
         background: #888;
       }
     }
+  }
+
+  th .checkbox {
+    accent-color: #6c4d4e;
   }
 
 
