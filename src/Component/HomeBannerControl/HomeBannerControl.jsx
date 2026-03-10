@@ -238,7 +238,7 @@ export default function HomeBannerControl() {
           <thead>
             <tr>
               <th>
-                <input type="checkbox" checked={allSelected} onChange={handleSelectAll} /> Select All
+                <input className={styles.checkbox} type="checkbox" checked={allSelected} onChange={handleSelectAll} /> Select All
               </th>
               <th>Image</th>
               <th>Tagline</th>
@@ -258,7 +258,7 @@ export default function HomeBannerControl() {
               banners.map((item) => (
                 <tr key={item._id}>
                   <td>
-                    <input
+                    <input className={styles.checkbox}
                       type="checkbox"
                       checked={selected.includes(item._id)}
                       onChange={() => handleSelect(item._id)}
