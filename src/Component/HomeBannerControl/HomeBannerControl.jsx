@@ -260,7 +260,6 @@ export default function HomeBannerControl() {
                   <td>
                     <input className={styles.checkbox}
                       type="checkbox"
-                      className="check"
                       checked={selected.includes(item._id)}
                       onChange={() => handleSelect(item._id)}
                     />
