@@ -37,3 +37,20 @@ img {
   max-width: 100%;
   height: auto;
 }
+
+/* Scrollbar width */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+/* Red–White Thumb */
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: #ED1C24;
+}

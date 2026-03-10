@@ -137,6 +137,14 @@ export const multipleDeleteHomeBanner = async () => {
     return res.data;
 };
 
+// ✅ Toggle Active Banner
+export const toggleActiveBanner = async (id) => {
+    const res = await axiosInstance.put(
+        endpoints.toggleActiveBanner(id)
+    );
+    return res.data;
+};
+
 /* ================================
     Why Choose Us APIs
 ================================ */
