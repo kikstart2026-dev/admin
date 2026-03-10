@@ -37,6 +37,10 @@ export const endpoints = {
   selectiveDeleteHomeBanner: "/home-banner/select/delete",
   multipleDeleteHomeBanner: "/home-banner/delete/all",
 
+
+  // ✅ ACTIVE BANNER
+toggleActiveBanner: (id) => `/home-banner/active/${id}`,
+
   // Why Choose Us------------------------------------>>
 
   createWhyChooseUs: "/why-choose-us/create",
