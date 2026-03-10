@@ -27,7 +27,7 @@ export default function HomeBannerControl() {
   const [imageFile, setImageFile] = useState(null);
   const [getData, setGetData] = useState(null);
   const [formValues, setFormValues] = useState({
-    subheading: "",
+    tagline: "",
     heading: "",
     description: ""
   });
@@ -45,9 +45,9 @@ export default function HomeBannerControl() {
 
   const [banners, setBanners] = useState([]);
 
-React.useEffect(() => {
-  setBanners(data);
-}, [data]);
+  React.useEffect(() => {
+    setBanners(data);
+  }, [data]);
 
   const fetchBanner = () => {
     queryClient.invalidateQueries(["homeBanners"]);
@@ -170,7 +170,7 @@ React.useEffect(() => {
     setBannerId(item._id);
     setHeadingId(item.headingData._id);
     setFormValues({
-      subheading: item.headingData?.subheading || "",
+      tagline: item.headingData?.tagline || "",
       heading: item.headingData?.heading || "",
       description: item.headingData?.description || ""
     });
@@ -183,27 +183,27 @@ React.useEffect(() => {
     setShowGet(true);
   };
 
-const toggleActive = async (id) => {
-  try {
+  const toggleActive = async (id) => {
+    try {
 
-    // UI instantly change
-    setBanners((prev) =>
-      prev.map((item) => ({
-        ...item,
-        isActive: item._id === id
-      }))
-    );
+      // UI instantly change
+      setBanners((prev) =>
+        prev.map((item) => ({
+          ...item,
+          isActive: item._id === id
+        }))
+      );
 
-    // backend update
-    await toggleActiveBanner(id);
+      // backend update
+      await toggleActiveBanner(id);
 
-    // backend থেকে fresh data আনবে
-    fetchBanner();
+      // backend থেকে fresh data আনবে
+      fetchBanner();
 
-  } catch (err) {
-    console.error(err);
-  }
-};
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   if (isLoading) return <p>Loading...</p>;
 
@@ -217,7 +217,7 @@ const toggleActive = async (id) => {
             onClick={() => {
               setMode("create");
               setShowForm(true);
-              setFormValues({ subheading: "", heading: "", description: "" });
+              setFormValues({ tagline: "", heading: "", description: "" });
               setPreview("");
               setImageFile(null);
             }}
@@ -241,8 +241,8 @@ const toggleActive = async (id) => {
                 <input type="checkbox" checked={allSelected} onChange={handleSelectAll} /> Select All
               </th>
               <th>Image</th>
+              <th>Tagline</th>
               <th>Heading</th>
-              <th>Subheading</th>
               <th>Active</th>
               <th>Action</th>
             </tr>
@@ -270,8 +270,9 @@ const toggleActive = async (id) => {
                       alt=""
                     />
                   </td>
+                  <td>{item?.headingData?.tagline || "No tagline"}</td>
                   <td>{item?.headingData?.heading || "No Heading"}</td>
-                  <td>{item?.headingData?.subheading || "No Subheading"}</td>
+                  
                   <td>
                     <i
                       className={item.isActive ? "bi bi-toggle-on" : "bi bi-toggle-off"}
@@ -306,6 +307,15 @@ const toggleActive = async (id) => {
         <div className={styles.modal}>
           <div className={styles.modalContent}>
             <h4>{mode === "create" ? "Create Banner" : "Edit Banner"}</h4>
+
+            <input
+              type="text"
+              placeholder="Tagline"
+              name="tagline"
+              value={formValues.tagline}
+              onChange={handleChange}
+            />
+
             <input
               type="text"
               placeholder="Heading"
@@ -313,13 +323,7 @@ const toggleActive = async (id) => {
               value={formValues.heading}
               onChange={handleChange}
             />
-            <input
-              type="text"
-              placeholder="Subheading"
-              name="subheading"
-              value={formValues.subheading}
-              onChange={handleChange}
-            />
+
             <textarea
               placeholder="Description"
               name="description"
@@ -350,15 +354,14 @@ const toggleActive = async (id) => {
             <table>
 
               <tbody>
-
                 <tr>
+                  <th>Tagline</th>
+                  <td>{getData.headingData.tagline}</td>
+                </tr>
+                <tr>
+
                   <th>Heading</th>
                   <td>{getData.headingData.heading}</td>
-                </tr>
-
-                <tr>
-                  <th>Subheading</th>
-                  <td>{getData.headingData.subheading}</td>
                 </tr>
 
                 <tr>
