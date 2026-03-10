@@ -3,13 +3,6 @@ import styles from "./Dashboard.module.scss";
 import Sidebar from "../../Component/Sidebar/Sidebar";
 
 export default function Dashboard() {
-<<<<<<< HEAD
-    return (
-    
-      <div className={styles.wrap}>
-          <div className={styles.left}>
-            <Sidebar/>
-=======
   return (
     <div className={styles.wrap}>
       <div className={styles.left}>
@@ -58,7 +51,6 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
->>>>>>> 798519c193a49234ae087f88311ddc4703d70c2a
           </div>
 
           {/* Dummy Charts */}
