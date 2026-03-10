@@ -35,13 +35,19 @@ export default function HomeBannerControl() {
   // ================================
   // FETCH DATA
   // ================================
-  const { data: banners = [], isLoading } = useQuery({
+  const { data = [], isLoading } = useQuery({
     queryKey: ["homeBanners"],
     queryFn: async () => {
       const res = await getAllHomeBanner();
       return res?.data?.data || res?.data || [];
     },
   });
+
+  const [banners, setBanners] = useState([]);
+
+React.useEffect(() => {
+  setBanners(data);
+}, [data]);
 
   const fetchBanner = () => {
     queryClient.invalidateQueries(["homeBanners"]);
@@ -93,42 +99,42 @@ export default function HomeBannerControl() {
   // ================================
   // CREATE / UPDATE
   // ================================
-const handleCreate = async () => {
-  try {
-    // 1️⃣ Create the heading first
-    const headingRes = await createHeading(formValues);
-    const newHeadingId = headingRes?.data?._id;
-    
-    // 2️⃣ Upload image if any
-    let imageUrl = "";
-    if (imageFile) {
-      const fd = new FormData();
-      fd.append("file", imageFile);
-      const uploadRes = await createFile(fd);
-      imageUrl = uploadRes.data[0].path;
+  const handleCreate = async () => {
+    try {
+      // 1️⃣ Create the heading first
+      const headingRes = await createHeading(formValues);
+      const newHeadingId = headingRes?.data?._id;
+
+      // 2️⃣ Upload image if any
+      let imageUrl = "";
+      if (imageFile) {
+        const fd = new FormData();
+        fd.append("file", imageFile);
+        const uploadRes = await createFile(fd);
+        imageUrl = uploadRes.data[0].path;
+      }
+
+      // 3️⃣ Create the banner (default isActive = false)
+      const bannerRes = await createHomeBanner({
+        headingId: newHeadingId,
+        image: "http://localhost:8008" + imageUrl
+      });
+
+      const newBannerId = bannerRes?.data?._id; // get the new banner ID
+
+      // 4️⃣ Immediately activate the new banner
+      if (newBannerId) {
+        await toggleActiveBanner(newBannerId); // now it's active
+      }
+
+      alert("Banner Created and Activated Successfully");
+      setShowForm(false);
+      setImageFile(null);
+      fetchBanner(); // refresh table to show active toggle
+    } catch (err) {
+      console.error(err);
     }
-
-    // 3️⃣ Create the banner (default isActive = false)
-    const bannerRes = await createHomeBanner({
-      headingId: newHeadingId,
-      image: "http://localhost:8008" + imageUrl
-    });
-
-    const newBannerId = bannerRes?.data?._id; // get the new banner ID
-
-    // 4️⃣ Immediately activate the new banner
-    if (newBannerId) {
-      await toggleActiveBanner(newBannerId); // now it's active
-    }
-
-    alert("Banner Created and Activated Successfully");
-    setShowForm(false);
-    setImageFile(null);
-    fetchBanner(); // refresh table to show active toggle
-  } catch (err) {
-    console.error(err);
-  }
-};
+  };
 
   const handleUpdate = async () => {
     try {
@@ -177,14 +183,27 @@ const handleCreate = async () => {
     setShowGet(true);
   };
 
-  const toggleActive = async (id) => {
-    try {
-      await toggleActiveBanner(id);
-      fetchBanner();
-    } catch (err) {
-      console.error(err);
-    }
-  };
+const toggleActive = async (id) => {
+  try {
+
+    // UI instantly change
+    setBanners((prev) =>
+      prev.map((item) => ({
+        ...item,
+        isActive: item._id === id
+      }))
+    );
+
+    // backend update
+    await toggleActiveBanner(id);
+
+    // backend থেকে fresh data আনবে
+    fetchBanner();
+
+  } catch (err) {
+    console.error(err);
+  }
+};
 
   if (isLoading) return <p>Loading...</p>;
 
