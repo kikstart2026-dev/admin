@@ -29,17 +29,17 @@ export const endpoints = {
   
   // Home Banner------------------------------------>>
 
-  createHomeBanner: "/home-banner/create",
-  getAllHomeBanner: "/home-banner",
-  getHomeBannerById: (id) => `/home-banner/${id}`,
-  updateHomeBanner: (id) => `/home-banner/${id}`,
-  singleDeleteHomeBanner: (id) => `/home-banner/${id}`,
-  selectiveDeleteHomeBanner: "/home-banner/select/delete",
-  multipleDeleteHomeBanner: "/home-banner/delete/all",
+  createHomeBanner: "admin/home-banner/create",
+  getAllHomeBanner: "admin/home-banner",
+  getHomeBannerById: (id) => `admin/home-banner/${id}`,
+  updateHomeBanner: (id) => `admin/home-banner/${id}`,
+  singleDeleteHomeBanner: (id) => `admin/home-banner/${id}`,
+  selectiveDeleteHomeBanner: "admin/home-banner/select/delete",
+  multipleDeleteHomeBanner: "admin/home-banner/delete/all",
 
 
   // ✅ ACTIVE BANNER
-toggleActiveBanner: (id) => `/home-banner/active/${id}`,
+toggleActiveBanner: (id) => `admin/home-banner/active/${id}`,
 
   // Why Choose Us------------------------------------>>
 
