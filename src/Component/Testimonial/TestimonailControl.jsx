@@ -220,7 +220,7 @@ export default function TestimonialControl() {
   return (
     <div className={styles.banner}>
       <div className={styles.bannerWrap}>
-        <h3 className={styles.title}>Testimonial Control</h3>
+        <h3 className={styles.title}>Control As You Want</h3>
 
         <div className={styles.topActions}>
           <button
@@ -295,6 +295,7 @@ export default function TestimonialControl() {
                   <td>
                     <input
                       type="checkbox"
+                      className={styles.checkbox}
                       checked={selected.includes(item._id)}
                       onChange={() => handleSelect(item._id)}
                     />

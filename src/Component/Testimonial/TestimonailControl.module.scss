@@ -1,15 +1,14 @@
 textarea {
   resize: none;
-  /* user cannot manually resize */
   overflow: hidden;
   min-height: 80px;
 }
 
 /* Title */
 .title {
-  font-size: 24px;
-  color: #ED1C24;
-  font-weight: 600;
+  font-size: 20px;
+  color: #9f0005;
+  font-weight: 500;
 }
 
 .check{
@@ -61,7 +60,7 @@ textarea {
   width: 100%;
   border-collapse: collapse;
   background-color: #ffffff;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+  // box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
 
 
   th,
