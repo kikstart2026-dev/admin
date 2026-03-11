@@ -29,6 +29,10 @@ textarea {
   transition: 0.3s ease;
 }
 
+.topActions button:nth-child(1){
+  margin-right: 20px;
+}
+
 .topActions button:hover {
   transform: scale(1.08);
 }

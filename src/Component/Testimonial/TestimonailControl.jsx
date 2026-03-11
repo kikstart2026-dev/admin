@@ -9,11 +9,10 @@ import {
   delSelectiveTest,
   createHeading,
   updateHeading,
-  createFile
+  createFile,
 } from "../../apis/api";
 
 export default function TestimonialControl() {
-
   const queryClient = useQueryClient();
 
   const [cards, setCards] = useState([]);
@@ -36,43 +35,35 @@ export default function TestimonialControl() {
   const [headingData, setHeadingData] = useState({
     tagline: "",
     heading: "",
-    description: ""
+    description: "",
   });
 
   const [formValues, setFormValues] = useState({
     name: "",
     designation: "",
-    description: ""
+    description: "",
   });
-
-  /* =========================
-      FETCH DATA
-  ========================= */
 
   const { data = {}, isLoading } = useQuery({
     queryKey: ["testimonials"],
     queryFn: async () => {
       const res = await getAllTest();
       return res?.data || {};
-    }
+    },
   });
 
   useEffect(() => {
-
     setCards(data.cards || []);
 
     if (data.heading) {
-
       setHeadingId(data.heading._id);
 
       setHeadingData({
         tagline: data.heading.tagline || "",
         heading: data.heading.heading || "",
-        description: data.heading.description || ""
+        description: data.heading.description || "",
       });
-
     }
-
   }, [data]);
 
   const fetchData = () => {
@@ -81,33 +72,20 @@ export default function TestimonialControl() {
 
   const allSelected = selected.length === cards.length && cards.length > 0;
 
-  /* =========================
-      SELECT
-  ========================= */
-
   const handleSelect = (id) => {
-
     if (selected.includes(id)) {
       setSelected(selected.filter((x) => x !== id));
     } else {
       setSelected([...selected, id]);
     }
-
   };
 
   const handleSelectAll = () => {
-
     if (allSelected) setSelected([]);
     else setSelected(cards.map((x) => x._id));
-
   };
 
-  /* =========================
-      DELETE MULTIPLE
-  ========================= */
-
   const handleDeleteSelected = async () => {
-
     if (selected.length === 0) {
       alert("Select cards first");
       return;
@@ -120,45 +98,27 @@ export default function TestimonialControl() {
     setSelected([]);
 
     fetchData();
-
   };
 
-  /* =========================
-      HEADING SAVE
-  ========================= */
-
   const handleHeadingSave = async () => {
-
     try {
-
       if (headingId) {
-
         await updateHeading(headingId, headingData);
         alert("Heading Updated");
-
       } else {
-
         const res = await createHeading(headingData);
         setHeadingId(res?.data?._id);
 
         alert("Heading Created");
-
       }
 
       fetchData();
-
     } catch (err) {
       console.log(err);
     }
-
   };
 
-  /* =========================
-      IMAGE
-  ========================= */
-
   const handleImageChange = (e) => {
-
     const file = e.target.files[0];
 
     if (!file) return;
@@ -166,15 +126,9 @@ export default function TestimonialControl() {
     setImageFile(file);
 
     setPreview(URL.createObjectURL(file));
-
   };
 
-  /* =========================
-      CREATE CARD
-  ========================= */
-
   const handleCreate = async () => {
-
     if (!headingId) {
       alert("Create heading first");
       return;
@@ -183,24 +137,20 @@ export default function TestimonialControl() {
     let imageUrl = "";
 
     if (imageFile) {
-
       const fd = new FormData();
       fd.append("file", imageFile);
 
       const uploadRes = await createFile(fd);
 
       imageUrl = "http://localhost:8008" + uploadRes.data[0].path;
-
     }
 
     await createTest({
-
       headingId,
       image: imageUrl,
       name: formValues.name,
       designation: formValues.designation,
-      description: formValues.description
-
+      description: formValues.description,
     });
 
     alert("Card Created");
@@ -208,36 +158,26 @@ export default function TestimonialControl() {
     setShowForm(false);
 
     fetchData();
-
   };
 
-  /* =========================
-      UPDATE CARD
-  ========================= */
-
   const handleUpdate = async () => {
-
     let imageUrl = preview;
 
     if (imageFile) {
-
       const fd = new FormData();
       fd.append("file", imageFile);
 
       const uploadRes = await createFile(fd);
 
       imageUrl = "http://localhost:8008" + uploadRes.data[0].path;
-
     }
 
     await updateTest(cardId, {
-
       headingId,
       image: imageUrl,
       name: formValues.name,
       designation: formValues.designation,
-      description: formValues.description
-
+      description: formValues.description,
     });
 
     alert("Card Updated");
@@ -245,21 +185,17 @@ export default function TestimonialControl() {
     setShowForm(false);
 
     fetchData();
-
   };
 
   const handleDelete = async (id) => {
-
     if (!window.confirm("Delete Card?")) return;
 
     await delSingleTest(id);
 
     fetchData();
-
   };
 
   const handleEdit = (item) => {
-
     setMode("update");
     setShowForm(true);
 
@@ -268,48 +204,38 @@ export default function TestimonialControl() {
     setFormValues({
       name: item.name,
       designation: item.designation,
-      description: item.description
+      description: item.description,
     });
 
     setPreview(item.image);
-
   };
 
   const handleGet = (item) => {
-
     setGetData(item);
-
     setShowGet(true);
-
   };
 
   if (isLoading) return <p>Loading...</p>;
 
   return (
-
     <div className={styles.banner}>
-
       <div className={styles.bannerWrap}>
-
         <h3 className={styles.title}>Testimonial Control</h3>
 
         <div className={styles.topActions}>
-
           <button
             className={styles.createBtn}
             onClick={() => {
-
               setMode("create");
               setShowForm(true);
 
               setFormValues({
                 name: "",
                 designation: "",
-                description: ""
+                description: "",
               });
 
               setPreview("");
-
             }}
           >
             Create Card
@@ -326,27 +252,23 @@ export default function TestimonialControl() {
             className={styles.deleteSelected}
             onClick={handleDeleteSelected}
           >
-            ({selected.length}/{cards.length})
+            <i className="bi bi-trash"></i>{" "}
+            {allSelected ? "ALL" : `(${selected.length}/${cards.length})`}
           </button>
-
         </div>
-
       </div>
 
       <div className={styles.tableWrap}>
-
         <table className={styles.table}>
-
           <thead>
-
             <tr>
-
               <th>
                 <input
+                  className={styles.checkbox}
                   type="checkbox"
                   checked={allSelected}
                   onChange={handleSelectAll}
-                />
+                />{" "}
                 Select All
               </th>
 
@@ -354,35 +276,28 @@ export default function TestimonialControl() {
               <th>Name</th>
               <th>Designation</th>
               <th>Action</th>
-
             </tr>
-
           </thead>
 
           <tbody>
-
             {cards.length === 0 ? (
-
               <tr>
-                <td colSpan={5} style={{ textAlign: "center", padding: "20px" }}>
+                <td
+                  colSpan={5}
+                  style={{ textAlign: "center", padding: "20px" }}
+                >
                   No Testimonials Found
                 </td>
               </tr>
-
             ) : (
-
               cards.map((item) => (
-
                 <tr key={item._id}>
-
                   <td>
-
                     <input
                       type="checkbox"
                       checked={selected.includes(item._id)}
                       onChange={() => handleSelect(item._id)}
                     />
-
                   </td>
 
                   <td>
@@ -394,39 +309,26 @@ export default function TestimonialControl() {
                   <td>{item.designation}</td>
 
                   <td className={styles.actions}>
-
                     <button onClick={() => handleEdit(item)}>
-                      Edit
+                      <i className="bi bi-pencil-square"></i>
                     </button>
-
                     <button onClick={() => handleGet(item)}>
-                      View
+                      <i className="bi bi-eye"></i>
                     </button>
-
                     <button onClick={() => handleDelete(item._id)}>
-                      Delete
+                      <i className="bi bi-trash"></i>
                     </button>
-
                   </td>
-
                 </tr>
-
               ))
-
             )}
-
           </tbody>
-
         </table>
-
       </div>
 
       {showForm && (
-
         <div className={styles.modal}>
-
           <div className={styles.modalContent}>
-
             <h4>{mode === "create" ? "Create Card" : "Edit Card"}</h4>
 
             <input
@@ -460,27 +362,19 @@ export default function TestimonialControl() {
             {preview && <img src={preview} alt="" width="120" />}
 
             <div className={styles.modalActions}>
-
               <button onClick={() => setShowForm(false)}>Cancel</button>
 
               <button onClick={mode === "create" ? handleCreate : handleUpdate}>
                 {mode === "create" ? "Create" : "Update"}
               </button>
-
             </div>
-
           </div>
-
         </div>
-
       )}
 
       {showHeadingModal && (
-
         <div className={styles.modal}>
-
           <div className={styles.modalContent}>
-
             <h4>Update Heading</h4>
 
             <input
@@ -510,10 +404,7 @@ export default function TestimonialControl() {
             />
 
             <div className={styles.modalActions}>
-
-              <button onClick={() => setShowHeadingModal(false)}>
-                Cancel
-              </button>
+              <button onClick={() => setShowHeadingModal(false)}>Cancel</button>
 
               <button
                 onClick={async () => {
@@ -523,17 +414,36 @@ export default function TestimonialControl() {
               >
                 Save Heading
               </button>
-
             </div>
-
           </div>
-
         </div>
-
       )}
 
+      {showGet && getData && (
+        <div className={styles.modal}>
+          <div className={styles.modalContent}>
+            <h4>View Card</h4>
+
+            <img src={getData.image} alt="" width="120" />
+
+            <p>
+              <strong>Name:</strong> {getData.name}
+            </p>
+
+            <p>
+              <strong>Designation:</strong> {getData.designation}
+            </p>
+
+            <p>
+              <strong>Description:</strong> {getData.description}
+            </p>
+
+            <div className={styles.modalActions}>
+              <button onClick={() => setShowGet(false)}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
-
   );
-
 }
