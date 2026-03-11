@@ -60,4 +60,20 @@ toggleActiveBanner: (id) => `admin/home-banner/active/${id}`,
   singleDeleteService: (id) => `/service/${id}`,
   selectiveDeleteService: "/service/select/delete",
   multipleDeleteService: "/service/delete/all",
+
+  // About Section------------------------------------>>
+
+createAboutSection: "admin/about/create",
+
+getAllAboutSection: "admin/about",
+
+getAboutSectionById: (id) => `admin/about/${id}`,
+
+updateAboutSection: (id) => `admin/about/${id}`,
+
+singleDeleteAboutSection: (id) => `admin/about/${id}`,
+
+selectiveDeleteAboutSection: "admin/about/select/delete",
+
+multipleDeleteAboutSection: "admin/about/delete/all",
 };
