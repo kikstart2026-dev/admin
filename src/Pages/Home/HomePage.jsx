@@ -3,6 +3,7 @@ import styles from "./HomePage.module.scss"
 import HomeBannerControl from "../../Component/HomeBannerControl/HomeBannerControl"
 import Sidebar from "../../Component/Sidebar/Sidebar";
 import "../../Main.scss";
+import WhyChooseUsControl from "../../Component/WhyChooseUsControl/WhyChooseUsControl";
 
 
 export default function HomePage() {
@@ -15,6 +16,8 @@ export default function HomePage() {
       <div className={styles.right}>
      {/* <h1>HOME PAGE</h1> */}
         <HomeBannerControl />
+
+        <WhyChooseUsControl />
       </div>
     </div>
   );
