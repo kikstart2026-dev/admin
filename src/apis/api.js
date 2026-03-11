@@ -243,3 +243,49 @@ export const multipleDeleteService = async () => {
     const res = await axiosInstance.delete(endpoints.multipleDeleteService);
     return res.data;
 };
+
+/* ================================ Testimonails APIs ================================ */
+
+// ✅ Create Service
+export const createTest = async (payload) => {
+    const res = await axiosInstance.post(endpoints.createTest, payload);
+    return res.data;
+};
+
+// ✅ Get All services
+export const getAllTest = async () => {
+    const res = await axiosInstance.get(endpoints.getAllTest);
+    return res.data;
+};
+
+// ✅ Get sevice By ID
+export const getTestById = async (id) => {
+    const res = await axiosInstance.get(endpoints.getTestById(id));
+    return res.data;
+};
+
+// ✅ Update service
+export const updateTest = async (id, payload) => {
+    const res = await axiosInstance.put(endpoints.updateTest(id), payload);
+    return res.data;
+};
+
+// ✅ Delete Single
+export const delSingleTest = async (id) => {
+    const res = await axiosInstance.delete(endpoints.delSingleTest(id));
+    return res.data;
+};
+
+// ✅ Delete Selective
+export const delSelectiveTest = async (payload) => {
+    const res = await axiosInstance.delete(endpoints.delSelectiveTest, {
+        data: payload,
+    });
+    return res.data;
+};
+
+// ✅ Delete All
+export const delAllTest = async () => {
+    const res = await axiosInstance.delete(endpoints.delAllTest);
+    return res.data;
+};
