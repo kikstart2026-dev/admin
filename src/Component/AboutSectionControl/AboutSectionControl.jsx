@@ -6,10 +6,10 @@ import {
   createHeading,
   updateHeading,
   createFile,
-  createAboutSection,
-  getAllAboutSection,
-  updateAboutSection,
-  singleDeleteAboutSection
+  createAboutUs,
+  getAllAboutUs,
+  updateAboutUs,
+  singleDeleteAboutUs
 } from "../../apis/api";
 
 export default function AboutSectionControl() {
@@ -34,7 +34,7 @@ export default function AboutSectionControl() {
   const { data = [], isLoading } = useQuery({
     queryKey: ["aboutSection"],
     queryFn: async () => {
-      const res = await getAllAboutSection();
+      const res = await getAllAboutUs();
       return res?.data || [];
     }
   });
@@ -80,7 +80,7 @@ export default function AboutSectionControl() {
       }
 
       // 3️⃣ create about
-      await createAboutSection({
+      await createAboutUs({
         headingId: newHeadingId,
         image: "http://localhost:8008" + imageUrl
       });
@@ -117,7 +117,7 @@ export default function AboutSectionControl() {
 
       await updateHeading(headingId, formValues);
 
-      await updateAboutSection(aboutId, {
+      await updateAboutUs(aboutId, {
         headingId: headingId
       });
 
@@ -145,7 +145,7 @@ export default function AboutSectionControl() {
 
     try {
 
-      await singleDeleteAboutSection(id);
+      await singleDeleteAboutUs(id);
 
       refresh();
 

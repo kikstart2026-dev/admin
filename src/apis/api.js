@@ -252,10 +252,10 @@ export const multipleDeleteService = async () => {
 
 
 // CREATE
-export const createAboutSection = async (payload) => {
+export const createAboutUs = async (payload) => {
 
   const res = await axiosInstance.post(
-    endpoints.createAboutSection,
+    endpoints.createAboutUs,
     payload
   );
 
@@ -265,10 +265,10 @@ export const createAboutSection = async (payload) => {
 
 
 // GET ALL
-export const getAllAboutSection = async () => {
+export const getAllAboutUs = async () => {
 
   const res = await axiosInstance.get(
-    endpoints.getAllAboutSection
+    endpoints.getAllAboutUs
   );
 
   return res.data;
@@ -277,10 +277,10 @@ export const getAllAboutSection = async () => {
 
 
 // GET BY ID
-export const getAboutSectionById = async (id) => {
+export const getAboutUsById = async (id) => {
 
   const res = await axiosInstance.get(
-    endpoints.getAboutSectionById(id)
+    endpoints.getAboutUsById(id)
   );
 
   return res.data;
@@ -289,10 +289,10 @@ export const getAboutSectionById = async (id) => {
 
 
 // UPDATE
-export const updateAboutSection = async (id, payload) => {
+export const updateAboutUs = async (id, payload) => {
 
   const res = await axiosInstance.put(
-    endpoints.updateAboutSection(id),
+    endpoints.updateAboutUs(id),
     payload
   );
 
@@ -302,10 +302,10 @@ export const updateAboutSection = async (id, payload) => {
 
 
 // DELETE SINGLE
-export const singleDeleteAboutSection = async (id) => {
+export const singleDeleteAboutUs = async (id) => {
 
   const res = await axiosInstance.delete(
-    endpoints.singleDeleteAboutSection(id)
+    endpoints.singleDeleteAboutUs(id)
   );
 
   return res.data;
@@ -314,10 +314,10 @@ export const singleDeleteAboutSection = async (id) => {
 
 
 // DELETE SELECTIVE
-export const selectiveDeleteAboutSection = async (payload) => {
+export const selectiveDeleteAboutUs = async (payload) => {
 
   const res = await axiosInstance.delete(
-    endpoints.selectiveDeleteAboutSection,
+    endpoints.selectiveDeleteAboutUs,
     {
       data: payload
     }
@@ -329,10 +329,10 @@ export const selectiveDeleteAboutSection = async (payload) => {
 
 
 // DELETE ALL
-export const multipleDeleteAboutSection = async () => {
+export const multipleDeleteAboutUs = async () => {
 
   const res = await axiosInstance.delete(
-    endpoints.multipleDeleteAboutSection
+    endpoints.multipleDeleteAboutUs
   );
 
   return res.data;
