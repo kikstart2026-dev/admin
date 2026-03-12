@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./Contact.module.scss";
-import Sidebar from "../../Component/Sidebar/Sidebar";
+import Sidebar from "../../Shared/Sidebar/Sidebar";
 
 export default function Contact() {
 

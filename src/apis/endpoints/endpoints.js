@@ -76,4 +76,13 @@ singleDeleteAboutSection: (id) => `admin/about/${id}`,
 selectiveDeleteAboutSection: "admin/about/select/delete",
 
 multipleDeleteAboutSection: "admin/about/delete/all",
+  // testimonials------------------------------------>>
+
+  createTest: "admin/testimonal/create",
+  getAllTest: "admin/testimonal/",
+  getTestById: (id) => `admin/testimonal/${id}`,
+  updateTest: (id) => `admin/testimonal/update/${id}`,
+  delSingleTest: (id) => `admin/testimonal/delete/${id}`,
+  delSelectiveTest: "admin/testimonal/delete-selected",
+  delAllTest: "admin/testimonal/delete-all",
 };
