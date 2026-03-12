@@ -190,21 +190,19 @@ textarea {
   }
 
   input,
-  textarea {
+textarea {
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;
     border: 1px solid #ddd;
     border-radius: 8px;
-    font-size: 14px;
     outline: none;
-    transition: 0.3s ease;
-  }
 
-  input:focus,
-  textarea:focus {
-    border-color: #ED1C24;
-  }
+    &:focus {
+        border-color: #ED1C24;
+        outline: none;
+    }
+}
 
   .preview {
     text-align: center;

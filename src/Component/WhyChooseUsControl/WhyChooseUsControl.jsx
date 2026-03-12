@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import styles from "./WhyChooseUsControl.module.scss";
-import "../../Main.scss";
 
 import {
   getAllWhyChooseUs,
@@ -9,6 +8,7 @@ import {
   updateWhyChooseUs,
   singleDeleteWhyChooseUs,
   selectiveDeleteWhyChooseUs,
+  createHeading,
   updateHeading,
   createFile
 } from "../../apis/api";
@@ -17,297 +17,256 @@ export default function WhyChooseUsControl() {
 
   const queryClient = useQueryClient();
 
-  const [selected,setSelected] = useState([]);
+  const [selected, setSelected] = useState([]);
+  const [showForm, setShowForm] = useState(false);
+  const [showHeadingModal, setShowHeadingModal] = useState(false);
+  const [showGet, setShowGet] = useState(false);
 
-  const [showCardForm,setShowCardForm] = useState(false);
-  const [showHeadingForm,setShowHeadingForm] = useState(false);
+  const [mode, setMode] = useState("create");
+  const [cardId, setCardId] = useState(null);
 
-  const [mode,setMode] = useState("create");
+  const [headingId, setHeadingId] = useState(null);
 
-  const [cardId,setCardId] = useState(null);
-  const [headingId,setHeadingId] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
+  const [preview, setPreview] = useState("");
+  const [oldImage, setOldImage] = useState("");
 
-  const [iconFile,setIconFile] = useState(null);
-  const [preview,setPreview] = useState("");
+  const [getData, setGetData] = useState(null);
 
-  const [headingForm,setHeadingForm] = useState({
-    tagline:"",
-    heading:"",
-    description:""
+  const [headingData, setHeadingData] = useState({
+    tagline: "",
+    heading: "",
+    description: ""
   });
 
-  const [cardForm,setCardForm] = useState({
-    title:"",
-    description:"",
-    color:""
+  const [formValues, setFormValues] = useState({
+    title: "",
+    description: "",
+    color: ""
   });
 
-  // =========================
-  // FETCH DATA
-  // =========================
-
-  const {data,isLoading} = useQuery({
-    queryKey:["whyChooseUs"],
-    queryFn: async ()=>{
+  const { data = {}, isLoading } = useQuery({
+    queryKey: ["whyChooseUs"],
+    queryFn: async () => {
       const res = await getAllWhyChooseUs();
-      return res?.data?.data || {};
+      return res?.data || {};
     }
   });
 
-  const [cards,setCards] = useState([]);
+  const cards = data.cards || [];
 
-  useEffect(()=>{
-
-    if(data?.cards){
-
-      setCards(data.cards);
-
-    }
-
-    if(data?.heading){
-
-      setHeadingId(data.heading._id);
-
-      setHeadingForm({
-        tagline:data.heading.tagline || "",
-        heading:data.heading.heading || "",
-        description:data.heading.description || ""
-      });
-
-    }
-
-  },[data]);
-
-  const refresh = ()=>{
-    queryClient.invalidateQueries(["whyChooseUs"]);
+  if (data.heading && headingId === null) {
+    setHeadingId(data.heading._id);
+    setHeadingData({
+      tagline: data.heading.tagline || "",
+      heading: data.heading.heading || "",
+      description: data.heading.description || ""
+    });
   }
 
-  // =========================
-  // SELECT
-  // =========================
+  const fetchData = () => {
+    queryClient.invalidateQueries(["whyChooseUs"]);
+  };
 
-  const handleSelect = (id)=>{
-    if(selected.includes(id)){
-      setSelected(selected.filter(x=>x!==id));
-    }else{
-      setSelected([...selected,id]);
+  const allSelected = selected.length === cards.length && cards.length > 0;
+
+  const handleSelect = (id) => {
+    if (selected.includes(id)) {
+      setSelected(selected.filter((x) => x !== id));
+    } else {
+      setSelected([...selected, id]);
     }
   };
 
-  const allSelected = selected.length === cards.length && cards.length>0;
-
-  const handleSelectAll = ()=>{
-    if(allSelected){
-      setSelected([]);
-    }else{
-      setSelected(cards.map(x=>x._id));
-    }
+  const handleSelectAll = () => {
+    if (allSelected) setSelected([]);
+    else setSelected(cards.map((x) => x._id));
   };
 
-  const handleDeleteSelected = async()=>{
-    await selectiveDeleteWhyChooseUs({ids:selected});
+  const handleDeleteSelected = async () => {
+
+    if (selected.length === 0) {
+      alert("Select cards first");
+      return;
+    }
+
+    if (!window.confirm("Delete Selected Cards?")) return;
+
+    await selectiveDeleteWhyChooseUs({ ids: selected });
+
     setSelected([]);
-    refresh();
+
+    fetchData();
   };
 
-  // =========================
-  // HEADING INPUT
-  // =========================
+  const handleHeadingSave = async () => {
 
-  const handleHeadingChange = (e)=>{
-    setHeadingForm({
-      ...headingForm,
-      [e.target.name]:e.target.value
-    });
+    if (headingId) {
+      await updateHeading(headingId, headingData);
+      alert("Heading Updated");
+    } else {
+      const res = await createHeading(headingData);
+      setHeadingId(res?.data?._id);
+      alert("Heading Created");
+    }
+
+    fetchData();
   };
 
-  const handleHeadingUpdate = async()=>{
+  const handleImageChange = (e) => {
 
-    await updateHeading(headingId,headingForm);
-
-    setShowHeadingForm(false);
-
-    refresh();
-
-  };
-
-  // =========================
-  // CARD INPUT
-  // =========================
-
-  const handleCardChange = (e)=>{
-    setCardForm({
-      ...cardForm,
-      [e.target.name]:e.target.value
-    });
-  };
-
-  const handleIconChange = (e)=>{
     const file = e.target.files[0];
-    if(!file) return;
 
-    setIconFile(file);
+    if (!file) return;
+
+    setImageFile(file);
     setPreview(URL.createObjectURL(file));
   };
 
-  // =========================
-  // CREATE CARD
-  // =========================
+  const handleCreate = async () => {
 
-  const handleCreateCard = async()=>{
+    if (!headingId) {
+      alert("Create heading first");
+      return;
+    }
 
-    let iconUrl="";
+    let imageUrl = "";
 
-    if(iconFile){
+    if (imageFile) {
 
       const fd = new FormData();
-
-      fd.append("file",iconFile);
+      fd.append("file", imageFile);
 
       const uploadRes = await createFile(fd);
 
-      iconUrl="http://localhost:8008"+uploadRes.data[0].path;
-
+      imageUrl = "http://localhost:8008" + uploadRes.data[0].path;
     }
 
     await createWhyChooseUs({
       headingId,
-      icon:iconUrl,
-      title:cardForm.title,
-      description:cardForm.description,
-      color:cardForm.color
+      icon: imageUrl,
+      title: formValues.title,
+      description: formValues.description,
+      color: formValues.color
     });
 
-    setShowCardForm(false);
+    alert("Card Created");
 
-    refresh();
+    setShowForm(false);
 
+    fetchData();
   };
 
-  // =========================
-  // UPDATE CARD
-  // =========================
+  const handleUpdate = async () => {
 
-  const handleUpdateCard = async()=>{
+  let imageUrl = oldImage;
 
-    let iconUrl = preview;
+  if (imageFile) {
 
-    if(iconFile){
+    const fd = new FormData();
+    fd.append("file", imageFile);
 
-      const fd = new FormData();
+    const uploadRes = await createFile(fd);
 
-      fd.append("file",iconFile);
+    imageUrl = "http://localhost:8008" + uploadRes.data[0].path;
+  }
 
-      const uploadRes = await createFile(fd);
+  await updateWhyChooseUs(cardId, {
+    headingId,
+    icon: imageUrl,
+    title: formValues.title,
+    description: formValues.description,
+    color: formValues.color
+  });
 
-      iconUrl="http://localhost:8008"+uploadRes.data[0].path;
+  alert("Card Updated");
 
-    }
+  setShowForm(false);
 
-    await updateWhyChooseUs(cardId,{
-      headingId,
-      icon:iconUrl,
-      title:cardForm.title,
-      description:cardForm.description,
-      color:cardForm.color
-    });
+  fetchData();
+};
 
-    setShowCardForm(false);
+  const handleDelete = async (id) => {
 
-    refresh();
-
-  };
-
-  // =========================
-  // DELETE CARD
-  // =========================
-
-  const handleDelete = async(id)=>{
-
-    if(!window.confirm("Delete card?")) return;
+    if (!window.confirm("Delete Card?")) return;
 
     await singleDeleteWhyChooseUs(id);
 
-    refresh();
-
+    fetchData();
   };
 
-  // =========================
-  // EDIT CARD
-  // =========================
-
-  const handleEdit = (item)=>{
+  const handleEdit = (item) => {
 
     setMode("update");
-
-    setShowCardForm(true);
+    setShowForm(true);
 
     setCardId(item._id);
 
-    setPreview(item.icon);
-
-    setCardForm({
-      title:item.title,
-      description:item.description,
-      color:item.color
+    setFormValues({
+      title: item.title,
+      description: item.description,
+      color: item.color
     });
 
+    setPreview(item.icon);
+    setOldImage(item.icon);
+    setImageFile(null);
   };
 
-  if(isLoading) return <p>Loading...</p>;
+  const handleGet = (item) => {
 
-  return(
+    setGetData(item);
 
+    setShowGet(true);
+  };
+
+  if (isLoading) return <p>Loading...</p>;
+
+  return (
     <div className={styles.banner}>
 
       <div className={styles.bannerWrap}>
 
-        <h3 className={styles.title}>Why Choose Us Control</h3>
+        <h3 className={styles.title}>Control As You Want</h3>
 
         <div className={styles.topActions}>
 
           <button
             className={styles.createBtn}
-            onClick={()=>setShowHeadingForm(true)}
-          >
-            Update Heading
-          </button>
-
-          <button
-            className={styles.createBtn}
-            onClick={()=>{
+            onClick={() => {
 
               setMode("create");
+              setShowForm(true);
 
-              setShowCardForm(true);
-
-              setCardForm({
-                title:"",
-                description:"",
-                color:""
+              setFormValues({
+                title: "",
+                description: "",
+                color: ""
               });
 
               setPreview("");
-
-              setIconFile(null);
-
             }}
           >
             Create Card
           </button>
 
           <button
+            className={styles.createBtn}
+            onClick={() => setShowHeadingModal(true)}
+          >
+            Update Heading
+          </button>
+
+          <button
             className={styles.deleteSelected}
             onClick={handleDeleteSelected}
           >
-            Delete Selected
+            <i className="bi bi-trash"></i>{" "}
+            {allSelected ? "ALL" : `(${selected.length}/${cards.length})`}
           </button>
 
         </div>
-
       </div>
-
-      {/* TABLE */}
 
       <div className={styles.tableWrap}>
 
@@ -319,19 +278,16 @@ export default function WhyChooseUsControl() {
 
               <th>
                 <input
+                  className={styles.checkbox}
                   type="checkbox"
                   checked={allSelected}
                   onChange={handleSelectAll}
-                />
-                Select All
+                /> Select All
               </th>
 
               <th>Icon</th>
-
               <th>Title</th>
-
               <th>Color</th>
-
               <th>Action</th>
 
             </tr>
@@ -340,44 +296,57 @@ export default function WhyChooseUsControl() {
 
           <tbody>
 
-            {cards.length===0 ? (
-
+            {cards.length === 0 ? (
               <tr>
-                <td colSpan="5">No Card Found</td>
+                <td colSpan={5} style={{ textAlign: "center", padding: "20px" }}>
+                  No Cards Found
+                </td>
               </tr>
-
             ) : (
+              cards.map((item) => (
 
-              cards.map(item=>(
                 <tr key={item._id}>
 
                   <td>
+
                     <input
                       type="checkbox"
+                      className={styles.checkbox}
                       checked={selected.includes(item._id)}
-                      onChange={()=>handleSelect(item._id)}
+                      onChange={() => handleSelect(item._id)}
                     />
+
                   </td>
 
                   <td>
-                    <img src={item.icon} alt="" width="40"/>
+                    <img src={item.icon} alt="" width="80" />
                   </td>
 
                   <td>{item.title}</td>
 
                   <td>
-                    <span style={{background:item.color,padding:"5px 15px"}}>
+                    <div
+                      style={{
+                        background: item.color,
+                        padding: "6px 14px",
+                        borderRadius: "6px"
+                      }}
+                    >
                       {item.color}
-                    </span>
+                    </div>
                   </td>
 
                   <td className={styles.actions}>
 
-                    <button onClick={()=>handleEdit(item)}>
+                    <button onClick={() => handleEdit(item)}>
                       <i className="bi bi-pencil-square"></i>
                     </button>
 
-                    <button onClick={()=>handleDelete(item._id)}>
+                    <button onClick={() => handleGet(item)}>
+                      <i className="bi bi-eye"></i>
+                    </button>
+
+                    <button onClick={() => handleDelete(item._id)}>
                       <i className="bi bi-trash"></i>
                     </button>
 
@@ -385,7 +354,6 @@ export default function WhyChooseUsControl() {
 
                 </tr>
               ))
-
             )}
 
           </tbody>
@@ -394,9 +362,66 @@ export default function WhyChooseUsControl() {
 
       </div>
 
-      {/* HEADING MODAL */}
 
-      {showHeadingForm && (
+      {/* Create / Update Modal */}
+
+      {showForm && (
+
+        <div className={styles.modal}>
+
+          <div className={styles.modalContent}>
+
+            <h4>{mode === "create" ? "Create Card" : "Edit Card"}</h4>
+
+            <input
+              type="text"
+              placeholder="Title"
+              value={formValues.title}
+              onChange={(e) =>
+                setFormValues({ ...formValues, title: e.target.value })
+              }
+            />
+
+            <textarea
+              placeholder="Description"
+              value={formValues.description}
+              onChange={(e) =>
+                setFormValues({ ...formValues, description: e.target.value })
+              }
+            />
+
+            <input
+              type="text"
+              placeholder="Color"
+              value={formValues.color}
+              onChange={(e) =>
+                setFormValues({ ...formValues, color: e.target.value })
+              }
+            />
+
+            <input type="file" onChange={handleImageChange} />
+
+            {preview && <img src={preview} alt="" width="120" />}
+
+            <div className={styles.modalActions}>
+
+              <button onClick={() => setShowForm(false)}>Cancel</button>
+
+              <button onClick={mode === "create" ? handleCreate : handleUpdate}>
+                {mode === "create" ? "Create" : "Update"}
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      )}
+
+      {/* Heading Modal */}
+
+      {showHeadingModal && (
 
         <div className={styles.modal}>
 
@@ -406,35 +431,41 @@ export default function WhyChooseUsControl() {
 
             <input
               type="text"
-              name="tagline"
               placeholder="Tagline"
-              value={headingForm.tagline}
-              onChange={handleHeadingChange}
+              value={headingData.tagline}
+              onChange={(e) =>
+                setHeadingData({ ...headingData, tagline: e.target.value })
+              }
             />
 
             <input
               type="text"
-              name="heading"
               placeholder="Heading"
-              value={headingForm.heading}
-              onChange={handleHeadingChange}
+              value={headingData.heading}
+              onChange={(e) =>
+                setHeadingData({ ...headingData, heading: e.target.value })
+              }
             />
 
             <textarea
-              name="description"
               placeholder="Description"
-              value={headingForm.description}
-              onChange={handleHeadingChange}
+              value={headingData.description}
+              onChange={(e) =>
+                setHeadingData({ ...headingData, description: e.target.value })
+              }
             />
 
             <div className={styles.modalActions}>
 
-              <button onClick={()=>setShowHeadingForm(false)}>
-                Cancel
-              </button>
+              <button onClick={() => setShowHeadingModal(false)}>Cancel</button>
 
-              <button onClick={handleHeadingUpdate}>
-                Update
+              <button
+                onClick={async () => {
+                  await handleHeadingSave();
+                  setShowHeadingModal(false);
+                }}
+              >
+                Save Heading
               </button>
 
             </div>
@@ -445,60 +476,26 @@ export default function WhyChooseUsControl() {
 
       )}
 
-      {/* CARD MODAL */}
+      {/* View Modal */}
 
-      {showCardForm && (
+      {showGet && getData && (
 
         <div className={styles.modal}>
 
           <div className={styles.modalContent}>
 
-            <h4>{mode==="create"?"Create Card":"Update Card"}</h4>
+            <h4>View Card</h4>
 
-            <input
-              type="text"
-              name="title"
-              placeholder="Title"
-              value={cardForm.title}
-              onChange={handleCardChange}
-            />
+            <img src={getData.icon} alt="" width="120" />
 
-            <textarea
-              name="description"
-              placeholder="Description"
-              value={cardForm.description}
-              onChange={handleCardChange}
-            />
+            <p><strong>Title:</strong> {getData.title}</p>
 
-            <input
-              type="color"
-              name="color"
-              value={cardForm.color}
-              onChange={handleCardChange}
-            />
+            <p><strong>Description:</strong> {getData.description}</p>
 
-            <input type="file" onChange={handleIconChange}/>
-
-            {preview && (
-              <img
-                src={preview}
-                alt=""
-                className={styles.preview}
-              />
-            )}
+            <p><strong>Color:</strong> {getData.color}</p>
 
             <div className={styles.modalActions}>
-
-              <button onClick={()=>setShowCardForm(false)}>
-                Cancel
-              </button>
-
-              <button
-                onClick={mode==="create"?handleCreateCard:handleUpdateCard}
-              >
-                {mode==="create"?"Create":"Update"}
-              </button>
-
+              <button onClick={() => setShowGet(false)}>Close</button>
             </div>
 
           </div>
@@ -508,7 +505,5 @@ export default function WhyChooseUsControl() {
       )}
 
     </div>
-
   );
-
 }

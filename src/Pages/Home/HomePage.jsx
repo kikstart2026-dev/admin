@@ -35,11 +35,10 @@ export default function HomePage() {
             <span>Home Banner Control</span>
 
             <i
-              className={`bi ${
-                activeSection === "banner"
+              className={`bi ${activeSection === "banner"
                   ? "bi-chevron-up"
                   : "bi-chevron-down"
-              }`}
+                }`}
             ></i>
           </div>
 
@@ -49,7 +48,28 @@ export default function HomePage() {
             </div>
           )}
         </div>
+        {/* Why Choose Us */}
+        <div className={styles.section}>
+          <div
+            className={styles.sectionHeader}
+            onClick={() => toggleSection("why-choose-us")}
+          >
+            <span>Why Choose Us Control</span>
 
+            <i
+              className={`bi ${activeSection === "why-choose-us"
+                  ? "bi-chevron-up"
+                  : "bi-chevron-down"
+                }`}
+            ></i>
+          </div>
+
+          {activeSection === "why-choose-us" && (
+            <div className={styles.sectionBody}>
+              <WhyChooseUsControl />
+            </div>
+          )}
+        </div>
         {/* TESTIMONIAL */}
         <div className={styles.section}>
           <div
@@ -59,11 +79,10 @@ export default function HomePage() {
             <span>Testimonial Control</span>
 
             <i
-              className={`bi ${
-                activeSection === "testimonial"
+              className={`bi ${activeSection === "testimonial"
                   ? "bi-chevron-up"
                   : "bi-chevron-down"
-              }`}
+                }`}
             ></i>
           </div>
 
@@ -73,29 +92,6 @@ export default function HomePage() {
             </div>
           )}
         </div>
-        {/* <div className={styles.section}>
-          <div
-            className={styles.sectionHeader}
-            onClick={() => toggleSection("testimonial")}
-          >
-            <span>Testimonial Control</span>
-
-            <i
-              className={`bi ${
-                activeSection === "testimonial"
-                  ? "bi-chevron-up"
-                  : "bi-chevron-down"
-              }`}
-            ></i>
-          </div>
-
-          {activeSection === "testimonial" && (
-            <div className={styles.sectionBody}>
-              <TestimonialControl />
-            </div>
-          )}
-        </div> */}
-
       </div>
     </div>
   );
