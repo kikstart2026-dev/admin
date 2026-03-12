@@ -266,12 +266,8 @@ export const createAboutSection = async (payload) => {
 
 // GET ALL
 export const getAllAboutSection = async () => {
-
-  const res = await axiosInstance.get(
-    endpoints.getAllAboutSection
-  );
-
-  return res.data;
+    const res = await axiosInstance.get(endpoints.getAllAboutSection);
+    return res.data;
 };
 
 

@@ -63,13 +63,13 @@ toggleActiveBanner: (id) => `admin/home-banner/active/${id}`,
 
 // ABOUT SECTION
 
-  createAboutSection: "admin/about/create",
-  getAllAboutSection: "admin/about",
-  getAboutSectionById: (id) => `admin/about/${id}`,
-  updateAboutSection: (id) => `admin/about/${id}`,
-  singleDeleteAboutSection: (id) => `admin/about/${id}`,
-  selectiveDeleteAboutSection: "admin/about/select/delete",
-  multipleDeleteAboutSection: "admin/about/delete/all",
+  createAboutSection: "admin/about-us/create",
+  getAllAboutSection: "admin/about-us",
+  getAboutSectionById: (id) => `admin/about-us/${id}`,
+  updateAboutSection: (id) => `admin/about-us/${id}`,
+  singleDeleteAboutSection: (id) => `admin/about-us/${id}`,
+  selectiveDeleteAboutSection: "admin/about-us/select/delete",
+  multipleDeleteAboutSection: "admin/about-us/delete/all",
 
   
   // testimonials------------------------------------>>
