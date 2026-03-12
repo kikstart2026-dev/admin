@@ -1,62 +1,53 @@
-.aboutAdmin {
-  padding: 20px;
+.title {
+  font-size: 20px;
+  color: #9f0005;
+  font-weight: 500;
 }
 
-/* Top Section */
-.top {
+.bannerWrap {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 25px;
-
-  h3 {
-    font-size: 24px;
-    color: #ED1C24;
-    font-weight: 600;
-  }
-
-  button {
-    background: #2ed57c;
-    color: #fff;
-    border: none;
-    padding: 10px 18px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: 0.3s;
-
-    &:hover {
-      transform: scale(1.08);
-    }
-  }
+  padding: 20px;
 }
 
-/* Table */
+.deleteSelected {
+  background: #ED1C24;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-left: 20px;
+}
+
+.createBtn {
+  background: #2ed57c;
+  color: #ffffff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+}
 
 .table {
   width: 100%;
   border-collapse: collapse;
-  background: #fff;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  background-color: #ffffff;
 
   th,
   td {
     padding: 12px;
     text-align: center;
-    border-bottom: 1px solid #eee;
   }
 
-  th {
-    font-weight: 600;
-  }
-
-  td {
-    font-size: 14px;
+  img {
+    width: 80px;
+    border-radius: 6px;
   }
 }
 
-/* Action Buttons */
-
-.table button {
+.actions button {
   margin-right: 8px;
   padding: 6px 12px;
   border: none;
@@ -64,26 +55,19 @@
   cursor: pointer;
   color: #fff;
   font-weight: 500;
-  transition: 0.3s;
 }
 
-.table button:nth-child(1) {
+.actions button:nth-child(1) {
   background: #3b82f6;
-
-  &:hover {
-    background: #2563eb;
-  }
 }
 
-.table button:nth-child(2) {
+.actions button:nth-child(2) {
+  background: #10b981;
+}
+
+.actions button:nth-child(3) {
   background: #ef4444;
-
-  &:hover {
-    background: #dc2626;
-  }
 }
-
-/* Modal Overlay */
 
 .modal {
   position: fixed;
@@ -95,10 +79,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
 }
-
-/* Modal Content */
 
 .modalContent {
   background: #fff;
@@ -106,63 +87,43 @@
   border-radius: 12px;
   width: 90%;
   max-width: 500px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-
-  h4 {
-    font-size: 20px;
-    margin-bottom: 20px;
-    color: #ED1C24;
-    text-align: center;
-  }
 
   input,
   textarea {
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;
-    border: 1px solid #ddd;
     border-radius: 8px;
-    font-size: 14px;
-    outline: none;
-    transition: 0.3s;
+    border: 1px solid #ddd;
   }
 
   textarea {
     resize: none;
-    min-height: 100px;
+    min-height: 80px;
   }
 
-  input:focus,
-  textarea:focus {
-    border-color: #ED1C24;
+  h4 {
+    text-align: center;
+    color: #ED1C24;
+    margin-bottom: 20px;
   }
 }
 
-/* Modal Buttons */
-
-.actions {
+.modalActions {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
 
   button {
-    padding: 8px 16px;
-    border-radius: 6px;
+    background: #ED1C24;
     border: none;
     color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
     cursor: pointer;
-    transition: 0.3s;
   }
 
   button:nth-child(1) {
     background: black;
-  }
-
-  button:nth-child(2) {
-    background: #ED1C24;
-  }
-
-  button:hover {
-    transform: scale(1.05);
   }
 }

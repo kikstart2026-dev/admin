@@ -43,13 +43,13 @@ toggleActiveBanner: (id) => `admin/home-banner/active/${id}`,
 
   // Why Choose Us------------------------------------>>
 
-  createWhyChooseUs: "/why-choose-us/create",
-  getAllWhyChooseUs: "/why-choose-us",
-  getWhyChooseUsById: (id) => `/why-choose-us/${id}`,
-  updateWhyChooseUs: (id) => `/why-choose-us/${id}`,
-  singleDeleteWhyChooseUs: (id) => `/why-choose-us/${id}`,
-  selectiveDeleteWhyChooseUs: "/why-choose-us/select/delete",
-  multipleDeleteWhyChooseUs: "/why-choose-us/delete/all",
+  createWhyChooseUs: "admin/why-choose-us/create",
+  getAllWhyChooseUs: "admin/why-choose-us",
+  getWhyChooseUsById: (id) => `admin/why-choose-us/${id}`,
+  updateWhyChooseUs: (id) => `admin/why-choose-us/${id}`,
+  singleDeleteWhyChooseUs: (id) => `admin/why-choose-us/${id}`,
+  selectiveDeleteWhyChooseUs: "admin/why-choose-us/select/delete",
+  multipleDeleteWhyChooseUs: "admin/why-choose-us/delete/all",
 
   // service------------------------------------>>
 
@@ -63,13 +63,13 @@ toggleActiveBanner: (id) => `admin/home-banner/active/${id}`,
 
 // ABOUT SECTION
 
-  createAboutUs: "admin/about-us/create",
-  getAllAboutUs: "admin/about-us",
-  getAboutUsById: (id) => `admin/about-us/${id}`,
-  updateAboutUs: (id) => `admin/about-us/${id}`,
-  singleDeleteAboutUs: (id) => `admin/about-us/${id}`,
-  selectiveDeleteAboutUs: "admin/about-us/select/delete",
-  multipleDeleteAboutUs: "admin/about-us/delete/all",
+  createAboutSection: "admin/about-us/create",
+  getAllAboutSection: "admin/about-us",
+  getAboutSectionById: (id) => `admin/about-us/${id}`,
+  updateAboutSection: (id) => `admin/about-us/${id}`,
+  singleDeleteAboutSection: (id) => `admin/about-us/${id}`,
+  selectiveDeleteAboutSection: "admin/about-us/select/delete",
+  multipleDeleteAboutSection: "admin/about-us/delete/all",
 
   
   // testimonials------------------------------------>>

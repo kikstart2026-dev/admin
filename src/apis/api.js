@@ -252,10 +252,10 @@ export const multipleDeleteService = async () => {
 
 
 // CREATE
-export const createAboutUs = async (payload) => {
+export const createAboutSection = async (payload) => {
 
   const res = await axiosInstance.post(
-    endpoints.createAboutUs,
+    endpoints.createAboutSection,
     payload
   );
 
@@ -265,13 +265,9 @@ export const createAboutUs = async (payload) => {
 
 
 // GET ALL
-export const getAllAboutUs = async () => {
-
-  const res = await axiosInstance.get(
-    endpoints.getAllAboutUs
-  );
-
-  return res.data;
+export const getAllAboutSection = async () => {
+    const res = await axiosInstance.get(endpoints.getAllAboutSection);
+    return res.data;
 };
 
 
@@ -289,10 +285,10 @@ export const getAboutUsById = async (id) => {
 
 
 // UPDATE
-export const updateAboutUs = async (id, payload) => {
+export const updateAboutSection = async (id, payload) => {
 
   const res = await axiosInstance.put(
-    endpoints.updateAboutUs(id),
+    endpoints.updateAboutSection(id),
     payload
   );
 
@@ -302,10 +298,10 @@ export const updateAboutUs = async (id, payload) => {
 
 
 // DELETE SINGLE
-export const singleDeleteAboutUs = async (id) => {
+export const singleDeleteAboutSection = async (id) => {
 
   const res = await axiosInstance.delete(
-    endpoints.singleDeleteAboutUs(id)
+    endpoints.singleDeleteAboutSection(id)
   );
 
   return res.data;
@@ -314,10 +310,10 @@ export const singleDeleteAboutUs = async (id) => {
 
 
 // DELETE SELECTIVE
-export const selectiveDeleteAboutUs = async (payload) => {
+export const selectiveDeleteAboutSection = async (payload) => {
 
   const res = await axiosInstance.delete(
-    endpoints.selectiveDeleteAboutUs,
+    endpoints.selectiveDeleteAboutSection,
     {
       data: payload
     }
@@ -329,10 +325,10 @@ export const selectiveDeleteAboutUs = async (payload) => {
 
 
 // DELETE ALL
-export const multipleDeleteAboutUs = async () => {
+export const multipleDeleteAboutUsSection = async () => {
 
   const res = await axiosInstance.delete(
-    endpoints.multipleDeleteAboutUs
+    endpoints.multipleDeleteAboutUsSection
   );
 
   return res.data;
