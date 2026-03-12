@@ -29,15 +29,16 @@ export default function HomePage() {
         {/* HOME BANNER */}
         <div className={styles.section}>
           <div
-            className={styles.sectionHeader}
+            className={`${styles.sectionHeader} ${activeSection === "banner" ? styles.active : ""
+              }`}
             onClick={() => toggleSection("banner")}
           >
             <span>Home Banner Control</span>
 
             <i
               className={`bi ${activeSection === "banner"
-                  ? "bi-chevron-up"
-                  : "bi-chevron-down"
+                ? "bi-chevron-up"
+                : "bi-chevron-down"
                 }`}
             ></i>
           </div>
@@ -51,15 +52,16 @@ export default function HomePage() {
         {/* ABOUT US */}
         <div className={styles.section}>
           <div
-            className={styles.sectionHeader}
+            className={`${styles.sectionHeader} ${activeSection === "about-us" ? styles.active : ""
+              }`}
             onClick={() => toggleSection("about-us")}
           >
             <span>About Us Control</span>
 
             <i
               className={`bi ${activeSection === "about-us"
-                  ? "bi-chevron-up"
-                  : "bi-chevron-down"
+                ? "bi-chevron-up"
+                : "bi-chevron-down"
                 }`}
             ></i>
           </div>
@@ -73,15 +75,16 @@ export default function HomePage() {
         {/* Why Choose Us */}
         <div className={styles.section}>
           <div
-            className={styles.sectionHeader}
+            className={`${styles.sectionHeader} ${activeSection === "why-choose-us" ? styles.active : ""
+              }`}
             onClick={() => toggleSection("why-choose-us")}
           >
             <span>Why Choose Us Control</span>
 
             <i
               className={`bi ${activeSection === "why-choose-us"
-                  ? "bi-chevron-up"
-                  : "bi-chevron-down"
+                ? "bi-chevron-up"
+                : "bi-chevron-down"
                 }`}
             ></i>
           </div>
@@ -95,15 +98,16 @@ export default function HomePage() {
         {/* TESTIMONIAL */}
         <div className={styles.section}>
           <div
-            className={styles.sectionHeader}
+            className={`${styles.sectionHeader} ${activeSection === "testimonial" ? styles.active : ""
+              }`}
             onClick={() => toggleSection("testimonial")}
           >
             <span>Testimonial Control</span>
 
             <i
               className={`bi ${activeSection === "testimonial"
-                  ? "bi-chevron-up"
-                  : "bi-chevron-down"
+                ? "bi-chevron-up"
+                : "bi-chevron-down"
                 }`}
             ></i>
           </div>
