@@ -4,6 +4,8 @@
   transition: all 0.3s ease;
   border-right: 1px solid #ddd;
   z-index: 1000;
+  position: fixed;
+  width: 20%;
 
   ul {
     padding-left: 0;
