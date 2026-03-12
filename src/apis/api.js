@@ -244,6 +244,99 @@ export const multipleDeleteService = async () => {
     return res.data;
 };
 
+
+
+/* ==================================================
+   ABOUT SECTION APIs
+====================================================== */
+
+
+// CREATE
+export const createAboutSection = async (payload) => {
+
+  const res = await axiosInstance.post(
+    endpoints.createAboutSection,
+    payload
+  );
+
+  return res.data;
+};
+
+
+
+// GET ALL
+export const getAllAboutSection = async () => {
+
+  const res = await axiosInstance.get(
+    endpoints.getAllAboutSection
+  );
+
+  return res.data;
+};
+
+
+
+// GET BY ID
+export const getAboutSectionById = async (id) => {
+
+  const res = await axiosInstance.get(
+    endpoints.getAboutSectionById(id)
+  );
+
+  return res.data;
+};
+
+
+
+// UPDATE
+export const updateAboutSection = async (id, payload) => {
+
+  const res = await axiosInstance.put(
+    endpoints.updateAboutSection(id),
+    payload
+  );
+
+  return res.data;
+};
+
+
+
+// DELETE SINGLE
+export const singleDeleteAboutSection = async (id) => {
+
+  const res = await axiosInstance.delete(
+    endpoints.singleDeleteAboutSection(id)
+  );
+
+  return res.data;
+};
+
+
+
+// DELETE SELECTIVE
+export const selectiveDeleteAboutSection = async (payload) => {
+
+  const res = await axiosInstance.delete(
+    endpoints.selectiveDeleteAboutSection,
+    {
+      data: payload
+    }
+  );
+
+  return res.data;
+};
+
+
+
+// DELETE ALL
+export const multipleDeleteAboutSection = async () => {
+
+  const res = await axiosInstance.delete(
+    endpoints.multipleDeleteAboutSection
+  );
+
+  return res.data;
+};
 /* ================================ Testimonails APIs ================================ */
 
 // ✅ Create Service

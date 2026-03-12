@@ -5,7 +5,7 @@ import TestimonialControl from "../../Component/Testimonial/TestimonailControl";
 import Sidebar from "../../Shared/Sidebar/Sidebar";
 import "../../Main.scss";
 import WhyChooseUsControl from "../../Component/WhyChooseUsControl/WhyChooseUsControl";
-
+import AboutSectionControl from "../../Component/AboutSectionControl/AboutSectionControl";
 export default function HomePage() {
 
   const [activeSection, setActiveSection] = useState(null);
@@ -45,6 +45,28 @@ export default function HomePage() {
           {activeSection === "banner" && (
             <div className={styles.sectionBody}>
               <HomeBannerControl />
+            </div>
+          )}
+        </div>
+        {/* ABOUT US */}
+        <div className={styles.section}>
+          <div
+            className={styles.sectionHeader}
+            onClick={() => toggleSection("about-us")}
+          >
+            <span>About Us Control</span>
+
+            <i
+              className={`bi ${activeSection === "about-us"
+                  ? "bi-chevron-up"
+                  : "bi-chevron-down"
+                }`}
+            ></i>
+          </div>
+
+          {activeSection === "about-us" && (
+            <div className={styles.sectionBody}>
+              <AboutSectionControl />
             </div>
           )}
         </div>
