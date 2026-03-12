@@ -3,6 +3,9 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import styles from "./AboutSectionControl.module.scss";
 
 import {
+  createHeading,
+  updateHeading,
+  createFile,
   createAboutSection,
   getAllAboutSection,
   updateAboutSection,
@@ -15,116 +18,126 @@ export default function AboutSectionControl() {
 
   const [showForm, setShowForm] = useState(false);
   const [mode, setMode] = useState("create");
+
   const [aboutId, setAboutId] = useState(null);
+  const [headingId, setHeadingId] = useState(null);
 
-  const [image, setImage] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
 
-  const [form, setForm] = useState({
-    subtitle: "",
-    title: "",
+  const [formValues, setFormValues] = useState({
+    tagline: "",
+    heading: "",
     description: ""
   });
 
-  // =========================
-  // FETCH DATA
-  // =========================
 
   const { data = [], isLoading } = useQuery({
     queryKey: ["aboutSection"],
     queryFn: async () => {
       const res = await getAllAboutSection();
-      return res?.data?.data || res?.data || [];
+      return res?.data || [];
     }
   });
 
-  const fetchAbout = () => {
+  const refresh = () => {
     queryClient.invalidateQueries(["aboutSection"]);
   };
 
-  // =========================
-  // INPUT CHANGE
-  // =========================
+
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setFormValues({
+      ...formValues,
+      [e.target.name]: e.target.value
+    });
   };
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setImage(file);
+    setImageFile(e.target.files[0]);
   };
 
-  // =========================
-  // CREATE
-  // =========================
+
 
   const handleCreate = async () => {
+
     try {
 
-      const fd = new FormData();
+      const headingRes = await createHeading(formValues);
 
-      fd.append("subtitle", form.subtitle);
-      fd.append("title", form.title);
-      fd.append("description", form.description);
+      const newHeadingId = headingRes?.data?._id;
 
-      if (image) {
-        fd.append("image", image);
+      let imageUrl = "";
+
+      if (imageFile) {
+
+        const fd = new FormData();
+        fd.append("file", imageFile);
+
+        const uploadRes = await createFile(fd);
+
+        imageUrl = uploadRes?.data?.[0]?.path;
+
       }
 
-      await createAboutSection(fd);
+      // 3️⃣ create about
+      await createAboutSection({
+        headingId: newHeadingId,
+        image: "http://localhost:8008" + imageUrl
+      });
 
-      alert("About Section Created");
+      alert("About Created Successfully");
 
       setShowForm(false);
 
-      setForm({
-        subtitle: "",
-        title: "",
+      setFormValues({
+        tagline: "",
+        heading: "",
         description: ""
       });
 
-      setImage(null);
+      setImageFile(null);
 
-      fetchAbout();
+      refresh();
 
     } catch (err) {
-      console.error(err);
+
+      console.log(err);
+
     }
+
   };
 
-  // =========================
-  // UPDATE
-  // =========================
+  /* =========================
+        UPDATE
+  ========================= */
 
   const handleUpdate = async () => {
+
     try {
 
-      const fd = new FormData();
+      await updateHeading(headingId, formValues);
 
-      fd.append("subtitle", form.subtitle);
-      fd.append("title", form.title);
-      fd.append("description", form.description);
+      await updateAboutSection(aboutId, {
+        headingId: headingId
+      });
 
-      if (image) {
-        fd.append("image", image);
-      }
-
-      await updateAboutSection(aboutId, fd);
-
-      alert("About Section Updated");
+      alert("About Updated");
 
       setShowForm(false);
 
-      fetchAbout();
+      refresh();
 
     } catch (err) {
-      console.error(err);
+
+      console.log(err);
+
     }
+
   };
 
-  // =========================
-  // DELETE
-  // =========================
+  /* =========================
+        DELETE
+  ========================= */
 
   const handleDelete = async (id) => {
 
@@ -134,16 +147,19 @@ export default function AboutSectionControl() {
 
       await singleDeleteAboutSection(id);
 
-      fetchAbout();
+      refresh();
 
     } catch (err) {
-      console.error(err);
+
+      console.log(err);
+
     }
+
   };
 
-  // =========================
-  // EDIT
-  // =========================
+  /* =========================
+        EDIT
+  ========================= */
 
   const handleEdit = (item) => {
 
@@ -153,10 +169,12 @@ export default function AboutSectionControl() {
 
     setAboutId(item._id);
 
-    setForm({
-      subtitle: item.subtitle || "",
-      title: item.title || "",
-      description: item.description || ""
+    setHeadingId(item.headingData?._id);
+
+    setFormValues({
+      tagline: item.headingData?.tagline || "",
+      heading: item.headingData?.heading || "",
+      description: item.headingData?.description || ""
     });
 
   };
@@ -164,58 +182,68 @@ export default function AboutSectionControl() {
   if (isLoading) return <p>Loading...</p>;
 
   return (
+
     <div className={styles.aboutAdmin}>
 
       <div className={styles.top}>
+
         <h3>About Section Control</h3>
 
         <button
           onClick={() => {
+
             setMode("create");
+
             setShowForm(true);
-            setForm({
-              subtitle: "",
-              title: "",
+
+            setFormValues({
+              tagline: "",
+              heading: "",
               description: ""
             });
+
           }}
         >
           Create About
         </button>
+
       </div>
+
 
       {/* TABLE */}
 
       <table className={styles.table}>
 
         <thead>
+
           <tr>
             <th>Tagline</th>
             <th>Heading</th>
             <th>Description</th>
             <th>Action</th>
           </tr>
+
         </thead>
 
         <tbody>
 
           {data.length === 0 ? (
+
             <tr>
-              <td colSpan={4} style={{ padding: "20px" }}>
-                No Data Found
-              </td>
+              <td colSpan="4">No Data Found</td>
             </tr>
+
           ) : (
 
             data.map((item) => (
 
               <tr key={item._id}>
 
-                <td>{item.subtitle}</td>
+                <td>{item.headingData?.tagline}</td>
 
-                <td>{item.title}</td>
+                <td>{item.headingData?.heading}</td>
 
-                <td>{item.description}</td>
+                <td>{item.headingData?.description}</td>
 
                 <td>
 
@@ -248,28 +276,30 @@ export default function AboutSectionControl() {
 
           <div className={styles.modalContent}>
 
-            <h4>{mode === "create" ? "Create About" : "Edit About"}</h4>
+            <h4>
+              {mode === "create" ? "Create About" : "Edit About"}
+            </h4>
 
             <input
               type="text"
-              placeholder="Subtitle"
-              name="subtitle"
-              value={form.subtitle}
+              name="tagline"
+              placeholder="Tagline"
+              value={formValues.tagline}
               onChange={handleChange}
             />
 
             <input
               type="text"
-              placeholder="Title"
-              name="title"
-              value={form.title}
+              name="heading"
+              placeholder="Heading"
+              value={formValues.heading}
               onChange={handleChange}
             />
 
             <textarea
-              placeholder="Description"
               name="description"
-              value={form.description}
+              placeholder="Description"
+              value={formValues.description}
               onChange={handleChange}
             />
 
@@ -301,5 +331,7 @@ export default function AboutSectionControl() {
       )}
 
     </div>
+
   );
+
 }

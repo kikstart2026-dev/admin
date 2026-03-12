@@ -243,70 +243,100 @@ export const multipleDeleteService = async () => {
     const res = await axiosInstance.delete(endpoints.multipleDeleteService);
     return res.data;
 };
-/* ================================
-   About Section APIs
-================================ */
 
-// Create
+
+
+/* ==================================================
+   ABOUT SECTION APIs
+====================================================== */
+
+
+// CREATE
 export const createAboutSection = async (payload) => {
+
   const res = await axiosInstance.post(
     endpoints.createAboutSection,
     payload
   );
+
   return res.data;
 };
 
-// Get All
+
+
+// GET ALL
 export const getAllAboutSection = async () => {
+
   const res = await axiosInstance.get(
     endpoints.getAllAboutSection
   );
+
   return res.data;
 };
 
-// Get By Id
+
+
+// GET BY ID
 export const getAboutSectionById = async (id) => {
+
   const res = await axiosInstance.get(
     endpoints.getAboutSectionById(id)
   );
+
   return res.data;
 };
 
-// Update
+
+
+// UPDATE
 export const updateAboutSection = async (id, payload) => {
+
   const res = await axiosInstance.put(
     endpoints.updateAboutSection(id),
     payload
   );
+
   return res.data;
 };
 
-// Delete Single
+
+
+// DELETE SINGLE
 export const singleDeleteAboutSection = async (id) => {
+
   const res = await axiosInstance.delete(
     endpoints.singleDeleteAboutSection(id)
   );
+
   return res.data;
 };
 
-// Delete Selective
+
+
+// DELETE SELECTIVE
 export const selectiveDeleteAboutSection = async (payload) => {
+
   const res = await axiosInstance.delete(
     endpoints.selectiveDeleteAboutSection,
     {
-      data: payload,
+      data: payload
     }
   );
+
   return res.data;
 };
 
-// Delete All
+
+
+// DELETE ALL
 export const multipleDeleteAboutSection = async () => {
+
   const res = await axiosInstance.delete(
     endpoints.multipleDeleteAboutSection
   );
+
   return res.data;
-}
+};
 /* ================================ Testimonails APIs ================================ */
 
 // ✅ Create Service
