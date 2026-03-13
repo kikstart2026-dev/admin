@@ -159,32 +159,32 @@ export default function WhyChooseUsControl() {
 
   const handleUpdate = async () => {
 
-  let imageUrl = oldImage;
+    let imageUrl = oldImage;
 
-  if (imageFile) {
+    if (imageFile) {
 
-    const fd = new FormData();
-    fd.append("file", imageFile);
+      const fd = new FormData();
+      fd.append("file", imageFile);
 
-    const uploadRes = await createFile(fd);
+      const uploadRes = await createFile(fd);
 
-    imageUrl = "http://localhost:8008" + uploadRes.data[0].path;
-  }
+      imageUrl = "http://localhost:8008" + uploadRes.data[0].path;
+    }
 
-  await updateWhyChooseUs(cardId, {
-    headingId,
-    icon: imageUrl,
-    title: formValues.title,
-    description: formValues.description,
-    color: formValues.color
-  });
+    await updateWhyChooseUs(cardId, {
+      headingId,
+      icon: imageUrl,
+      title: formValues.title,
+      description: formValues.description,
+      color: formValues.color
+    });
 
-  alert("Card Updated");
+    alert("Card Updated");
 
-  setShowForm(false);
+    setShowForm(false);
 
-  fetchData();
-};
+    fetchData();
+  };
 
   const handleDelete = async (id) => {
 
@@ -254,7 +254,7 @@ export default function WhyChooseUsControl() {
             className={styles.createBtn}
             onClick={() => setShowHeadingModal(true)}
           >
-            Update Heading
+            {data?.heading ? "Update Heading" : "Create Heading"}
           </button>
 
           <button
