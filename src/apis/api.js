@@ -245,11 +245,9 @@ export const multipleDeleteService = async () => {
 };
 
 
-
 /* ==================================================
    ABOUT SECTION APIs
 ====================================================== */
-
 
 // CREATE
 export const createAboutSection = async (payload) => {
@@ -263,25 +261,22 @@ export const createAboutSection = async (payload) => {
 };
 
 
-
 // GET ALL
 export const getAllAboutSection = async () => {
-    const res = await axiosInstance.get(endpoints.getAllAboutSection);
-    return res.data;
+  const res = await axiosInstance.get(endpoints.getAllAboutSection);
+  return res.data;
 };
-
 
 
 // GET BY ID
 export const getAboutUsById = async (id) => {
 
   const res = await axiosInstance.get(
-    endpoints.getAboutUsById(id)
+    endpoints.getAboutSectionById(id)
   );
 
   return res.data;
 };
-
 
 
 // UPDATE
@@ -296,7 +291,6 @@ export const updateAboutSection = async (id, payload) => {
 };
 
 
-
 // DELETE SINGLE
 export const singleDeleteAboutSection = async (id) => {
 
@@ -306,7 +300,6 @@ export const singleDeleteAboutSection = async (id) => {
 
   return res.data;
 };
-
 
 
 // DELETE SELECTIVE
@@ -323,12 +316,22 @@ export const selectiveDeleteAboutSection = async (payload) => {
 };
 
 
-
 // DELETE ALL
 export const multipleDeleteAboutUsSection = async () => {
 
   const res = await axiosInstance.delete(
-    endpoints.multipleDeleteAboutUsSection
+    endpoints.multipleDeleteAboutSection
+  );
+
+  return res.data;
+};
+
+
+// ACTIVE TOGGLE
+export const toggleActiveAboutSection = async (id) => {
+
+  const res = await axiosInstance.put(
+    endpoints.toggleActiveAboutSection(id)
   );
 
   return res.data;

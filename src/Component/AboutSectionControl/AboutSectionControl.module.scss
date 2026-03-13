@@ -127,3 +127,17 @@
     background: black;
   }
 }
+.selectAll{
+display:flex;
+align-items:center;
+gap:6px;
+}
+
+.closeBtn{
+background:#ED1C24;
+color:#fff;
+border:none;
+padding:8px 18px;
+border-radius:6px;
+cursor:pointer;
+}
