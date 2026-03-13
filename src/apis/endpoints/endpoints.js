@@ -53,13 +53,13 @@ toggleActiveBanner: (id) => `admin/home-banner/active/${id}`,
 
   // service------------------------------------>>
 
-  createService: "/service/create",
-  getAllService: "/service/",
-  getServiceById: (id) => `/service/${id}`,
-  updateService: (id) => `/service/${id}`,
-  singleDeleteService: (id) => `/service/${id}`,
-  selectiveDeleteService: "/service/select/delete",
-  multipleDeleteService: "/service/delete/all",
+  createService: "admin/service/create",
+  getAllService: "admin/service/",
+  getServiceById: (id) => `admin/service/${id}`,
+  updateService: (id) => `admin/service/${id}`,
+  singleDeleteService: (id) => `admin/service/${id}`,
+  selectiveDeleteService: "admin/service/select/delete",
+  multipleDeleteService: "admin/service/delete/all",
 
 // ABOUT SECTION
 

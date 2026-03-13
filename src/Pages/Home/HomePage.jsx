@@ -6,6 +6,7 @@ import Sidebar from "../../Shared/Sidebar/Sidebar";
 import "../../Main.scss";
 import WhyChooseUsControl from "../../Component/WhyChooseUsControl/WhyChooseUsControl";
 import AboutSectionControl from "../../Component/AboutSectionControl/AboutSectionControl";
+import ServiceControl from "../../Component/ServiceControl/ServiceControl";
 export default function HomePage() {
 
   const [activeSection, setActiveSection] = useState(null);
@@ -92,6 +93,29 @@ export default function HomePage() {
           {activeSection === "why-choose-us" && (
             <div className={styles.sectionBody}>
               <WhyChooseUsControl />
+            </div>
+          )}
+        </div>
+        {/* service */}
+        <div className={styles.section}>
+          <div
+            className={`${styles.sectionHeader} ${activeSection === "service" ? styles.active : ""
+              }`}
+            onClick={() => toggleSection("service")}
+          >
+            <span>Service Control</span>
+
+            <i
+              className={`bi ${activeSection === "service"
+                ? "bi-chevron-up"
+                : "bi-chevron-down"
+                }`}
+            ></i>
+          </div>
+
+          {activeSection === "service" && (
+            <div className={styles.sectionBody}>
+              <ServiceControl />
             </div>
           )}
         </div>
