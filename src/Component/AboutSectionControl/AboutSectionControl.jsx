@@ -9,9 +9,10 @@ import {
   updateAboutSection,
   singleDeleteAboutSection,
   selectiveDeleteAboutSection,
+  toggleActiveAboutSection,
   createHeading,
   updateHeading,
-  createFile
+  createFile,
 } from "../../apis/api";
 
 export default function AboutSectionControl() {
@@ -35,53 +36,41 @@ export default function AboutSectionControl() {
   const [formValues, setFormValues] = useState({
     tagline: "",
     heading: "",
-    description: ""
+    description: "",
   });
 
-
-  /* ==============================
-        FETCH
-  ============================== */
+  /* ================= FETCH ================= */
 
   const { data = [], isLoading } = useQuery({
-    queryKey: ["aboutSection"],
-    queryFn: async () => {
-      const res = await getAllAboutSection();
-      return res?.data || [];
-    }
-  });
-
+  queryKey: ["aboutSection"],
+  queryFn: async () => {
+    const res = await getAllAboutSection();
+    return res?.data?.data || res?.data || [];
+  },
+});
   const refresh = () => {
     queryClient.invalidateQueries(["aboutSection"]);
   };
 
-
-  /* ==============================
-        SELECT LOGIC
-  ============================== */
+  /* ================= SELECT ================= */
 
   const allSelected = selected.length === data.length && data.length > 0;
 
   const handleSelect = (id) => {
-
     if (selected.includes(id)) {
       setSelected(selected.filter((x) => x !== id));
     } else {
       setSelected([...selected, id]);
     }
-
   };
 
   const handleSelectAll = () => {
-
     if (allSelected) {
       setSelected([]);
     } else {
       setSelected(data.map((x) => x._id));
     }
-
   };
-
 
   const handleDeleteSelected = async () => {
 
@@ -94,36 +83,28 @@ export default function AboutSectionControl() {
 
     try {
 
-      await selectiveDeleteAboutSection({
-        ids: selected
-      });
+      await selectiveDeleteAboutSection({ ids: selected });
 
       setSelected([]);
 
       refresh();
 
     } catch (err) {
-
       console.log(err);
-
     }
 
   };
 
-
-  /* ==============================
-        INPUT
-  ============================== */
+  /* ================= INPUT ================= */
 
   const handleChange = (e) => {
 
     setFormValues({
       ...formValues,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
 
   };
-
 
   const handleImageChange = (e) => {
 
@@ -132,22 +113,17 @@ export default function AboutSectionControl() {
     if (!file) return;
 
     setImageFile(file);
-
     setPreview(URL.createObjectURL(file));
 
   };
 
-
-  /* ==============================
-        CREATE
-  ============================== */
+  /* ================= CREATE ================= */
 
   const handleCreate = async () => {
 
     try {
 
       const headingRes = await createHeading(formValues);
-
       const newHeadingId = headingRes?.data?._id;
 
       let imageUrl = "";
@@ -155,7 +131,6 @@ export default function AboutSectionControl() {
       if (imageFile) {
 
         const fd = new FormData();
-
         fd.append("file", imageFile);
 
         const uploadRes = await createFile(fd);
@@ -166,29 +141,21 @@ export default function AboutSectionControl() {
 
       await createAboutSection({
         headingId: newHeadingId,
-        image: "http://localhost:8008" + imageUrl
+        image: "http://localhost:8008" + imageUrl,
       });
 
       alert("About Created Successfully");
 
       setShowForm(false);
-
-      setImageFile(null);
-
       refresh();
 
     } catch (err) {
-
       console.log(err);
-
     }
 
   };
 
-
-  /* ==============================
-        UPDATE
-  ============================== */
+  /* ================= UPDATE ================= */
 
   const handleUpdate = async () => {
 
@@ -201,7 +168,6 @@ export default function AboutSectionControl() {
       if (imageFile) {
 
         const fd = new FormData();
-
         fd.append("file", imageFile);
 
         const uploadRes = await createFile(fd);
@@ -212,29 +178,25 @@ export default function AboutSectionControl() {
 
       await updateAboutSection(aboutId, {
         headingId,
-        image: imageUrl
+        image: imageUrl,
       });
 
       alert("About Updated Successfully");
 
       setShowForm(false);
 
-      setImageFile(null);
+      setAboutId(null);
+      setHeadingId(null);
 
       refresh();
 
     } catch (err) {
-
       console.log(err);
-
     }
 
   };
 
-
-  /* ==============================
-        DELETE
-  ============================== */
+  /* ================= DELETE ================= */
 
   const handleDelete = async (id) => {
 
@@ -247,56 +209,56 @@ export default function AboutSectionControl() {
       refresh();
 
     } catch (err) {
-
       console.log(err);
-
     }
 
   };
 
-
-  /* ==============================
-        EDIT
-  ============================== */
+  /* ================= EDIT ================= */
 
   const handleEdit = (item) => {
 
     setMode("update");
-
     setShowForm(true);
 
     setAboutId(item._id);
-
     setHeadingId(item.headingData?._id);
 
     setFormValues({
       tagline: item.headingData?.tagline || "",
       heading: item.headingData?.heading || "",
-      description: item.headingData?.description || ""
+      description: item.headingData?.description || "",
     });
 
     setPreview(item.image);
 
-    setImageFile(null);
-
   };
 
-
-  /* ==============================
-        GET
-  ============================== */
+  /* ================= GET ================= */
 
   const handleGet = (item) => {
 
     setGetData(item);
-
     setShowGet(true);
 
   };
 
+  /* ================= ACTIVE FIX ================= */
+
+  const toggleActive = async (id) => {
+  try {
+
+    await toggleActiveAboutSection(id);
+
+    await queryClient.invalidateQueries(["aboutSection"]);
+
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 
   if (isLoading) return <p>Loading...</p>;
-
 
   return (
 
@@ -304,9 +266,7 @@ export default function AboutSectionControl() {
 
       <div className={styles.bannerWrap}>
 
-        <h3 className={styles.title}>
-          Control About Section
-        </h3>
+        <h3 className={styles.title}>Control About Section</h3>
 
         <div className={styles.topActions}>
 
@@ -315,18 +275,15 @@ export default function AboutSectionControl() {
             onClick={() => {
 
               setMode("create");
-
               setShowForm(true);
+
+              setPreview("");
 
               setFormValues({
                 tagline: "",
                 heading: "",
-                description: ""
+                description: "",
               });
-
-              setPreview("");
-
-              setImageFile(null);
 
             }}
           >
@@ -337,16 +294,13 @@ export default function AboutSectionControl() {
             className={styles.deleteSelected}
             onClick={handleDeleteSelected}
           >
-            <i className="bi bi-trash"></i>{" "}
-            {allSelected ? "ALL" : `(${selected.length}/${data.length})`}
+            <i className="bi bi-trash"></i>
+            {allSelected ? " ALL" : ` (${selected.length})`}
           </button>
 
         </div>
 
       </div>
-
-
-      {/* TABLE */}
 
       <div className={styles.tableWrap}>
 
@@ -356,20 +310,19 @@ export default function AboutSectionControl() {
 
             <tr>
 
-              <th>
-
+              <th className={styles.selectAll}>
                 <input
-                  className={styles.checkbox}
                   type="checkbox"
                   checked={allSelected}
                   onChange={handleSelectAll}
-                /> Select All
-
+                />
+                <span>Select All</span>
               </th>
 
               <th>Image</th>
               <th>Tagline</th>
               <th>Heading</th>
+              <th>Active</th>
               <th>Action</th>
 
             </tr>
@@ -378,56 +331,63 @@ export default function AboutSectionControl() {
 
           <tbody>
 
-            {data.length === 0 ? (
+            {data.map((item) => (
 
-              <tr>
-                <td colSpan={5}>No About Found</td>
+              <tr key={item._id}>
+
+                <td>
+                  <input
+                    type="checkbox"
+                    checked={selected.includes(item._id)}
+                    onChange={() => handleSelect(item._id)}
+                  />
+                </td>
+
+                <td>
+                  <img src={item.image} width="80" alt="" />
+                </td>
+
+                <td>{item.headingData?.tagline}</td>
+
+                <td>{item.headingData?.heading}</td>
+
+                <td>
+
+                  <i
+                    className={
+                      item.isActive
+                        ? "bi bi-toggle-on"
+                        : "bi bi-toggle-off"
+                    }
+                    style={{
+                      fontSize: "28px",
+                      cursor: "pointer",
+                      color: item.isActive ? "#ED1C24" : "#aaa",
+                    }}
+                    onClick={() => toggleActive(item._id)}
+                  ></i>
+
+                </td>
+
+                <td className={styles.actions}>
+
+                  <button onClick={() => handleEdit(item)}>
+                    <i className="bi bi-pencil-square"></i>
+                  </button>
+
+                  <button onClick={() => handleGet(item)}>
+                    <i className="bi bi-eye"></i>
+                  </button>
+
+                  <button onClick={() => handleDelete(item._id)}>
+                    <i className="bi bi-trash"></i>
+                  </button>
+
+                </td>
+
               </tr>
 
-            ) : (
-
-              data.map((item) => (
-
-                <tr key={item._id}>
-
-                  <td>
-
-                    <input
-                      className={styles.checkbox}
-                      type="checkbox"
-                      checked={selected.includes(item._id)}
-                      onChange={() => handleSelect(item._id)}
-                    />
-
-                  </td>
-
-                  <td>
-                    <img src={item.image} alt="" />
-                  </td>
-
-                  <td>{item.headingData?.tagline}</td>
-
-                  <td>{item.headingData?.heading}</td>
-
-                  <td className={styles.actions}>
-                    <button onClick={() => handleEdit(item)}>
-                      <i className="bi bi-pencil-square"></i>
-                    </button>
-
-                    <button onClick={() => handleGet(item)}>
-                      <i className="bi bi-eye"></i>
-                    </button>
-
-                    <button onClick={() => handleDelete(item._id)}>
-                      <i className="bi bi-trash"></i>
-                    </button>
-                  </td>
-
-                </tr>
-
-              ))
-
-            )}
+            ))}
 
           </tbody>
 
@@ -435,8 +395,7 @@ export default function AboutSectionControl() {
 
       </div>
 
-
-      {/* FORM */}
+      {/* FORM MODAL */}
 
       {showForm && (
 
@@ -445,9 +404,7 @@ export default function AboutSectionControl() {
           <div className={styles.modalContent}>
 
             <h4>
-              {mode === "create"
-                ? "Create About"
-                : "Edit About"}
+              {mode === "create" ? "Create About" : "Update About"}
             </h4>
 
             <input
@@ -473,35 +430,24 @@ export default function AboutSectionControl() {
               onChange={handleChange}
             />
 
-            <input
-              type="file"
-              onChange={handleImageChange}
-            />
+            <input type="file" onChange={handleImageChange} />
 
-            {preview && (
-              <img
-                src={preview}
-                alt="preview"
-                className={styles.preview}
-              />
-            )}
+            {preview && <img src={preview} width="120" alt="" />}
 
             <div className={styles.modalActions}>
 
-              <button
-                onClick={() => setShowForm(false)}
-              >
+              <button onClick={() => setShowForm(false)}>
                 Cancel
               </button>
 
               <button
-                onClick={mode === "create"
-                  ? handleCreate
-                  : handleUpdate}
+                onClick={
+                  mode === "create"
+                    ? handleCreate
+                    : handleUpdate
+                }
               >
-                {mode === "create"
-                  ? "Create"
-                  : "Update"}
+                {mode === "create" ? "Create" : "Update"}
               </button>
 
             </div>
@@ -512,8 +458,7 @@ export default function AboutSectionControl() {
 
       )}
 
-
-      {/* GET */}
+      {/* GET MODAL */}
 
       {showGet && getData && (
 
@@ -523,35 +468,15 @@ export default function AboutSectionControl() {
 
             <h4>About Details</h4>
 
-            <table>
+            <p><b>Tagline:</b> {getData.headingData?.tagline}</p>
 
-              <tbody>
+            <p><b>Heading:</b> {getData.headingData?.heading}</p>
 
-                <tr>
-                  <th>Tagline</th>
-                  <td>{getData.headingData.tagline}</td>
-                </tr>
+            <p><b>Description:</b> {getData.headingData?.description}</p>
 
-                <tr>
-                  <th>Heading</th>
-                  <td>{getData.headingData.heading}</td>
-                </tr>
+            <img src={getData.image} width="200" alt="" />
 
-                <tr>
-                  <th>Description</th>
-                  <td>{getData.headingData.description}</td>
-                </tr>
-
-                <tr>
-                  <th>Image</th>
-                  <td>
-                    <img src={getData.image} alt="" />
-                  </td>
-                </tr>
-
-              </tbody>
-
-            </table>
+            <br /><br />
 
             <button
               className={styles.closeBtn}
