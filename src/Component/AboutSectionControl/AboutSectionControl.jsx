@@ -478,11 +478,23 @@ export default function AboutSectionControl() {
 
             <h4>About Details</h4>
 
-            <p><b>Tagline:</b> {getData.headingData?.tagline}</p>
+            <div className={styles.detailRow}>
+  <span className={styles.label}>Tagline</span>
+  <span className={styles.value}>{getData.headingData?.tagline}</span>
+</div>
 
-            <p><b>Heading:</b> {getData.headingData?.heading}</p>
+<div className={styles.detailRow}>
+  <span className={styles.label}>Heading</span>
+  <span className={styles.value}>{getData.headingData?.heading}</span>
+</div>
 
-            <p><b>Description:</b> {getData.headingData?.description}</p>
+<div className={styles.descriptionBlock}>
+  <span className={styles.label}>Description</span>
+
+  <p className={styles.descriptionText}>
+    {getData.headingData?.description}
+  </p>
+</div>
 
             <img src={getData.image} width="200" alt="" />
 
