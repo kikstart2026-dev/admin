@@ -83,7 +83,7 @@
 
 .modalContent {
   background: #fff;
-  padding: 30px;
+  padding: 15px 30px;
   border-radius: 12px;
   width: 90%;
   max-width: 500px;
@@ -128,9 +128,10 @@
   }
 }
 .selectAll{
-display:flex;
-align-items:center;
-gap:6px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
 }
 
 .closeBtn{
@@ -144,4 +145,27 @@ cursor:pointer;
 
 input[type="checkbox"]{
   accent-color:#ED1C24;
+}
+.detailRow{
+  display:flex;
+  align-items:flex-start;
+  margin-bottom:10px;
+}
+
+.label{
+  width:110px;
+  font-weight:700;
+  color:#333;
+}
+
+.value{
+  flex:1;
+}
+.descriptionBlock{
+  margin-top:10px;
+}
+
+.descriptionText{
+  text-align:center;
+  margin:8px 0;
 }
