@@ -42,12 +42,12 @@ export default function AboutSectionControl() {
   /* ================= FETCH ================= */
 
   const { data = [], isLoading } = useQuery({
-  queryKey: ["aboutSection"],
-  queryFn: async () => {
-    const res = await getAllAboutSection();
-    return res?.data?.data || res?.data || [];
-  },
-});
+    queryKey: ["aboutSection"],
+    queryFn: async () => {
+      const res = await getAllAboutSection();
+      return res?.data?.data || res?.data || [];
+    },
+  });
   const refresh = () => {
     queryClient.invalidateQueries(["aboutSection"]);
   };
@@ -120,47 +120,47 @@ export default function AboutSectionControl() {
   /* ================= CREATE ================= */
 
   const handleCreate = async () => {
-  try {
+    try {
 
-    const headingRes = await createHeading(formValues);
-    const newHeadingId = headingRes?.data?._id;
+      const headingRes = await createHeading(formValues);
+      const newHeadingId = headingRes?.data?._id;
 
-    let imageUrl = "";
+      let imageUrl = "";
 
-    if (imageFile) {
+      if (imageFile) {
 
-      const fd = new FormData();
-      fd.append("file", imageFile);
+        const fd = new FormData();
+        fd.append("file", imageFile);
 
-      const uploadRes = await createFile(fd);
+        const uploadRes = await createFile(fd);
 
-      imageUrl = uploadRes.data[0].path;
+        imageUrl = uploadRes.data[0].path;
 
+      }
+
+      const aboutRes = await createAboutSection({
+        headingId: newHeadingId,
+        image: "http://localhost:8008" + imageUrl,
+      });
+
+      const newAboutId = aboutRes?.data?._id;
+
+      if (newAboutId) {
+        await toggleActiveAboutSection(newAboutId);
+      }
+
+      alert("About Created Successfully");
+
+      setShowForm(false);
+
+      setImageFile(null);
+
+      refresh();
+
+    } catch (err) {
+      console.log(err);
     }
-
-    const aboutRes = await createAboutSection({
-      headingId: newHeadingId,
-      image: "http://localhost:8008" + imageUrl,
-    });
-
-    const newAboutId = aboutRes?.data?._id;
-
-    if (newAboutId) {
-      await toggleActiveAboutSection(newAboutId);
-    }
-
-    alert("About Created Successfully");
-
-    setShowForm(false);
-
-    setImageFile(null);
-
-    refresh();
-
-  } catch (err) {
-    console.log(err);
-  }
-};
+  };
 
   /* ================= UPDATE ================= */
 
@@ -253,13 +253,13 @@ export default function AboutSectionControl() {
   /* ================= ACTIVE FIX ================= */
 
   const toggleActive = async (id) => {
-  try {
-    await toggleActiveAboutSection(id);
-    refresh();
-  } catch (err) {
-    console.error(err);
-  }
-};
+    try {
+      await toggleActiveAboutSection(id);
+      refresh();
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
 
   if (isLoading) return <p>Loading...</p>;
@@ -299,8 +299,14 @@ export default function AboutSectionControl() {
             onClick={handleDeleteSelected}
           >
             <i className="bi bi-trash"></i>
-            {allSelected ? " ALL" : ` (${selected.length})`}
+            {selected.length === 0
+              ? ""
+              : allSelected
+                ? " ALL"
+                : ` (${selected.length}/${data.length})`}
           </button>
+
+          
 
         </div>
 
@@ -500,3 +506,11 @@ export default function AboutSectionControl() {
   );
 
 }
+
+                              // <button
+                              //             className={styles.deleteSelected}
+                              //             onClick={handleDeleteSelected}
+                              //           >
+                              //             <i className="bi bi-trash"></i>
+                              //             {allSelected ? " ALL" : ` (${selected.length})`}
+                              //           </button>
