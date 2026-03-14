@@ -194,7 +194,7 @@ export default function ServiceControl() {
 
       <div className={styles.bannerWrap}>
 
-        <h3 className={styles.title}>Service Control</h3>
+        <h3 className={styles.title}>Control As You Want</h3>
 
         <div className={styles.topActions}>
 

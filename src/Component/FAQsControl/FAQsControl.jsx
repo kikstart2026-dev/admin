@@ -109,7 +109,7 @@ export default function FAQsControl() {
     return (
         <div className={styles.banner}>
             <div className={styles.bannerWrap}>
-                <h3 className={styles.title}>Control FAQs</h3>
+                <h3 className={styles.title}>Control As You Want</h3>
                 <div className={styles.topActions}>
                     <button className={styles.createBtn} onClick={() => { setMode("create"); setShowForm(true); }}>
                         Create FAQ

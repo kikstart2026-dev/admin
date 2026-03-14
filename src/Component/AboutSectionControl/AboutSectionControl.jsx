@@ -270,7 +270,7 @@ export default function AboutSectionControl() {
 
       <div className={styles.bannerWrap}>
 
-        <h3 className={styles.title}>Control About Section</h3>
+        <h3 className={styles.title}>Control As You Want</h3>
 
         <div className={styles.topActions}>
 
