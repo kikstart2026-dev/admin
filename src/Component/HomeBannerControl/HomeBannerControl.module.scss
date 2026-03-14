@@ -1,0 +1,281 @@
+textarea {
+  resize: none;
+  /* user cannot manually resize */
+  overflow: hidden;
+  min-height: 80px;
+}
+
+/* Title */
+.title {
+  font-size: 20px;
+  color: #9f0005;
+  font-weight: 500;
+}
+
+.check{
+  accent-color: red;
+}
+
+/* Banner Wrapper */
+.bannerWrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+}
+
+/* Top Buttons */
+.topActions button {
+  transition: 0.3s ease;
+}
+
+.topActions button:hover {
+  transform: scale(1.08);
+}
+
+.deleteSelected {
+  background: #ED1C24;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-left: 20px;
+}
+
+.createBtn {
+  background: #2ed57c;
+  color: #ffffff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Table */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+  // box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+
+
+  th,
+  td {
+    padding: 12px;
+    text-align: center;
+
+
+    .checkbox {
+      accent-color: #ED1C24;
+    }
+
+  }
+
+  img {
+    width: 80px;
+    border-radius: 6px;
+  }
+}
+
+/* Action Buttons */
+.actions button {
+  margin-right: 8px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #fff;
+  font-weight: 500;
+  transition: 0.3s ease;
+}
+
+.actions button:hover {
+  transform: scale(1.08);
+}
+
+.actions button:nth-child(1) {
+  background: #3b82f6;
+
+  &:hover {
+    background: #2563eb;
+  }
+}
+
+.actions button:nth-child(2) {
+  background: #10b981;
+
+  &:hover {
+    background: #059669;
+  }
+}
+
+.actions button:nth-child(3) {
+  background: #ef4444;
+
+  &:hover {
+    background: #dc2626;
+  }
+}
+
+/* Modal Overlay */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Modal Content */
+.modalContent {
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  position: relative;
+
+  /* Table in GET modal */
+  table {
+    width: 100%;
+    margin: 25px 0;
+
+    th {
+      font-weight: 600;
+      font-size: 16px;
+      padding: 8px;
+    }
+
+    td {
+      padding: 8px;
+      // border-bottom: 1px solid #eee;
+      font-size: 14px;
+
+      img {
+        width: 150px;
+        // height: 100PX;
+      }
+    }
+  }
+
+  .closeBtn {
+    margin-right: 8px;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: white;
+    font-weight: 500;
+    transition: 0.3s ease;
+    background-color: #ED1C24;
+  }
+
+  h4 {
+    font-size: 20px;
+    margin-bottom: 20px;
+    color: #ED1C24;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: 0.3s ease;
+  }
+
+  input:focus,
+  textarea:focus {
+    border-color: #ED1C24;
+  }
+
+  .preview {
+    text-align: center;
+    width: 150px;
+    // height: 300PX;
+
+    img {
+
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+  }
+
+  .modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+
+    button {
+      margin-right: 8px;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: white;
+      font-weight: 500;
+      transition: 0.3s ease;
+      background-color: #ED1C24;
+    }
+
+    button:nth-child(1) {
+      background: #000000;
+    }
+
+
+
+
+    .saveBtn {
+      background: #ED1C24;
+      color: #fff;
+      border: none;
+
+      &:hover {
+        background: #c71b1b;
+      }
+    }
+
+    .closeBtn {
+      background: #ED1C24;
+      color: #fff;
+      border: none;
+
+      &:hover {
+        background: #888;
+      }
+    }
+  }
+
+  th .checkbox {
+    accent-color: #6c4d4e;
+  }
+
+
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
