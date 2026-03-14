@@ -12,6 +12,10 @@ import {
   selectiveDeleteHomeBanner,
   toggleActiveBanner,
 } from "../../apis/api";
+
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+
 import "../../Main.scss";
 
 export default function HomeBannerControl() {
@@ -33,10 +37,6 @@ export default function HomeBannerControl() {
     description: "",
   });
 
-  // ==============================
-  // FETCH BANNERS
-  // ==============================
-
   const { data = [], isLoading } = useQuery({
     queryKey: ["homeBanners"],
     queryFn: async () => {
@@ -48,10 +48,6 @@ export default function HomeBannerControl() {
   const fetchBanner = () => {
     queryClient.invalidateQueries(["homeBanners"]);
   };
-
-  // ==============================
-  // SELECT LOGIC
-  // ==============================
 
   const allSelected = selected.length === data.length && data.length > 0;
 
@@ -78,18 +74,12 @@ export default function HomeBannerControl() {
 
     try {
       await selectiveDeleteHomeBanner({ ids: selected });
-
       setSelected([]);
-
       fetchBanner();
     } catch (err) {
       console.error(err);
     }
   };
-
-  // ==============================
-  // FORM INPUT
-  // ==============================
 
   const handleChange = (e) => {
     setFormValues({
@@ -104,29 +94,21 @@ export default function HomeBannerControl() {
     if (!file) return;
 
     setImageFile(file);
-
     setPreview(URL.createObjectURL(file));
   };
-
-  // ==============================
-  // CREATE
-  // ==============================
 
   const handleCreate = async () => {
     try {
       const headingRes = await createHeading(formValues);
-
       const newHeadingId = headingRes?.data?._id;
 
       let imageUrl = "";
 
       if (imageFile) {
         const fd = new FormData();
-
         fd.append("file", imageFile);
 
         const uploadRes = await createFile(fd);
-
         imageUrl = uploadRes.data[0].path;
       }
 
@@ -144,18 +126,12 @@ export default function HomeBannerControl() {
       alert("Banner Created Successfully");
 
       setShowForm(false);
-
       setImageFile(null);
-
       fetchBanner();
     } catch (err) {
       console.error(err);
     }
   };
-
-  // ==============================
-  // UPDATE
-  // ==============================
 
   const handleUpdate = async () => {
     try {
@@ -165,11 +141,9 @@ export default function HomeBannerControl() {
 
       if (imageFile) {
         const fd = new FormData();
-
         fd.append("file", imageFile);
 
         const uploadRes = await createFile(fd);
-
         imageUrl = "http://localhost:8008" + uploadRes.data[0].path;
       }
 
@@ -181,42 +155,29 @@ export default function HomeBannerControl() {
       alert("Banner Updated Successfully");
 
       setShowForm(false);
-
       setImageFile(null);
-
       fetchBanner();
     } catch (err) {
       console.error(err);
     }
   };
-
-  // ==============================
-  // DELETE
-  // ==============================
 
   const handleDelete = async (id) => {
     if (!window.confirm("Delete Banner?")) return;
 
     try {
       await singleDeleteHomeBanner(id);
-
       fetchBanner();
     } catch (err) {
       console.error(err);
     }
   };
 
-  // ==============================
-  // EDIT
-  // ==============================
-
   const handleEdit = (item) => {
     setMode("update");
-
     setShowForm(true);
 
     setBannerId(item._id);
-
     setHeadingId(item.headingData._id);
 
     setFormValues({
@@ -226,28 +187,17 @@ export default function HomeBannerControl() {
     });
 
     setPreview(item.image);
-
     setImageFile(null);
   };
 
-  // ==============================
-  // GET
-  // ==============================
-
   const handleGet = (item) => {
     setGetData(item);
-
     setShowGet(true);
   };
-
-  // ==============================
-  // TOGGLE ACTIVE
-  // ==============================
 
   const toggleActive = async (id) => {
     try {
       await toggleActiveBanner(id);
-
       fetchBanner();
     } catch (err) {
       console.error(err);
@@ -266,7 +216,6 @@ export default function HomeBannerControl() {
             className={styles.createBtn}
             onClick={() => {
               setMode("create");
-
               setShowForm(true);
 
               setFormValues({
@@ -276,7 +225,6 @@ export default function HomeBannerControl() {
               });
 
               setPreview("");
-
               setImageFile(null);
             }}
           >
@@ -293,8 +241,6 @@ export default function HomeBannerControl() {
         </div>
       </div>
 
-      {/* TABLE */}
-
       <div className={styles.tableWrap}>
         <table className={styles.table}>
           <thead>
@@ -310,13 +256,9 @@ export default function HomeBannerControl() {
               </th>
 
               <th>Image</th>
-
               <th>Tagline</th>
-
               <th>Heading</th>
-
               <th>Active</th>
-
               <th>Action</th>
             </tr>
           </thead>
@@ -351,7 +293,6 @@ export default function HomeBannerControl() {
                   </td>
 
                   <td>{item?.headingData?.tagline || "No tagline"}</td>
-
                   <td>{item?.headingData?.heading || "No Heading"}</td>
 
                   <td>
@@ -388,8 +329,6 @@ export default function HomeBannerControl() {
         </table>
       </div>
 
-      {/* FORM */}
-
       {showForm && (
         <div className={styles.modal}>
           <div className={styles.modalContent}>
@@ -411,11 +350,33 @@ export default function HomeBannerControl() {
               onChange={handleChange}
             />
 
-            <textarea
-              placeholder="Description"
-              name="description"
-              value={formValues.description}
-              onChange={handleChange}
+            <CKEditor
+              editor={ClassicEditor}
+              data={formValues.description}
+              config={{
+                toolbar: [
+                  "heading",
+                  "|",
+                  "bold",
+                  "italic",
+                  "fontColor",
+                  "fontBackgroundColor",
+                  "|",
+                  "bulletedList",
+                  "numberedList",
+                  "|",
+                  "link",
+                  "undo",
+                  "redo"
+                ]
+              }}
+              onChange={(event, editor) => {
+                const data = editor.getData();
+                setFormValues({
+                  ...formValues,
+                  description: data,
+                });
+              }}
             />
 
             <input type="file" onChange={handleImageChange} />
@@ -435,8 +396,6 @@ export default function HomeBannerControl() {
         </div>
       )}
 
-      {/* GET MODAL */}
-
       {showGet && getData && (
         <div className={styles.modal}>
           <div className={styles.modalContent}>
@@ -446,25 +405,25 @@ export default function HomeBannerControl() {
               <tbody>
                 <tr>
                   <th>Tagline</th>
-
                   <td>{getData.headingData.tagline}</td>
                 </tr>
 
                 <tr>
                   <th>Heading</th>
-
                   <td>{getData.headingData.heading}</td>
                 </tr>
 
                 <tr>
                   <th>Description</th>
-
-                  <td>{getData.headingData.description}</td>
+                  <td
+                    dangerouslySetInnerHTML={{
+                      __html: getData.headingData.description,
+                    }}
+                  ></td>
                 </tr>
 
                 <tr>
                   <th>Image</th>
-
                   <td>
                     <img src={getData.image} alt="" />
                   </td>
