@@ -381,3 +381,29 @@ export const delAllTest = async () => {
     const res = await axiosInstance.delete(endpoints.delAllTest);
     return res.data;
 };
+
+/* ================================ FAQ APIs ================================ */
+
+// ✅ Create FAQ
+export const createFaq = async (payload) => {
+    const res = await axiosInstance.post(endpoints.createFaq, payload);
+    return res.data;
+};
+
+// ✅ Get All FAQs
+export const getFaqs = async () => {
+    const res = await axiosInstance.get(endpoints.getFaqs);
+    return res.data;
+};
+
+// ✅ Update FAQ
+export const updateFaq = async (id, payload) => {
+    const res = await axiosInstance.put(endpoints.updateFaq(id), payload);
+    return res.data;
+};
+
+// ✅ Delete FAQ
+export const deleteFaq = async (id) => {
+    const res = await axiosInstance.delete(endpoints.deleteFaq(id));
+    return res.data;
+};

@@ -7,6 +7,7 @@ import "../../Main.scss";
 import WhyChooseUsControl from "../../Component/WhyChooseUsControl/WhyChooseUsControl";
 import AboutSectionControl from "../../Component/AboutSectionControl/AboutSectionControl";
 import ServiceControl from "../../Component/ServiceControl/ServiceControl";
+import FAQsControl from "../../Component/FAQsControl/FAQsControl";
 export default function HomePage() {
 
   const [activeSection, setActiveSection] = useState(null);
@@ -50,6 +51,7 @@ export default function HomePage() {
             </div>
           )}
         </div>
+
         {/* ABOUT US */}
         <div className={styles.section}>
           <div
@@ -73,6 +75,7 @@ export default function HomePage() {
             </div>
           )}
         </div>
+
         {/* Why Choose Us */}
         <div className={styles.section}>
           <div
@@ -96,6 +99,7 @@ export default function HomePage() {
             </div>
           )}
         </div>
+
         {/* service */}
         <div className={styles.section}>
           <div
@@ -119,6 +123,7 @@ export default function HomePage() {
             </div>
           )}
         </div>
+
         {/* TESTIMONIAL */}
         <div className={styles.section}>
           <div
@@ -142,6 +147,31 @@ export default function HomePage() {
             </div>
           )}
         </div>
+
+        {/* FAQ */}
+        <div className={styles.section}>
+          <div
+            className={`${styles.sectionHeader} ${activeSection === "faq" ? styles.active : ""
+              }`}
+            onClick={() => toggleSection("faq")}
+          >
+            <span>FAQ Control</span>
+
+            <i
+              className={`bi ${activeSection === "faq"
+                  ? "bi-chevron-up"
+                  : "bi-chevron-down"
+                }`}
+            ></i>
+          </div>
+
+          {activeSection === "faq" && (
+            <div className={styles.sectionBody}>
+              <FAQsControl />
+            </div>
+          )}
+        </div>
+
       </div>
     </div>
   );
