@@ -149,6 +149,7 @@ textarea {
             color: #fff;
             cursor: pointer;
             background-color: #ED1C24;
+            margin-top: 15px;
         }
 
         button:nth-child(1) {
@@ -162,3 +163,46 @@ textarea {
   border-color: #ED1C24;
   outline: none;
 }
+
+.modalContent {
+
+  table {
+    width: 100%;
+    margin: 25px 0;
+
+    th {
+      font-weight: 600;
+      font-size: 16px;
+      padding: 8px;
+    }
+
+    td {
+      padding: 8px;
+      font-size: 14px;
+
+      img {
+        width: 50px;
+      }
+    }
+  }
+
+  .closeBtn {
+    margin-right: 8px;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: white;
+    font-weight: 500;
+    transition: 0.3s ease;
+    background-color: #ED1C24;
+  }
+
+}
+
+.colorBox{
+  padding: 6px 14px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
