@@ -26,7 +26,7 @@ export const endpoints = {
 
 
   createFile: "/media/create",
-  
+
   // Home Banner------------------------------------>>
 
   createHomeBanner: "admin/home-banner/create",
@@ -39,7 +39,7 @@ export const endpoints = {
 
 
   // ✅ ACTIVE BANNER
-toggleActiveBanner: (id) => `admin/home-banner/active/${id}`,
+  toggleActiveBanner: (id) => `admin/home-banner/active/${id}`,
 
   // Why Choose Us------------------------------------>>
 
@@ -61,18 +61,18 @@ toggleActiveBanner: (id) => `admin/home-banner/active/${id}`,
   selectiveDeleteService: "admin/service/select/delete",
   multipleDeleteService: "admin/service/delete/all",
 
-// ABOUT SECTION
+  // ABOUT SECTION
 
-createAboutSection: "admin/about-us/create",
-getAllAboutSection: "admin/about-us",
-getAboutSectionById: (id) => `admin/about-us/${id}`,
-updateAboutSection: (id) => `admin/about-us/${id}`,
-singleDeleteAboutSection: (id) => `admin/about-us/${id}`,
-selectiveDeleteAboutSection: "admin/about-us/select/delete",
-multipleDeleteAboutSection: "admin/about-us/delete/all",
+  createAboutSection: "admin/about-us/create",
+  getAllAboutSection: "admin/about-us",
+  getAboutSectionById: (id) => `admin/about-us/${id}`,
+  updateAboutSection: (id) => `admin/about-us/${id}`,
+  singleDeleteAboutSection: (id) => `admin/about-us/${id}`,
+  selectiveDeleteAboutSection: "admin/about-us/select/delete",
+  multipleDeleteAboutSection: "admin/about-us/delete/all",
 
-// ACTIVE TOGGLE
-toggleActiveAboutSection: (id) => `admin/about-us/active/${id}`,
+  // ACTIVE TOGGLE
+  toggleActiveAboutSection: (id) => `admin/about-us/active/${id}`,
   // testimonials------------------------------------>>
 
   createTest: "admin/testimonal/create",
@@ -82,4 +82,12 @@ toggleActiveAboutSection: (id) => `admin/about-us/active/${id}`,
   delSingleTest: (id) => `admin/testimonal/delete/${id}`,
   delSelectiveTest: "admin/testimonal/delete-selected",
   delAllTest: "admin/testimonal/delete-all",
+
+  // FAQ------------------------------------>>
+
+  createFaq: "admin/faq/create",
+  getFaqs: "admin/faq/",
+  updateFaq: (id) => `admin/faq/${id}`,
+  deleteFaq: (id) => `admin/faq/${id}`,
 };
+
