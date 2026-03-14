@@ -137,6 +137,14 @@ export const multipleDeleteHomeBanner = async () => {
     return res.data;
 };
 
+// ✅ Toggle Active Banner
+export const toggleActiveBanner = async (id) => {
+    const res = await axiosInstance.put(
+        endpoints.toggleActiveBanner(id)
+    );
+    return res.data;
+};
+
 /* ================================
     Why Choose Us APIs
 ================================ */
@@ -233,5 +241,143 @@ export const selectiveDeleteService = async (payload) => {
 // ✅ Delete All
 export const multipleDeleteService = async () => {
     const res = await axiosInstance.delete(endpoints.multipleDeleteService);
+    return res.data;
+};
+
+
+/* ==================================================
+   ABOUT SECTION APIs
+====================================================== */
+
+// CREATE
+export const createAboutSection = async (payload) => {
+
+  const res = await axiosInstance.post(
+    endpoints.createAboutSection,
+    payload
+  );
+
+  return res.data;
+};
+
+
+// GET ALL
+export const getAllAboutSection = async () => {
+  const res = await axiosInstance.get(endpoints.getAllAboutSection);
+  return res.data;
+};
+
+
+// GET BY ID
+export const getAboutUsById = async (id) => {
+
+  const res = await axiosInstance.get(
+    endpoints.getAboutSectionById(id)
+  );
+
+  return res.data;
+};
+
+
+// UPDATE
+export const updateAboutSection = async (id, payload) => {
+
+  const res = await axiosInstance.put(
+    endpoints.updateAboutSection(id),
+    payload
+  );
+
+  return res.data;
+};
+
+
+// DELETE SINGLE
+export const singleDeleteAboutSection = async (id) => {
+
+  const res = await axiosInstance.delete(
+    endpoints.singleDeleteAboutSection(id)
+  );
+
+  return res.data;
+};
+
+
+// DELETE SELECTIVE
+export const selectiveDeleteAboutSection = async (payload) => {
+
+  const res = await axiosInstance.delete(
+    endpoints.selectiveDeleteAboutSection,
+    {
+      data: payload
+    }
+  );
+
+  return res.data;
+};
+
+
+// DELETE ALL
+export const multipleDeleteAboutUsSection = async () => {
+
+  const res = await axiosInstance.delete(
+    endpoints.multipleDeleteAboutSection
+  );
+
+  return res.data;
+};
+
+
+// ACTIVE TOGGLE
+export const toggleActiveAboutSection = async (id) => {
+
+  const res = await axiosInstance.put(
+    endpoints.toggleActiveAboutSection(id)
+  );
+
+  return res.data;
+};
+/* ================================ Testimonails APIs ================================ */
+
+// ✅ Create Service
+export const createTest = async (payload) => {
+    const res = await axiosInstance.post(endpoints.createTest, payload);
+    return res.data;
+};
+
+// ✅ Get All services
+export const getAllTest = async () => {
+    const res = await axiosInstance.get(endpoints.getAllTest);
+    return res.data;
+};
+
+// ✅ Get sevice By ID
+export const getTestById = async (id) => {
+    const res = await axiosInstance.get(endpoints.getTestById(id));
+    return res.data;
+};
+
+// ✅ Update service
+export const updateTest = async (id, payload) => {
+    const res = await axiosInstance.put(endpoints.updateTest(id), payload);
+    return res.data;
+};
+
+// ✅ Delete Single
+export const delSingleTest = async (id) => {
+    const res = await axiosInstance.delete(endpoints.delSingleTest(id));
+    return res.data;
+};
+
+// ✅ Delete Selective
+export const delSelectiveTest = async (payload) => {
+    const res = await axiosInstance.delete(endpoints.delSelectiveTest, {
+        data: payload,
+    });
+    return res.data;
+};
+
+// ✅ Delete All
+export const delAllTest = async () => {
+    const res = await axiosInstance.delete(endpoints.delAllTest);
     return res.data;
 };

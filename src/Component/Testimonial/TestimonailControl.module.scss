@@ -1,6 +1,5 @@
 textarea {
   resize: none;
-  /* user cannot manually resize */
   overflow: hidden;
   min-height: 80px;
 }
@@ -27,6 +26,10 @@ textarea {
 /* Top Buttons */
 .topActions button {
   transition: 0.3s ease;
+}
+
+.topActions button:nth-child(1){
+  margin-right: 20px;
 }
 
 .topActions button:hover {
@@ -187,21 +190,19 @@ textarea {
   }
 
   input,
-  textarea {
+textarea {
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;
     border: 1px solid #ddd;
     border-radius: 8px;
-    font-size: 14px;
     outline: none;
-    transition: 0.3s ease;
-  }
 
-  input:focus,
-  textarea:focus {
-    border-color: #ED1C24;
-  }
+    &:focus {
+        border-color: #ED1C24;
+        outline: none;
+    }
+}
 
   .preview {
     text-align: center;

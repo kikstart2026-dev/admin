@@ -29,31 +29,57 @@ export const endpoints = {
   
   // Home Banner------------------------------------>>
 
-  createHomeBanner: "/home-banner/create",
-  getAllHomeBanner: "/home-banner",
-  getHomeBannerById: (id) => `/home-banner/${id}`,
-  updateHomeBanner: (id) => `/home-banner/${id}`,
-  singleDeleteHomeBanner: (id) => `/home-banner/${id}`,
-  selectiveDeleteHomeBanner: "/home-banner/select/delete",
-  multipleDeleteHomeBanner: "/home-banner/delete/all",
+  createHomeBanner: "admin/home-banner/create",
+  getAllHomeBanner: "admin/home-banner",
+  getHomeBannerById: (id) => `admin/home-banner/${id}`,
+  updateHomeBanner: (id) => `admin/home-banner/${id}`,
+  singleDeleteHomeBanner: (id) => `admin/home-banner/${id}`,
+  selectiveDeleteHomeBanner: "admin/home-banner/select/delete",
+  multipleDeleteHomeBanner: "admin/home-banner/delete/all",
+
+
+  // ✅ ACTIVE BANNER
+toggleActiveBanner: (id) => `admin/home-banner/active/${id}`,
 
   // Why Choose Us------------------------------------>>
 
-  createWhyChooseUs: "/why-choose-us/create",
-  getAllWhyChooseUs: "/why-choose-us",
-  getWhyChooseUsById: (id) => `/why-choose-us/${id}`,
-  updateWhyChooseUs: (id) => `/why-choose-us/${id}`,
-  singleDeleteWhyChooseUs: (id) => `/why-choose-us/${id}`,
-  selectiveDeleteWhyChooseUs: "/why-choose-us/select/delete",
-  multipleDeleteWhyChooseUs: "/why-choose-us/delete/all",
+  createWhyChooseUs: "admin/why-choose-us/create",
+  getAllWhyChooseUs: "admin/why-choose-us",
+  getWhyChooseUsById: (id) => `admin/why-choose-us/${id}`,
+  updateWhyChooseUs: (id) => `admin/why-choose-us/${id}`,
+  singleDeleteWhyChooseUs: (id) => `admin/why-choose-us/${id}`,
+  selectiveDeleteWhyChooseUs: "admin/why-choose-us/select/delete",
+  multipleDeleteWhyChooseUs: "admin/why-choose-us/delete/all",
 
   // service------------------------------------>>
 
-  createService: "/service/create",
-  getAllService: "/service/",
-  getServiceById: (id) => `/service/${id}`,
-  updateService: (id) => `/service/${id}`,
-  singleDeleteService: (id) => `/service/${id}`,
-  selectiveDeleteService: "/service/select/delete",
-  multipleDeleteService: "/service/delete/all",
+  createService: "admin/service/create",
+  getAllService: "admin/service/",
+  getServiceById: (id) => `admin/service/${id}`,
+  updateService: (id) => `admin/service/${id}`,
+  singleDeleteService: (id) => `admin/service/${id}`,
+  selectiveDeleteService: "admin/service/select/delete",
+  multipleDeleteService: "admin/service/delete/all",
+
+// ABOUT SECTION
+
+createAboutSection: "admin/about-us/create",
+getAllAboutSection: "admin/about-us",
+getAboutSectionById: (id) => `admin/about-us/${id}`,
+updateAboutSection: (id) => `admin/about-us/${id}`,
+singleDeleteAboutSection: (id) => `admin/about-us/${id}`,
+selectiveDeleteAboutSection: "admin/about-us/select/delete",
+multipleDeleteAboutSection: "admin/about-us/delete/all",
+
+// ACTIVE TOGGLE
+toggleActiveAboutSection: (id) => `admin/about-us/active/${id}`,
+  // testimonials------------------------------------>>
+
+  createTest: "admin/testimonal/create",
+  getAllTest: "admin/testimonal/",
+  getTestById: (id) => `admin/testimonal/${id}`,
+  updateTest: (id) => `admin/testimonal/update/${id}`,
+  delSingleTest: (id) => `admin/testimonal/delete/${id}`,
+  delSelectiveTest: "admin/testimonal/delete-selected",
+  delAllTest: "admin/testimonal/delete-all",
 };
