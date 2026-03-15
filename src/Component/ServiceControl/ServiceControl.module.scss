@@ -162,3 +162,43 @@ textarea {
   border-color: #ED1C24;
   outline: none;
 }
+
+/* CKEditor Style Fix */
+
+:global(.ck-editor__editable_inline) {
+  min-height: 120px;
+  max-height: 120px;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+/* Focus border color */
+
+:global(.ck.ck-editor__main > .ck-editor__editable:focus) {
+  border: 1px solid #ED1C24 !important;
+  box-shadow: 0 0 0 1px #ED1C24 !important;
+}
+
+/* Remove Powered by CKEditor */
+
+:global(.ck-powered-by) {
+  display: none !important;
+}
+
+/* Prevent editor from expanding modal */
+
+:global(.ck-editor) {
+  width: 100%;
+}
+
+/* Toolbar style fix */
+
+:global(.ck-toolbar) {
+  border-radius: 6px 6px 0 0;
+}
+
+/* Editor body */
+
+:global(.ck-editor__editable) {
+  border-radius: 0 0 6px 6px;
+}

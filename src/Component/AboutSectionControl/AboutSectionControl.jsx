@@ -15,6 +15,9 @@ import {
   createFile,
 } from "../../apis/api";
 
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+
 export default function AboutSectionControl() {
 
   const queryClient = useQueryClient();
@@ -48,6 +51,7 @@ export default function AboutSectionControl() {
       return res?.data?.data || res?.data || [];
     },
   });
+
   const refresh = () => {
     queryClient.invalidateQueries(["aboutSection"]);
   };
@@ -250,7 +254,7 @@ export default function AboutSectionControl() {
 
   };
 
-  /* ================= ACTIVE FIX ================= */
+  /* ================= ACTIVE ================= */
 
   const toggleActive = async (id) => {
     try {
@@ -260,7 +264,6 @@ export default function AboutSectionControl() {
       console.error(err);
     }
   };
-
 
   if (isLoading) return <p>Loading...</p>;
 
@@ -305,8 +308,6 @@ export default function AboutSectionControl() {
                 ? " ALL"
                 : ` (${selected.length}/${data.length})`}
           </button>
-
-          
 
         </div>
 
@@ -405,8 +406,6 @@ export default function AboutSectionControl() {
 
       </div>
 
-      {/* FORM MODAL */}
-
       {showForm && (
 
         <div className={styles.modal}>
@@ -433,11 +432,33 @@ export default function AboutSectionControl() {
               onChange={handleChange}
             />
 
-            <textarea
-              name="description"
-              placeholder="Description"
-              value={formValues.description}
-              onChange={handleChange}
+            <CKEditor
+              editor={ClassicEditor}
+              data={formValues.description}
+              config={{
+                toolbar: [
+                  "heading",
+                  "|",
+                  "bold",
+                  "italic",
+                  "fontColor",
+                  "fontBackgroundColor",
+                  "|",
+                  "bulletedList",
+                  "numberedList",
+                  "|",
+                  "link",
+                  "undo",
+                  "redo"
+                ]
+              }}
+              onChange={(event, editor) => {
+                const data = editor.getData();
+                setFormValues({
+                  ...formValues,
+                  description: data,
+                });
+              }}
             />
 
             <input type="file" onChange={handleImageChange} />
@@ -468,8 +489,6 @@ export default function AboutSectionControl() {
 
       )}
 
-      {/* GET MODAL */}
-
       {showGet && getData && (
 
         <div className={styles.modal}>
@@ -479,22 +498,25 @@ export default function AboutSectionControl() {
             <h4>About Details</h4>
 
             <div className={styles.detailRow}>
-  <span className={styles.label}>Tagline</span>
-  <span className={styles.value}>{getData.headingData?.tagline}</span>
-</div>
+              <span className={styles.label}>Tagline</span>
+              <span className={styles.value}>{getData.headingData?.tagline}</span>
+            </div>
 
-<div className={styles.detailRow}>
-  <span className={styles.label}>Heading</span>
-  <span className={styles.value}>{getData.headingData?.heading}</span>
-</div>
+            <div className={styles.detailRow}>
+              <span className={styles.label}>Heading</span>
+              <span className={styles.value}>{getData.headingData?.heading}</span>
+            </div>
 
-<div className={styles.descriptionBlock}>
-  <span className={styles.label}>Description</span>
+            <div className={styles.descriptionBlock}>
+              <span className={styles.label}>Description</span>
 
-  <p className={styles.descriptionText}>
-    {getData.headingData?.description}
-  </p>
-</div>
+              <div
+                className={styles.descriptionText}
+                dangerouslySetInnerHTML={{
+                  __html: getData.headingData?.description,
+                }}
+              ></div>
+            </div>
 
             <img src={getData.image} width="200" alt="" />
 
@@ -518,11 +540,3 @@ export default function AboutSectionControl() {
   );
 
 }
-
-                              // <button
-                              //             className={styles.deleteSelected}
-                              //             onClick={handleDeleteSelected}
-                              //           >
-                              //             <i className="bi bi-trash"></i>
-                              //             {allSelected ? " ALL" : ` (${selected.length})`}
-                              //           </button>
