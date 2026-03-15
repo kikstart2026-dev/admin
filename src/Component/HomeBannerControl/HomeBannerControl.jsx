@@ -41,7 +41,7 @@ export default function HomeBannerControl() {
     queryKey: ["homeBanners"],
     queryFn: async () => {
       const res = await getAllHomeBanner();
-      return res?.data?.data || res?.data || [];
+      return res?.data?.data || res?.data || []; // for safe data fetch
     },
   });
 

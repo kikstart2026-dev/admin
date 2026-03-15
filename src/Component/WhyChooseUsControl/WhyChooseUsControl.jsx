@@ -401,7 +401,7 @@ export default function WhyChooseUsControl() {
 
             <input type="file" onChange={handleImageChange} />
 
-            {preview && <img src={preview} alt="" width="120" />}
+            {preview && <img src={preview} alt="" width="100" />} 
 
             <div className={styles.modalActions}>
 
@@ -479,30 +479,57 @@ export default function WhyChooseUsControl() {
       {/* View Modal */}
 
       {showGet && getData && (
-
         <div className={styles.modal}>
-
           <div className={styles.modalContent}>
 
             <h4>View Card</h4>
 
-            <img src={getData.icon} alt="" width="120" />
+            <table>
+              <tbody>
 
-            <p><strong>Title:</strong> {getData.title}</p>
+                <tr>
+                  <th>Icon</th>
+                  <td>
+                    <img src={getData.icon} alt="" />
+                  </td>
+                </tr>
 
-            <p><strong>Description:</strong> {getData.description}</p>
+                <tr>
+                  <th>Title</th>
+                  <td>{getData.title}</td>
+                </tr>
 
-            <p><strong>Color:</strong> {getData.color}</p>
+                <tr>
+                  <th>Description</th>
+                  <td>{getData.description}</td>
+                </tr>
 
-            <div className={styles.modalActions}>
-              <button onClick={() => setShowGet(false)}>Close</button>
-            </div>
+                <tr>
+                  <th>Color</th>
+                  <td>
+                    <div
+                      className={styles.colorBox}
+                      style={{ background: getData.color }}
+                    >
+                      {getData.color}
+                    </div>
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+
+            <button
+              className={styles.closeBtn}
+              onClick={() => setShowGet(false)}
+            >
+              Close
+            </button>
 
           </div>
-
         </div>
-
       )}
+
 
     </div>
   );
