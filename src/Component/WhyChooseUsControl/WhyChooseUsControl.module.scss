@@ -206,3 +206,17 @@ textarea {
   display: inline-block;
 }
 
+/* CKEditor fixed height */
+
+:global(.ck-editor__editable_inline) {
+  min-height: 120px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+/* CKEditor focus border color */
+
+:global(.ck.ck-editor__main>.ck-editor__editable:focus) {
+  border: 1px solid #ED1C24 !important;
+  box-shadow: 0 0 0 1px #ED1C24 !important;
+}

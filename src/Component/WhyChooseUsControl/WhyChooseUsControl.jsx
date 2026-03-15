@@ -13,6 +13,9 @@ import {
   createFile
 } from "../../apis/api";
 
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+
 export default function WhyChooseUsControl() {
 
   const queryClient = useQueryClient();
@@ -362,7 +365,6 @@ export default function WhyChooseUsControl() {
 
       </div>
 
-
       {/* Create / Update Modal */}
 
       {showForm && (
@@ -382,12 +384,33 @@ export default function WhyChooseUsControl() {
               }
             />
 
-            <textarea
-              placeholder="Description"
-              value={formValues.description}
-              onChange={(e) =>
-                setFormValues({ ...formValues, description: e.target.value })
-              }
+            <CKEditor
+              editor={ClassicEditor}
+              data={formValues.description}
+              config={{
+                toolbar: [
+                  "heading",
+                  "|",
+                  "bold",
+                  "italic",
+                  "fontColor",
+                  "fontBackgroundColor",
+                  "|",
+                  "bulletedList",
+                  "numberedList",
+                  "|",
+                  "link",
+                  "undo",
+                  "redo"
+                ]
+              }}
+              onChange={(event, editor) => {
+                const data = editor.getData();
+                setFormValues({
+                  ...formValues,
+                  description: data
+                });
+              }}
             />
 
             <input
@@ -447,12 +470,33 @@ export default function WhyChooseUsControl() {
               }
             />
 
-            <textarea
-              placeholder="Description"
-              value={headingData.description}
-              onChange={(e) =>
-                setHeadingData({ ...headingData, description: e.target.value })
-              }
+            <CKEditor
+              editor={ClassicEditor}
+              data={headingData.description}
+              config={{
+                toolbar: [
+                  "heading",
+                  "|",
+                  "bold",
+                  "italic",
+                  "fontColor",
+                  "fontBackgroundColor",
+                  "|",
+                  "bulletedList",
+                  "numberedList",
+                  "|",
+                  "link",
+                  "undo",
+                  "redo"
+                ]
+              }}
+              onChange={(event, editor) => {
+                const data = editor.getData();
+                setHeadingData({
+                  ...headingData,
+                  description: data
+                });
+              }}
             />
 
             <div className={styles.modalActions}>
@@ -501,7 +545,7 @@ export default function WhyChooseUsControl() {
 
                 <tr>
                   <th>Description</th>
-                  <td>{getData.description}</td>
+                  <td dangerouslySetInnerHTML={{ __html: getData.description }}></td>
                 </tr>
 
                 <tr>
@@ -529,7 +573,6 @@ export default function WhyChooseUsControl() {
           </div>
         </div>
       )}
-
 
     </div>
   );
