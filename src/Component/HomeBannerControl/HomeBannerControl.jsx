@@ -19,12 +19,11 @@ import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import "../../Main.scss";
 
 export default function HomeBannerControl() {
-  const queryClient = useQueryClient();
-
+  const queryClient = useQueryClient(); // catch control and data refresh
   const [selected, setSelected] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [showGet, setShowGet] = useState(false);
-  const [mode, setMode] = useState("create");
+  const [mode, setMode] = useState("create"); // create and update mode control
   const [bannerId, setBannerId] = useState(null);
   const [headingId, setHeadingId] = useState(null);
   const [preview, setPreview] = useState("");
@@ -35,7 +34,7 @@ export default function HomeBannerControl() {
     tagline: "",
     heading: "",
     description: "",
-  });
+  }); // form data store 
 
   const { data = [], isLoading } = useQuery({
     queryKey: ["homeBanners"],
@@ -47,7 +46,7 @@ export default function HomeBannerControl() {
 
   const fetchBanner = () => {
     queryClient.invalidateQueries(["homeBanners"]);
-  };
+  }; // refresh data
 
   const allSelected = selected.length === data.length && data.length > 0;
 
