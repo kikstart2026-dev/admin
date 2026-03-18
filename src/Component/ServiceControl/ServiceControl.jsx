@@ -13,6 +13,9 @@ import {
   createFile
 } from "../../apis/api";
 
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+
 export default function ServiceControl() {
 
   const queryClient = useQueryClient();
@@ -360,13 +363,36 @@ export default function ServiceControl() {
               }
             />
 
-            <textarea
-              placeholder="Details"
-              value={formValues.details}
-              onChange={(e) =>
-                setFormValues({ ...formValues, details: e.target.value })
-              }
+            <div className={styles.ck}>
+                <CKEditor
+              editor={ClassicEditor}
+              data={formValues.details}
+              config={{
+                toolbar: [
+                  "heading",
+                  "|",
+                  "bold",
+                  "italic",
+                  "fontColor",
+                  "fontBackgroundColor",
+                  "|",
+                  "bulletedList",
+                  "numberedList",
+                  "|",
+                  "link",
+                  "undo",
+                  "redo"
+                ]
+              }}
+              onChange={(event, editor) => {
+                const data = editor.getData();
+                setFormValues({
+                  ...formValues,
+                  details: data,
+                });
+              }}
             />
+            </div>
 
             <input type="file" onChange={handleImageChange} />
 

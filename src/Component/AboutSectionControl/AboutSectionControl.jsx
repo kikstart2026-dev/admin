@@ -431,35 +431,37 @@ export default function AboutSectionControl() {
               value={formValues.heading}
               onChange={handleChange}
             />
+            <div className={styles.ck}>
+              <CKEditor
+                editor={ClassicEditor}
+                data={formValues.description}
+                config={{
+                  toolbar: [
+                    "heading",
+                    "|",
+                    "bold",
+                    "italic",
+                    "fontColor",
+                    "fontBackgroundColor",
+                    "|",
+                    "bulletedList",
+                    "numberedList",
+                    "|",
+                    "link",
+                    "undo",
+                    "redo"
+                  ]
+                }}
+                onChange={(event, editor) => {
+                  const data = editor.getData();
+                  setFormValues({
+                    ...formValues,
+                    description: data,
+                  });
+                }}
+              />
+            </div>
 
-            <CKEditor
-              editor={ClassicEditor}
-              data={formValues.description}
-              config={{
-                toolbar: [
-                  "heading",
-                  "|",
-                  "bold",
-                  "italic",
-                  "fontColor",
-                  "fontBackgroundColor",
-                  "|",
-                  "bulletedList",
-                  "numberedList",
-                  "|",
-                  "link",
-                  "undo",
-                  "redo"
-                ]
-              }}
-              onChange={(event, editor) => {
-                const data = editor.getData();
-                setFormValues({
-                  ...formValues,
-                  description: data,
-                });
-              }}
-            />
 
             <input type="file" onChange={handleImageChange} />
 

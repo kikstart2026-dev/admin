@@ -384,34 +384,36 @@ export default function WhyChooseUsControl() {
               }
             />
 
-            <CKEditor
-              editor={ClassicEditor}
-              data={formValues.description}
-              config={{
-                toolbar: [
-                  "heading",
-                  "|",
-                  "bold",
-                  "italic",
-                  "fontColor",
-                  "fontBackgroundColor",
-                  "|",
-                  "bulletedList",
-                  "numberedList",
-                  "|",
-                  "link",
-                  "undo",
-                  "redo"
-                ]
-              }}
-              onChange={(event, editor) => {
-                const data = editor.getData();
-                setFormValues({
-                  ...formValues,
-                  description: data
-                });
-              }}
-            />
+            <div className={styles.ck}>
+              <CKEditor
+                editor={ClassicEditor}
+                data={formValues.description}
+                config={{
+                  toolbar: [
+                    "heading",
+                    "|",
+                    "bold",
+                    "italic",
+                    "fontColor",
+                    "fontBackgroundColor",
+                    "|",
+                    "bulletedList",
+                    "numberedList",
+                    "|",
+                    "link",
+                    "undo",
+                    "redo"
+                  ]
+                }}
+                onChange={(event, editor) => {
+                  const data = editor.getData();
+                  setFormValues({
+                    ...formValues,
+                    description: data
+                  });
+                }}
+              />
+            </div>
 
             <input
               type="text"
@@ -424,7 +426,7 @@ export default function WhyChooseUsControl() {
 
             <input type="file" onChange={handleImageChange} />
 
-            {preview && <img src={preview} alt="" width="100" />} 
+            {preview && <img src={preview} alt="" width="100" />}
 
             <div className={styles.modalActions}>
 
