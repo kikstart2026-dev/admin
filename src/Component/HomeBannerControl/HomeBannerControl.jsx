@@ -34,7 +34,7 @@ export default function HomeBannerControl() {
     tagline: "",
     heading: "",
     description: "",
-  }); // form data store 
+  }); // form data store
 
   const { data = [], isLoading } = useQuery({
     queryKey: ["homeBanners"],
@@ -265,7 +265,10 @@ export default function HomeBannerControl() {
           <tbody>
             {data.length === 0 ? (
               <tr>
-                <td colSpan={6} style={{ textAlign: "center", padding: "20px" }}>
+                <td
+                  colSpan={6}
+                  style={{ textAlign: "center", padding: "20px" }}
+                >
                   No Banner Found
                 </td>
               </tr>
