@@ -114,6 +114,11 @@ export default function ServiceControl() {
 
   const handleCreate = async () => {
 
+    if (!formValues.title || !imageFile) {
+      alert("Title and Image are required");
+      return;
+    }
+
     let imageUrl = "";
 
     if (imageFile) {
@@ -141,6 +146,10 @@ export default function ServiceControl() {
 
   const handleUpdate = async () => {
 
+    if (!formValues.title || !imageFile) {
+      alert("Title and Image are required");
+      return;
+    }
     let imageUrl = oldImage;
 
     if (imageFile) {

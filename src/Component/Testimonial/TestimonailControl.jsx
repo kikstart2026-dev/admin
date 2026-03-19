@@ -137,6 +137,11 @@ export default function TestimonialControl() {
       return;
     }
 
+    if (!formValues.name || !formValues.designation || !imageFile) {
+      alert("Name, Designation and Image are required");
+      return;
+    }
+
     let imageUrl = "";
 
     if (imageFile) {
@@ -164,6 +169,12 @@ export default function TestimonialControl() {
   };
 
   const handleUpdate = async () => {
+
+    if (!formValues.name || !formValues.designation || !imageFile) {
+      alert("Name, Designation and Image are required");
+      return;
+    }
+
     let imageUrl = preview;
 
     if (imageFile) {
