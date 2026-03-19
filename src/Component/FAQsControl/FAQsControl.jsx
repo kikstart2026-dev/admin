@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styles from "./FAQsControl.module.scss";
 import {
   getFaqs,
@@ -22,7 +22,7 @@ export default function FAQsControl() {
   const [showGet, setShowGet] = useState(false);
   const [showHeadingModal, setShowHeadingModal] = useState(false);
 
-  const [mode, setMode] = useState("create"); // create/update
+  const [mode, setMode] = useState("create");
   const [faqId, setFaqId] = useState(null);
   const [headingId, setHeadingId] = useState(null);
   const [getData, setGetData] = useState(null);
@@ -47,21 +47,26 @@ export default function FAQsControl() {
     },
   });
 
-  // ================= AUTO LOAD HEADING =================
-  useEffect(() => {
-    if (data.length && data[0]?.headingData && !headingId) {
-      setHeadingId(data[0].headingData._id);
-      setHeadingData({
-        tagline: data[0].headingData.tagline || "",
-        heading: data[0].headingData.heading || "",
-        description: data[0].headingData.description || ""
-      });
-    }
-  }, [data]);
+  // ✅ FIX: useQuery instead of useEffect
+  useQuery({
+    queryKey: ["faqHeading"],
+    enabled: data.length > 0 && !headingId,
+    queryFn: async () => {
+      const first = data[0];
+      if (first?.headingData) {
+        setHeadingId(first.headingData._id);
+        setHeadingData({
+          tagline: first.headingData.tagline || "",
+          heading: first.headingData.heading || "",
+          description: first.headingData.description || ""
+        });
+      }
+      return null;
+    },
+  });
 
   const refresh = () => queryClient.invalidateQueries(["faqs"]);
 
-  // ================= TOGGLE =================
   const handleToggle = async (id) => {
     await toggleActiveFaq(id);
     refresh();
@@ -72,6 +77,12 @@ export default function FAQsControl() {
     try {
       if (!headingId) {
         alert("Create heading first");
+        return;
+      }
+
+      // ✅ FIX: answer validation
+      if (!formValues.question || !formValues.answer || formValues.answer.trim() === "") {
+        alert("Quetion and Answer both are required");
         return;
       }
 
@@ -107,14 +118,12 @@ export default function FAQsControl() {
     }
   };
 
-  // ================= DELETE =================
   const handleDelete = async (id) => {
     if (!window.confirm("Delete FAQ?")) return;
     await deleteFaq(id);
     refresh();
   };
 
-  // DELETE SELECTED — **About style** without Promise.all
   const handleBulkDelete = async () => {
     if (selected.length === 0) {
       alert("Select FAQs first");
@@ -133,7 +142,6 @@ export default function FAQsControl() {
     }
   };
 
-  // ================= SELECT =================
   const allSelected = selected.length === data.length && data.length > 0;
 
   const handleSelect = (id) => {
@@ -146,7 +154,6 @@ export default function FAQsControl() {
     setSelected(e.target.checked ? data.map(i => i._id) : []);
   };
 
-  // ================= EDIT =================
   const handleEdit = (item) => {
     setMode("update");
     setFaqId(item._id);
@@ -157,19 +164,18 @@ export default function FAQsControl() {
     setShowForm(true);
   };
 
-  // ================= GET =================
   const handleGet = (item) => {
     setGetData(item);
     setShowGet(true);
   };
 
-  // ================= CLOSE =================
   const closeModal = () => {
     setShowForm(false);
     setShowGet(false);
     setFormValues({ question: "", answer: "" });
     setFaqId(null);
   };
+
 
   return (
     <div className={styles.banner}>
