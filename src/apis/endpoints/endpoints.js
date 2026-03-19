@@ -85,9 +85,23 @@ export const endpoints = {
 
   // FAQ------------------------------------>>
 
-  createFaq: "admin/faq/create",
-  getFaqs: "admin/faq/",
-  updateFaq: (id) => `admin/faq/${id}`,
-  deleteFaq: (id) => `admin/faq/${id}`,
+  createFaq: "/admin/faq/create",
+
+  getFaqs: "/admin/faq",
+
+  getSingleFaq: (id) => `/admin/faq/${id}`,
+
+  updateFaq: (id) => `/admin/faq/${id}`,
+
+  deleteFaq: (id) => `/admin/faq/${id}`,
+
+  // 🔥 TOGGLE ACTIVE
+  toggleFaq: (id) => `/admin/faq/toggle/${id}`,
+
+  // 🔥 BULK DELETE
+  deleteSelectedFaq: "/admin/faq/delete-selected",
+
+  // 🔥 DELETE ALL
+  deleteAllFaq: "/admin/faq/delete-all",
 };
 

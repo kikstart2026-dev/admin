@@ -13,6 +13,9 @@ import {
   createFile
 } from "../../apis/api";
 
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+
 export default function ServiceControl() {
 
   const queryClient = useQueryClient();
@@ -111,6 +114,11 @@ export default function ServiceControl() {
 
   const handleCreate = async () => {
 
+    if (!formValues.title || !imageFile) {
+      alert("Title and Image are required");
+      return;
+    }
+
     let imageUrl = "";
 
     if (imageFile) {
@@ -138,6 +146,10 @@ export default function ServiceControl() {
 
   const handleUpdate = async () => {
 
+    if (!formValues.title || !imageFile) {
+      alert("Title and Image are required");
+      return;
+    }
     let imageUrl = oldImage;
 
     if (imageFile) {
@@ -223,11 +235,15 @@ export default function ServiceControl() {
           </button>
 
           <button
-            className={styles.deleteSelected}
+            className={styles.deleteSelected} // About style delete
             onClick={handleDeleteSelected}
           >
-            <i className="bi bi-trash"></i>{" "}
-            {allSelected ? "ALL" : `(${selected.length}/${services.length})`}
+            <i className="bi bi-trash"></i>
+            {selected.length === 0
+              ? ""
+              : allSelected
+                ? " ALL"
+                : ` (${selected.length}/${services.length})`}
           </button>
 
         </div>
@@ -360,13 +376,36 @@ export default function ServiceControl() {
               }
             />
 
-            <textarea
-              placeholder="Details"
-              value={formValues.details}
-              onChange={(e) =>
-                setFormValues({ ...formValues, details: e.target.value })
-              }
-            />
+            <div className={styles.ck}>
+              <CKEditor
+                editor={ClassicEditor}
+                data={formValues.details}
+                config={{
+                  toolbar: [
+                    "heading",
+                    "|",
+                    "bold",
+                    "italic",
+                    "fontColor",
+                    "fontBackgroundColor",
+                    "|",
+                    "bulletedList",
+                    "numberedList",
+                    "|",
+                    "link",
+                    "undo",
+                    "redo"
+                  ]
+                }}
+                onChange={(event, editor) => {
+                  const data = editor.getData();
+                  setFormValues({
+                    ...formValues,
+                    details: data,
+                  });
+                }}
+              />
+            </div>
 
             <input type="file" onChange={handleImageChange} />
 

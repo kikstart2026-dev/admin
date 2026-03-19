@@ -12,6 +12,9 @@ import {
   createFile,
 } from "../../apis/api";
 
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+
 export default function TestimonialControl() {
   const queryClient = useQueryClient();
 
@@ -134,6 +137,11 @@ export default function TestimonialControl() {
       return;
     }
 
+    if (!formValues.name || !formValues.designation || !imageFile) {
+      alert("Name, Designation and Image are required");
+      return;
+    }
+
     let imageUrl = "";
 
     if (imageFile) {
@@ -161,6 +169,12 @@ export default function TestimonialControl() {
   };
 
   const handleUpdate = async () => {
+
+    if (!formValues.name || !formValues.designation || !imageFile) {
+      alert("Name, Designation and Image are required");
+      return;
+    }
+
     let imageUrl = preview;
 
     if (imageFile) {
@@ -249,11 +263,15 @@ export default function TestimonialControl() {
           </button>
 
           <button
-            className={styles.deleteSelected}
+            className={styles.deleteSelected} // About style delete
             onClick={handleDeleteSelected}
           >
-            <i className="bi bi-trash"></i>{" "}
-            {allSelected ? "ALL" : `(${selected.length}/${cards.length})`}
+            <i className="bi bi-trash"></i>
+            {selected.length === 0
+              ? ""
+              : allSelected
+                ? " ALL"
+                : ` (${selected.length}/${cards.length})`}
           </button>
         </div>
       </div>
@@ -350,13 +368,36 @@ export default function TestimonialControl() {
               }
             />
 
-            <textarea
-              placeholder="Description"
-              value={formValues.description}
-              onChange={(e) =>
-                setFormValues({ ...formValues, description: e.target.value })
-              }
-            />
+            <div className={styles.ck}>
+              <CKEditor
+                editor={ClassicEditor}
+                data={formValues.description}
+                config={{
+                  toolbar: [
+                    "heading",
+                    "|",
+                    "bold",
+                    "italic",
+                    "fontColor",
+                    "fontBackgroundColor",
+                    "|",
+                    "bulletedList",
+                    "numberedList",
+                    "|",
+                    "link",
+                    "undo",
+                    "redo"
+                  ]
+                }}
+                onChange={(event, editor) => {
+                  const data = editor.getData();
+                  setFormValues({
+                    ...formValues,
+                    description: data,
+                  });
+                }}
+              />
+            </div>
 
             <input type="file" onChange={handleImageChange} />
 
