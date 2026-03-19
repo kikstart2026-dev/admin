@@ -99,7 +99,7 @@ export default function HomeBannerControl() {
   const handleCreate = async () => {
 
     // multi validation
-    if (!formValues.tagline && !formValues.heading && !imageFile) {
+    if (!formValues.tagline || !formValues.heading || !imageFile) {
       alert("Tagline, Heading and Image are required"); return;
 
     }
