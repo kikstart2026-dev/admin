@@ -226,11 +226,15 @@ export default function ServiceControl() {
           </button>
 
           <button
-            className={styles.deleteSelected}
+            className={styles.deleteSelected} // About style delete
             onClick={handleDeleteSelected}
           >
-            <i className="bi bi-trash"></i>{" "}
-            {allSelected ? "ALL" : `(${selected.length}/${services.length})`}
+            <i className="bi bi-trash"></i>
+            {selected.length === 0
+              ? ""
+              : allSelected
+                ? " ALL"
+                : ` (${selected.length}/${services.length})`}
           </button>
 
         </div>
@@ -364,34 +368,34 @@ export default function ServiceControl() {
             />
 
             <div className={styles.ck}>
-                <CKEditor
-              editor={ClassicEditor}
-              data={formValues.details}
-              config={{
-                toolbar: [
-                  "heading",
-                  "|",
-                  "bold",
-                  "italic",
-                  "fontColor",
-                  "fontBackgroundColor",
-                  "|",
-                  "bulletedList",
-                  "numberedList",
-                  "|",
-                  "link",
-                  "undo",
-                  "redo"
-                ]
-              }}
-              onChange={(event, editor) => {
-                const data = editor.getData();
-                setFormValues({
-                  ...formValues,
-                  details: data,
-                });
-              }}
-            />
+              <CKEditor
+                editor={ClassicEditor}
+                data={formValues.details}
+                config={{
+                  toolbar: [
+                    "heading",
+                    "|",
+                    "bold",
+                    "italic",
+                    "fontColor",
+                    "fontBackgroundColor",
+                    "|",
+                    "bulletedList",
+                    "numberedList",
+                    "|",
+                    "link",
+                    "undo",
+                    "redo"
+                  ]
+                }}
+                onChange={(event, editor) => {
+                  const data = editor.getData();
+                  setFormValues({
+                    ...formValues,
+                    details: data,
+                  });
+                }}
+              />
             </div>
 
             <input type="file" onChange={handleImageChange} />

@@ -231,11 +231,15 @@ export default function HomeBannerControl() {
           </button>
 
           <button
-            className={styles.deleteSelected}
+            className={styles.deleteSelected} // About style delete
             onClick={handleDeleteSelected}
           >
-            <i className="bi bi-trash"></i>{" "}
-            {allSelected ? "ALL" : `(${selected.length}/${data.length})`}
+            <i className="bi bi-trash"></i>
+            {selected.length === 0
+              ? ""
+              : allSelected
+                ? " ALL"
+                : ` (${selected.length}/${data.length})`}
           </button>
         </div>
       </div>

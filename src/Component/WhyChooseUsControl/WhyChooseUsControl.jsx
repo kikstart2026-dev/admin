@@ -261,11 +261,15 @@ export default function WhyChooseUsControl() {
           </button>
 
           <button
-            className={styles.deleteSelected}
+            className={styles.deleteSelected} // About style delete
             onClick={handleDeleteSelected}
           >
-            <i className="bi bi-trash"></i>{" "}
-            {allSelected ? "ALL" : `(${selected.length}/${cards.length})`}
+            <i className="bi bi-trash"></i>
+            {selected.length === 0
+              ? ""
+              : allSelected
+                ? " ALL"
+                : ` (${selected.length}/${cards.length})`}
           </button>
 
         </div>

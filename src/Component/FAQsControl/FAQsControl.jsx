@@ -211,7 +211,7 @@ export default function FAQsControl() {
         <table className={styles.table}>
           <thead>
             <tr>
-              <th><input type="checkbox" checked={allSelected} onChange={handleSelectAll} /></th>
+              <th><input type="checkbox" checked={allSelected} onChange={handleSelectAll} />{" "}Select All</th>
               <th>Question</th>
               <th>Answer</th>
               <th>Active</th>
