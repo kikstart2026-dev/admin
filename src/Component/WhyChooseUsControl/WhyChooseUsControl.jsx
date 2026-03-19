@@ -126,32 +126,37 @@ export default function WhyChooseUsControl() {
     setPreview(URL.createObjectURL(file));
   };
 
-  const handleCreate = async () => {
+const handleCreate = async () => {
 
-    if (!headingId) {
-      alert("Create heading first");
-      return;
-    }
+  if (!headingId) {
+    alert("Create heading first");
+    return;
+  }
 
-    let imageUrl = "";
+  // ✅ ADD HERE
+  if (!formValues.title || !formValues.color || !imageFile) {
+    alert("Title, Color and Icon are required");
+    return;
+  }
 
-    if (imageFile) {
+  let imageUrl = "";
 
-      const fd = new FormData();
-      fd.append("file", imageFile);
+  if (imageFile) {
+    const fd = new FormData();
+    fd.append("file", imageFile);
 
-      const uploadRes = await createFile(fd);
+    const uploadRes = await createFile(fd);
 
-      imageUrl = "http://localhost:8008" + uploadRes.data[0].path;
-    }
+    imageUrl = "http://localhost:8008" + uploadRes.data[0].path;
+  }
 
-    await createWhyChooseUs({
-      headingId,
-      icon: imageUrl,
-      title: formValues.title,
-      description: formValues.description,
-      color: formValues.color
-    });
+  await createWhyChooseUs({
+    headingId,
+    icon: imageUrl,
+    title: formValues.title,
+    description: formValues.description,
+    color: formValues.color
+  });
 
     alert("Card Created");
 
@@ -161,6 +166,11 @@ export default function WhyChooseUsControl() {
   };
 
   const handleUpdate = async () => {
+
+    if (!formValues.title || !formValues.color || !imageFile) {
+    alert("Title, Color and Icon are required");
+    return;
+  }
 
     let imageUrl = oldImage;
 
