@@ -129,6 +129,11 @@ export default function AboutSectionControl() {
       const headingRes = await createHeading(formValues);
       const newHeadingId = headingRes?.data?._id;
 
+      if (!formValues.tagline || !formValues.heading || !imageFile) {
+        alert("Tagline, Heading and Image are required");
+        return;
+      }
+
       let imageUrl = "";
 
       if (imageFile) {
@@ -173,6 +178,11 @@ export default function AboutSectionControl() {
     try {
 
       await updateHeading(headingId, formValues);
+
+      if (!formValues.title || !formValues.color || !imageFile) {
+        alert("Tagline, Heading and Image are required");
+        return;
+      }
 
       let imageUrl = preview;
 
