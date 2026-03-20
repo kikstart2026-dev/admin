@@ -145,7 +145,7 @@ export default function ServiceControl() {
   };
 
   const handleUpdate = async () => {
-    
+
     let imageUrl = oldImage;
 
     if (imageFile) {
@@ -481,27 +481,43 @@ export default function ServiceControl() {
       {/* View Modal */}
 
       {showGet && getData && (
-
         <div className={styles.modal}>
-
           <div className={styles.modalContent}>
-
             <h4>View Service</h4>
 
-            <img src={getData.image} alt="" width="120" />
+            <table>
+              <tbody>
+                <tr>
+                  <th>Image</th>
+                  <td>
+                    <img src={getData.image} alt="" />
+                  </td>
+                </tr>
 
-            <p><strong>Title:</strong> {getData.title}</p>
+                <tr>
+                  <th>Title</th>
+                  <td>{getData.title}</td>
+                </tr>
 
-            <p><strong>Details:</strong> {getData.details}</p>
+                <tr>
+                  <th>Details</th>
+                  <td
+                    dangerouslySetInnerHTML={{
+                      __html: getData.details,
+                    }}
+                  />
+                </tr>
+              </tbody>
+            </table>
 
-            <div className={styles.modalActions}>
-              <button onClick={() => setShowGet(false)}>Close</button>
-            </div>
-
+            <button
+              className={styles.closeBtn}
+              onClick={() => setShowGet(false)}
+            >
+              Close
+            </button>
           </div>
-
         </div>
-
       )}
 
     </div>
