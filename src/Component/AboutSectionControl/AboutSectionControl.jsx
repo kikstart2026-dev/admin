@@ -179,11 +179,6 @@ export default function AboutSectionControl() {
 
       await updateHeading(headingId, formValues);
 
-      if (!formValues.title || !formValues.color || !imageFile) {
-        alert("Tagline, Heading and Image are required");
-        return;
-      }
-
       let imageUrl = preview;
 
       if (imageFile) {

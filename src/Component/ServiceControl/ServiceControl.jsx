@@ -145,11 +145,7 @@ export default function ServiceControl() {
   };
 
   const handleUpdate = async () => {
-
-    if (!formValues.title || !imageFile) {
-      alert("Title and Image are required");
-      return;
-    }
+    
     let imageUrl = oldImage;
 
     if (imageFile) {

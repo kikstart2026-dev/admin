@@ -104,44 +104,6 @@ export default function HomeBannerControl() {
 
     }
 
-
-    // if (formValues.tagline && formValues.heading) {
-    //   alert("Image are required"); return;
-
-    // }
-
-    
-    // //  separate validation
-
-    //   if (formValues.tagline) {
-    //   alert("Heading and Image are required"); return;
-
-    // }
-
-    //    if (formValues.heading) {
-    //   alert("Tagline and Image are required"); return;
-
-    // }
-    //    if (imageFile) {
-    //   alert("Tagline and Heading are required"); return;
-
-    // }
-
-    // if (!formValues.tagline) {
-    //   alert("Tagline is required");
-    //   return;
-    // }
-
-    // if (!formValues.heading) {
-    //   alert("Heading is required");
-    //   return;
-    // }
-
-    // if (!imageFile) {
-    //   alert("Image is required");
-    //   return;
-    // }
-
     try {
       const headingRes = await createHeading(formValues);
       const newHeadingId = headingRes?.data?._id;
@@ -177,15 +139,6 @@ export default function HomeBannerControl() {
     }
   };
   const handleUpdate = async () => {
-    if (!formValues.tagline) {
-      alert("Tagline is required");
-      return;
-    }
-
-    if (!formValues.heading) {
-      alert("Heading is required");
-      return;
-    }
 
     try {
       await updateHeading(headingId, formValues);

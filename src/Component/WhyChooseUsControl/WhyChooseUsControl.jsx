@@ -167,11 +167,6 @@ const handleCreate = async () => {
 
   const handleUpdate = async () => {
 
-    if (!formValues.title || !formValues.color || !imageFile) {
-    alert("Title, Color and Icon are required");
-    return;
-  }
-
     let imageUrl = oldImage;
 
     if (imageFile) {

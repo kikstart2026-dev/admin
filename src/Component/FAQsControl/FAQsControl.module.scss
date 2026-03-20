@@ -301,6 +301,20 @@ textarea {
 /* CKEditor focus border color */
 
 :global(.ck.ck-editor__main>.ck-editor__editable:focus) {
-  border: 1px solid #ED1C24 !important;
-  box-shadow: 0 0 0 1px #ED1C24 !important;
+  border: 1px solid #ED1C24;
+  box-shadow: 0 0 0 1px #ED1C24;
+}
+
+:global(.faq-desc ul) {
+  list-style: disc;
+  padding-left: 20px ;
+}
+
+:global(.faq-desc ol) {
+  list-style: decimal;
+  padding-left: 20px ;
+}
+
+:global(.faq-desc li) {
+  margin-bottom: 5px;
 }

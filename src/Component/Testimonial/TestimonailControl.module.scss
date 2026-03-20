@@ -284,3 +284,16 @@ textarea {
 margin-bottom: 15px;
 // border-radius: 15px;
 }
+:global(.ck-content ul) {
+  list-style: disc;
+  padding-left: 20px ;
+}
+
+:global(.ck-content ol) {
+  list-style: decimal;
+  padding-left: 20px;
+}
+
+:global(.ck-content li) {
+  margin-bottom: 5px;
+}
