@@ -461,23 +461,32 @@ export default function TestimonialControl() {
           <div className={styles.modalContent}>
             <h4>View Card</h4>
 
-            <img src={getData.image} alt="" width="120" />
+            <table>
+              <tbody>
+                <tr>
+                  <th>Image</th>
+                  <td>
+                    <img src={getData.image} alt="" />
+                  </td>
+                </tr>
 
-            <p>
-              <strong>Name:</strong> {getData.name}
-            </p>
+                <tr>
+                  <th>Name</th>
+                  <td>{getData.name}</td>
+                </tr>
 
-            <p>
-              <strong>Designation:</strong> {getData.designation}
-            </p>
+                <tr>
+                  <th>Designation</th>
+                  <td>{getData.designation}</td>
+                </tr>
 
-            <p>
-              <strong>Description:</strong> {getData.description}
-            </p>
-
-            <div className={styles.modalActions}>
-              <button onClick={() => setShowGet(false)}>Close</button>
-            </div>
+                <tr>
+                  <th>Description</th>
+                  <td dangerouslySetInnerHTML={{ __html: getData.description }}></td>
+                </tr>
+              </tbody>
+            </table>
+              <button className={styles.closeBtn}onClick={() => setShowGet(false)}>Close</button>
           </div>
         </div>
       )}
