@@ -15,6 +15,8 @@ import {
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
+import { handleSuccess , handleError } from "../../utils";
+
 export default function TestimonialControl() {
   const queryClient = useQueryClient();
 
@@ -90,7 +92,7 @@ export default function TestimonialControl() {
 
   const handleDeleteSelected = async () => {
     if (selected.length === 0) {
-      alert("Select cards first");
+      handleError("Select cards first");
       return;
     }
 
@@ -107,12 +109,12 @@ export default function TestimonialControl() {
     try {
       if (headingId) {
         await updateHeading(headingId, headingData);
-        alert("Heading Updated");
+        handleSuccess("Heading Updated");
       } else {
         const res = await createHeading(headingData);
         setHeadingId(res?.data?._id);
 
-        alert("Heading Created");
+        handleSuccess("Heading Created");
       }
 
       fetchData();
@@ -133,12 +135,12 @@ export default function TestimonialControl() {
 
   const handleCreate = async () => {
     if (!headingId) {
-      alert("Create heading first");
+      handleError("Create heading first");
       return;
     }
 
     if (!formValues.name || !formValues.designation || !imageFile) {
-      alert("Name, Designation and Image are required");
+      handleError("Name, Designation and Image are required");
       return;
     }
 
@@ -161,7 +163,7 @@ export default function TestimonialControl() {
       description: formValues.description,
     });
 
-    alert("Card Created");
+    handleSuccess("Card Created");
 
     setShowForm(false);
 
@@ -189,7 +191,7 @@ export default function TestimonialControl() {
       description: formValues.description,
     });
 
-    alert("Card Updated");
+    handleSuccess("Card Updated");
 
     setShowForm(false);
 

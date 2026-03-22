@@ -15,6 +15,7 @@ import {
 
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import { handleSuccess , handleError } from "../../utils";
 
 export default function ServiceControl() {
 
@@ -89,7 +90,7 @@ export default function ServiceControl() {
   const handleDeleteSelected = async () => {
 
     if (selected.length === 0) {
-      alert("Select services first");
+      handleError("Select services first");
       return;
     }
 
@@ -115,7 +116,7 @@ export default function ServiceControl() {
   const handleCreate = async () => {
 
     if (!formValues.title || !imageFile) {
-      alert("Title and Image are required");
+      handleError("Title and Image are required");
       return;
     }
 
@@ -138,7 +139,7 @@ export default function ServiceControl() {
       details: formValues.details
     });
 
-    alert("Service Created");
+    handleSuccess("Service Created");
 
     setShowForm(false);
     fetchData();
@@ -165,7 +166,7 @@ export default function ServiceControl() {
       details: formValues.details
     });
 
-    alert("Service Updated");
+    handleSuccess("Service Updated");
 
     setShowForm(false);
     fetchData();
@@ -189,7 +190,7 @@ export default function ServiceControl() {
       setHeadingId(res?.data?._id);
     }
 
-    alert("Heading Saved");
+    handleSuccess("Heading Saved");
 
     setShowHeadingModal(false);
     fetchData();

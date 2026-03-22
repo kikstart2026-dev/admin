@@ -6,6 +6,9 @@ import Dashboard from './Pages/Dashboard/Dashboard';
 import About from './Pages/About/About';
 import Contact from './Pages/Contact/Contact';
 
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 function Layout() {
 
   const location = useLocation();
@@ -36,7 +39,15 @@ function App() {
   return (
     <div className="App">
       <Router>
+        <ToastContainer
+            position="top-center"
+            toastClassName="center-toast"
+            bodyClassName="center-toast-body"
+            closeOnClick={false}
+            draggable={false}
+          />
         <Layout />
+
       </Router>
     </div>
   );

@@ -15,6 +15,7 @@ import {
 
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import { handleSuccess , handleError } from "../../utils";
 
 export default function WhyChooseUsControl() {
 
@@ -89,7 +90,7 @@ export default function WhyChooseUsControl() {
   const handleDeleteSelected = async () => {
 
     if (selected.length === 0) {
-      alert("Select cards first");
+      handleError("Select cards first");
       return;
     }
 
@@ -106,11 +107,11 @@ export default function WhyChooseUsControl() {
 
     if (headingId) {
       await updateHeading(headingId, headingData);
-      alert("Heading Updated");
+      handleSuccess("Heading Updated");
     } else {
       const res = await createHeading(headingData);
       setHeadingId(res?.data?._id);
-      alert("Heading Created");
+      handleSuccess("Heading Created");
     }
 
     fetchData();
@@ -129,13 +130,13 @@ export default function WhyChooseUsControl() {
 const handleCreate = async () => {
 
   if (!headingId) {
-    alert("Create heading first");
+    handleError("Create heading first");
     return;
   }
 
   // ✅ ADD HERE
   if (!formValues.title || !formValues.color || !imageFile) {
-    alert("Title, Color and Icon are required");
+    handleError("Title, Color and Icon are required");
     return;
   }
 
@@ -158,7 +159,7 @@ const handleCreate = async () => {
     color: formValues.color
   });
 
-    alert("Card Created");
+    handleSuccess("Card Created");
 
     setShowForm(false);
 
@@ -187,7 +188,7 @@ const handleCreate = async () => {
       color: formValues.color
     });
 
-    alert("Card Updated");
+    handleSuccess("Card Updated");
 
     setShowForm(false);
 

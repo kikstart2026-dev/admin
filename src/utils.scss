@@ -1,0 +1,84 @@
+.toast-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    p {
+        width: 600;
+        font-size: 16px;
+    }
+
+    // span {
+    //     margin-right: 10px;
+    // }
+
+    p.error_P {
+        color: #ED1C24;
+    }
+
+    .success_p {
+        color: rgb(60, 218, 100);
+    }
+}
+
+.toast-error {
+    width: 100%;
+    background-color: #fdf5f5;
+    box-shadow: 0px 10px 10px #5d4a4a7a;
+}
+
+
+.toast-success {
+    width: 100%;
+    background-color: #f0fef4;
+    box-shadow: 0px 10px 10px #4a5d567a;
+}
+
+.Toastify__close-button>svg {
+    display: none;
+}
+
+.Toastify__progress-bar--error {
+    background: #ED1C24;
+}
+
+
+.toast-confirm {
+    text-align: center;
+    width: 100%;
+    background-color: rgb(255, 254, 240);
+    box-shadow: 0px 10px 10px #5d5d4a7a;
+}
+
+.confirm_p {
+    margin: 10px 0;
+    color: #000000;
+    font-weight: 600;
+}
+
+.confirm-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-confirm {
+    background: #1fb04d;
+      font-weight: 600;
+    color: #fff;
+    border: none;
+    padding: 6px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-left: 15px;
+}
+
+.btn-cancel {
+    background: #ED1C24;
+      font-weight: 600;
+    border: none;
+    padding: 6px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #ffffff;
+}

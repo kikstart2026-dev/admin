@@ -17,6 +17,7 @@ import {
 
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import { handleSuccess , handleError } from "../../utils";
 
 export default function AboutSectionControl() {
 
@@ -79,7 +80,7 @@ export default function AboutSectionControl() {
   const handleDeleteSelected = async () => {
 
     if (selected.length === 0) {
-      alert("Select About first");
+      handleError("Select About first");
       return;
     }
 
@@ -130,7 +131,7 @@ export default function AboutSectionControl() {
       const newHeadingId = headingRes?.data?._id;
 
       if (!formValues.tagline || !formValues.heading || !imageFile) {
-        alert("Tagline, Heading and Image are required");
+        handleError("Tagline, Heading and Image are required");
         return;
       }
 
@@ -158,7 +159,7 @@ export default function AboutSectionControl() {
         await toggleActiveAboutSection(newAboutId);
       }
 
-      alert("About Created Successfully");
+      handleSuccess("About Created Successfully");
 
       setShowForm(false);
 
@@ -197,7 +198,7 @@ export default function AboutSectionControl() {
         image: imageUrl,
       });
 
-      alert("About Updated Successfully");
+      handleSuccess("About Updated Successfully");
 
       setShowForm(false);
 

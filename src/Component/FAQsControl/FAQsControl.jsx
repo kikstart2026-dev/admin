@@ -13,6 +13,7 @@ import {
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import { handleSuccess , handleError } from "../../utils";
 
 export default function FAQsControl() {
   const queryClient = useQueryClient();
@@ -76,22 +77,22 @@ export default function FAQsControl() {
   const handleSubmit = async () => {
     try {
       if (!headingId) {
-        alert("Create heading first");
+        handleError("Create heading first");
         return;
       }
 
       // ✅ FIX: answer validation
       if (!formValues.question || !formValues.answer || formValues.answer.trim() === "") {
-        alert("Quetion and Answer both are required");
+        handleError("Quetion and Answer both are required");
         return;
       }
 
       if (mode === "create") {
         await createFaq({ ...formValues, headingId });
-        alert("FAQ Created");
+        handleSuccess("FAQ Created");
       } else {
         await updateFaq(faqId, { ...formValues, headingId });
-        alert("FAQ Updated");
+        handleSuccess("FAQ Updated");
       }
 
       closeModal();
@@ -106,11 +107,11 @@ export default function FAQsControl() {
     try {
       if (headingId) {
         await updateHeading(headingId, headingData);
-        alert("Heading Updated");
+        handleSuccess("Heading Updated");
       } else {
         const res = await createHeading(headingData);
         setHeadingId(res?.data?._id);
-        alert("Heading Created");
+        handleSuccess("Heading Created");
       }
       refresh();
     } catch (err) {
@@ -126,7 +127,7 @@ export default function FAQsControl() {
 
   const handleBulkDelete = async () => {
     if (selected.length === 0) {
-      alert("Select FAQs first");
+      handleError("Select FAQs first");
       return;
     }
     if (!window.confirm("Delete selected FAQs?")) return;
