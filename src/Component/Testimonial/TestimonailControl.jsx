@@ -12,6 +12,11 @@ import {
   createFile,
 } from "../../apis/api";
 
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+
+import { handleSuccess , handleError } from "../../utils";
+
 export default function TestimonialControl() {
   const queryClient = useQueryClient();
 
@@ -87,7 +92,7 @@ export default function TestimonialControl() {
 
   const handleDeleteSelected = async () => {
     if (selected.length === 0) {
-      alert("Select cards first");
+      handleError("Select cards first");
       return;
     }
 
@@ -104,12 +109,12 @@ export default function TestimonialControl() {
     try {
       if (headingId) {
         await updateHeading(headingId, headingData);
-        alert("Heading Updated");
+        handleSuccess("Heading Updated");
       } else {
         const res = await createHeading(headingData);
         setHeadingId(res?.data?._id);
 
-        alert("Heading Created");
+        handleSuccess("Heading Created");
       }
 
       fetchData();
@@ -130,7 +135,12 @@ export default function TestimonialControl() {
 
   const handleCreate = async () => {
     if (!headingId) {
-      alert("Create heading first");
+      handleError("Create heading first");
+      return;
+    }
+
+    if (!formValues.name || !formValues.designation || !imageFile) {
+      handleError("Name, Designation and Image are required");
       return;
     }
 
@@ -153,7 +163,7 @@ export default function TestimonialControl() {
       description: formValues.description,
     });
 
-    alert("Card Created");
+    handleSuccess("Card Created");
 
     setShowForm(false);
 
@@ -161,6 +171,7 @@ export default function TestimonialControl() {
   };
 
   const handleUpdate = async () => {
+
     let imageUrl = preview;
 
     if (imageFile) {
@@ -180,7 +191,7 @@ export default function TestimonialControl() {
       description: formValues.description,
     });
 
-    alert("Card Updated");
+    handleSuccess("Card Updated");
 
     setShowForm(false);
 
@@ -249,11 +260,15 @@ export default function TestimonialControl() {
           </button>
 
           <button
-            className={styles.deleteSelected}
+            className={styles.deleteSelected} // About style delete
             onClick={handleDeleteSelected}
           >
-            <i className="bi bi-trash"></i>{" "}
-            {allSelected ? "ALL" : `(${selected.length}/${cards.length})`}
+            <i className="bi bi-trash"></i>
+            {selected.length === 0
+              ? ""
+              : allSelected
+                ? " ALL"
+                : ` (${selected.length}/${cards.length})`}
           </button>
         </div>
       </div>
@@ -350,13 +365,36 @@ export default function TestimonialControl() {
               }
             />
 
-            <textarea
-              placeholder="Description"
-              value={formValues.description}
-              onChange={(e) =>
-                setFormValues({ ...formValues, description: e.target.value })
-              }
-            />
+            <div className={styles.ck}>
+              <CKEditor
+                editor={ClassicEditor}
+                data={formValues.description}
+                config={{
+                  toolbar: [
+                    "heading",
+                    "|",
+                    "bold",
+                    "italic",
+                    "fontColor",
+                    "fontBackgroundColor",
+                    "|",
+                    "bulletedList",
+                    "numberedList",
+                    "|",
+                    "link",
+                    "undo",
+                    "redo"
+                  ]
+                }}
+                onChange={(event, editor) => {
+                  const data = editor.getData();
+                  setFormValues({
+                    ...formValues,
+                    description: data,
+                  });
+                }}
+              />
+            </div>
 
             <input type="file" onChange={handleImageChange} />
 
@@ -425,23 +463,32 @@ export default function TestimonialControl() {
           <div className={styles.modalContent}>
             <h4>View Card</h4>
 
-            <img src={getData.image} alt="" width="120" />
+            <table>
+              <tbody>
+                <tr>
+                  <th>Image</th>
+                  <td>
+                    <img src={getData.image} alt="" />
+                  </td>
+                </tr>
 
-            <p>
-              <strong>Name:</strong> {getData.name}
-            </p>
+                <tr>
+                  <th>Name</th>
+                  <td>{getData.name}</td>
+                </tr>
 
-            <p>
-              <strong>Designation:</strong> {getData.designation}
-            </p>
+                <tr>
+                  <th>Designation</th>
+                  <td>{getData.designation}</td>
+                </tr>
 
-            <p>
-              <strong>Description:</strong> {getData.description}
-            </p>
-
-            <div className={styles.modalActions}>
-              <button onClick={() => setShowGet(false)}>Close</button>
-            </div>
+                <tr>
+                  <th>Description</th>
+                  <td dangerouslySetInnerHTML={{ __html: getData.description }}></td>
+                </tr>
+              </tbody>
+            </table>
+              <button className={styles.closeBtn}onClick={() => setShowGet(false)}>Close</button>
           </div>
         </div>
       )}

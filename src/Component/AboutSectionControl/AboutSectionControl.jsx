@@ -15,6 +15,10 @@ import {
   createFile,
 } from "../../apis/api";
 
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import { handleSuccess , handleError } from "../../utils";
+
 export default function AboutSectionControl() {
 
   const queryClient = useQueryClient();
@@ -42,12 +46,13 @@ export default function AboutSectionControl() {
   /* ================= FETCH ================= */
 
   const { data = [], isLoading } = useQuery({
-  queryKey: ["aboutSection"],
-  queryFn: async () => {
-    const res = await getAllAboutSection();
-    return res?.data?.data || res?.data || [];
-  },
-});
+    queryKey: ["aboutSection"],
+    queryFn: async () => {
+      const res = await getAllAboutSection();
+      return res?.data?.data || res?.data || [];
+    },
+  });
+
   const refresh = () => {
     queryClient.invalidateQueries(["aboutSection"]);
   };
@@ -75,7 +80,7 @@ export default function AboutSectionControl() {
   const handleDeleteSelected = async () => {
 
     if (selected.length === 0) {
-      alert("Select About first");
+      handleError("Select About first");
       return;
     }
 
@@ -120,11 +125,15 @@ export default function AboutSectionControl() {
   /* ================= CREATE ================= */
 
   const handleCreate = async () => {
-
     try {
 
       const headingRes = await createHeading(formValues);
       const newHeadingId = headingRes?.data?._id;
+
+      if (!formValues.tagline || !formValues.heading || !imageFile) {
+        handleError("Tagline, Heading and Image are required");
+        return;
+      }
 
       let imageUrl = "";
 
@@ -139,20 +148,28 @@ export default function AboutSectionControl() {
 
       }
 
-      await createAboutSection({
+      const aboutRes = await createAboutSection({
         headingId: newHeadingId,
         image: "http://localhost:8008" + imageUrl,
       });
 
-      alert("About Created Successfully");
+      const newAboutId = aboutRes?.data?._id;
+
+      if (newAboutId) {
+        await toggleActiveAboutSection(newAboutId);
+      }
+
+      handleSuccess("About Created Successfully");
 
       setShowForm(false);
+
+      setImageFile(null);
+
       refresh();
 
     } catch (err) {
       console.log(err);
     }
-
   };
 
   /* ================= UPDATE ================= */
@@ -181,7 +198,7 @@ export default function AboutSectionControl() {
         image: imageUrl,
       });
 
-      alert("About Updated Successfully");
+      handleSuccess("About Updated Successfully");
 
       setShowForm(false);
 
@@ -243,20 +260,16 @@ export default function AboutSectionControl() {
 
   };
 
-  /* ================= ACTIVE FIX ================= */
+  /* ================= ACTIVE ================= */
 
   const toggleActive = async (id) => {
-  try {
-
-    await toggleActiveAboutSection(id);
-
-    await queryClient.invalidateQueries(["aboutSection"]);
-
-  } catch (err) {
-    console.log(err);
-  }
-};
-
+    try {
+      await toggleActiveAboutSection(id);
+      refresh();
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   if (isLoading) return <p>Loading...</p>;
 
@@ -266,7 +279,7 @@ export default function AboutSectionControl() {
 
       <div className={styles.bannerWrap}>
 
-        <h3 className={styles.title}>Control About Section</h3>
+        <h3 className={styles.title}>Control As You Want</h3>
 
         <div className={styles.topActions}>
 
@@ -295,7 +308,11 @@ export default function AboutSectionControl() {
             onClick={handleDeleteSelected}
           >
             <i className="bi bi-trash"></i>
-            {allSelected ? " ALL" : ` (${selected.length})`}
+            {selected.length === 0
+              ? ""
+              : allSelected
+                ? " ALL"
+                : ` (${selected.length}/${data.length})`}
           </button>
 
         </div>
@@ -395,8 +412,6 @@ export default function AboutSectionControl() {
 
       </div>
 
-      {/* FORM MODAL */}
-
       {showForm && (
 
         <div className={styles.modal}>
@@ -422,13 +437,37 @@ export default function AboutSectionControl() {
               value={formValues.heading}
               onChange={handleChange}
             />
+            <div className={styles.ck}>
+              <CKEditor
+                editor={ClassicEditor}
+                data={formValues.description}
+                config={{
+                  toolbar: [
+                    "heading",
+                    "|",
+                    "bold",
+                    "italic",
+                    "fontColor",
+                    "fontBackgroundColor",
+                    "|",
+                    "bulletedList",
+                    "numberedList",
+                    "|",
+                    "link",
+                    "undo",
+                    "redo"
+                  ]
+                }}
+                onChange={(event, editor) => {
+                  const data = editor.getData();
+                  setFormValues({
+                    ...formValues,
+                    description: data,
+                  });
+                }}
+              />
+            </div>
 
-            <textarea
-              name="description"
-              placeholder="Description"
-              value={formValues.description}
-              onChange={handleChange}
-            />
 
             <input type="file" onChange={handleImageChange} />
 
@@ -458,8 +497,6 @@ export default function AboutSectionControl() {
 
       )}
 
-      {/* GET MODAL */}
-
       {showGet && getData && (
 
         <div className={styles.modal}>
@@ -468,11 +505,26 @@ export default function AboutSectionControl() {
 
             <h4>About Details</h4>
 
-            <p><b>Tagline:</b> {getData.headingData?.tagline}</p>
+            <div className={styles.detailRow}>
+              <span className={styles.label}>Tagline</span>
+              <span className={styles.value}>{getData.headingData?.tagline}</span>
+            </div>
 
-            <p><b>Heading:</b> {getData.headingData?.heading}</p>
+            <div className={styles.detailRow}>
+              <span className={styles.label}>Heading</span>
+              <span className={styles.value}>{getData.headingData?.heading}</span>
+            </div>
 
-            <p><b>Description:</b> {getData.headingData?.description}</p>
+            <div className={styles.descriptionBlock}>
+              <span className={styles.label}>Description</span>
+
+              <div
+                className={styles.descriptionText}
+                dangerouslySetInnerHTML={{
+                  __html: getData.headingData?.description,
+                }}
+              ></div>
+            </div>
 
             <img src={getData.image} width="200" alt="" />
 

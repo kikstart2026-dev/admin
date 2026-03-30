@@ -12,15 +12,19 @@ import {
   selectiveDeleteHomeBanner,
   toggleActiveBanner,
 } from "../../apis/api";
+
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+
 import "../../Main.scss";
+import { handleConfirm, handleError, handleSuccess } from "../../utils";
 
 export default function HomeBannerControl() {
-  const queryClient = useQueryClient();
-
+  const queryClient = useQueryClient(); // catch control and data refresh
   const [selected, setSelected] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [showGet, setShowGet] = useState(false);
-  const [mode, setMode] = useState("create");
+  const [mode, setMode] = useState("create"); // create and update mode control
   const [bannerId, setBannerId] = useState(null);
   const [headingId, setHeadingId] = useState(null);
   const [preview, setPreview] = useState("");
@@ -31,27 +35,19 @@ export default function HomeBannerControl() {
     tagline: "",
     heading: "",
     description: "",
-  });
-
-  // ==============================
-  // FETCH BANNERS
-  // ==============================
+  }); // form data store 
 
   const { data = [], isLoading } = useQuery({
     queryKey: ["homeBanners"],
     queryFn: async () => {
       const res = await getAllHomeBanner();
-      return res?.data?.data || res?.data || [];
+      return res?.data?.data || res?.data || []; // for safe data fetch
     },
   });
 
   const fetchBanner = () => {
     queryClient.invalidateQueries(["homeBanners"]);
-  };
-
-  // ==============================
-  // SELECT LOGIC
-  // ==============================
+  }; // refresh data
 
   const allSelected = selected.length === data.length && data.length > 0;
 
@@ -70,7 +66,7 @@ export default function HomeBannerControl() {
 
   const handleDeleteSelected = async () => {
     if (selected.length === 0) {
-      alert("Select banners first");
+      handleError("Select banners first");
       return;
     }
 
@@ -78,18 +74,12 @@ export default function HomeBannerControl() {
 
     try {
       await selectiveDeleteHomeBanner({ ids: selected });
-
       setSelected([]);
-
       fetchBanner();
     } catch (err) {
       console.error(err);
     }
   };
-
-  // ==============================
-  // FORM INPUT
-  // ==============================
 
   const handleChange = (e) => {
     setFormValues({
@@ -104,29 +94,28 @@ export default function HomeBannerControl() {
     if (!file) return;
 
     setImageFile(file);
-
     setPreview(URL.createObjectURL(file));
   };
 
-  // ==============================
-  // CREATE
-  // ==============================
-
   const handleCreate = async () => {
+
+    // multi validation
+    if (!formValues.tagline || !formValues.heading || !imageFile) {
+      handleError("Tagline, Heading and Image are required"); return;
+
+    }
+
     try {
       const headingRes = await createHeading(formValues);
-
       const newHeadingId = headingRes?.data?._id;
 
       let imageUrl = "";
 
       if (imageFile) {
         const fd = new FormData();
-
         fd.append("file", imageFile);
 
         const uploadRes = await createFile(fd);
-
         imageUrl = uploadRes.data[0].path;
       }
 
@@ -141,23 +130,17 @@ export default function HomeBannerControl() {
         await toggleActiveBanner(newBannerId);
       }
 
-      alert("Banner Created Successfully");
+      handleSuccess("Banner Created Successfully");
 
       setShowForm(false);
-
       setImageFile(null);
-
       fetchBanner();
     } catch (err) {
       console.error(err);
     }
   };
-
-  // ==============================
-  // UPDATE
-  // ==============================
-
   const handleUpdate = async () => {
+
     try {
       await updateHeading(headingId, formValues);
 
@@ -165,11 +148,9 @@ export default function HomeBannerControl() {
 
       if (imageFile) {
         const fd = new FormData();
-
         fd.append("file", imageFile);
 
         const uploadRes = await createFile(fd);
-
         imageUrl = "http://localhost:8008" + uploadRes.data[0].path;
       }
 
@@ -178,45 +159,45 @@ export default function HomeBannerControl() {
         image: imageUrl,
       });
 
-      alert("Banner Updated Successfully");
+      handleSuccess("Banner Updated Successfully");
 
       setShowForm(false);
-
       setImageFile(null);
-
       fetchBanner();
     } catch (err) {
       console.error(err);
     }
   };
 
-  // ==============================
-  // DELETE
-  // ==============================
+  // const handleDelete = async (id) => {
+  //   if (!window.confirm("Delete Banner?")) return;
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Delete Banner?")) return;
+  //   try {
+  //     await singleDeleteHomeBanner(id);
+  //     fetchBanner();
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
 
+const handleDelete = (id) => {
+  handleConfirm("Delete Banner?", async () => {
     try {
       await singleDeleteHomeBanner(id);
-
+      handleSuccess("Banner deleted successfully ✅");
       fetchBanner();
     } catch (err) {
       console.error(err);
+      handleError("Failed to delete banner ❌");
     }
-  };
-
-  // ==============================
-  // EDIT
-  // ==============================
+  });
+};
 
   const handleEdit = (item) => {
     setMode("update");
-
     setShowForm(true);
 
     setBannerId(item._id);
-
     setHeadingId(item.headingData._id);
 
     setFormValues({
@@ -226,28 +207,17 @@ export default function HomeBannerControl() {
     });
 
     setPreview(item.image);
-
     setImageFile(null);
   };
 
-  // ==============================
-  // GET
-  // ==============================
-
   const handleGet = (item) => {
     setGetData(item);
-
     setShowGet(true);
   };
-
-  // ==============================
-  // TOGGLE ACTIVE
-  // ==============================
 
   const toggleActive = async (id) => {
     try {
       await toggleActiveBanner(id);
-
       fetchBanner();
     } catch (err) {
       console.error(err);
@@ -266,7 +236,6 @@ export default function HomeBannerControl() {
             className={styles.createBtn}
             onClick={() => {
               setMode("create");
-
               setShowForm(true);
 
               setFormValues({
@@ -276,7 +245,6 @@ export default function HomeBannerControl() {
               });
 
               setPreview("");
-
               setImageFile(null);
             }}
           >
@@ -284,16 +252,18 @@ export default function HomeBannerControl() {
           </button>
 
           <button
-            className={styles.deleteSelected}
+            className={styles.deleteSelected} // About style delete
             onClick={handleDeleteSelected}
           >
-            <i className="bi bi-trash"></i>{" "}
-            {allSelected ? "ALL" : `(${selected.length}/${data.length})`}
+            <i className="bi bi-trash"></i>
+            {selected.length === 0
+              ? ""
+              : allSelected
+                ? " ALL"
+                : ` (${selected.length}/${data.length})`}
           </button>
         </div>
       </div>
-
-      {/* TABLE */}
 
       <div className={styles.tableWrap}>
         <table className={styles.table}>
@@ -310,13 +280,9 @@ export default function HomeBannerControl() {
               </th>
 
               <th>Image</th>
-
               <th>Tagline</th>
-
               <th>Heading</th>
-
               <th>Active</th>
-
               <th>Action</th>
             </tr>
           </thead>
@@ -351,7 +317,6 @@ export default function HomeBannerControl() {
                   </td>
 
                   <td>{item?.headingData?.tagline || "No tagline"}</td>
-
                   <td>{item?.headingData?.heading || "No Heading"}</td>
 
                   <td>
@@ -388,8 +353,6 @@ export default function HomeBannerControl() {
         </table>
       </div>
 
-      {/* FORM */}
-
       {showForm && (
         <div className={styles.modal}>
           <div className={styles.modalContent}>
@@ -401,6 +364,7 @@ export default function HomeBannerControl() {
               name="tagline"
               value={formValues.tagline}
               onChange={handleChange}
+
             />
 
             <input
@@ -409,14 +373,41 @@ export default function HomeBannerControl() {
               name="heading"
               value={formValues.heading}
               onChange={handleChange}
+
             />
 
-            <textarea
-              placeholder="Description"
-              name="description"
-              value={formValues.description}
-              onChange={handleChange}
-            />
+            <div className={styles.ck}>
+              <CKEditor
+                editor={ClassicEditor}
+                data={formValues.description}
+                className={styles.ckdes}
+                config={{
+                  toolbar: [
+                    "heading",
+                    "|",
+                    "bold",
+                    "italic",
+                    "fontColor",
+                    "fontBackgroundColor",
+                    "|",
+                    "bulletedList",
+                    "numberedList",
+                    "|",
+                    "link",
+                    "undo",
+                    "redo"
+                  ]
+                }}
+                onChange={(event, editor) => {
+                  const data = editor.getData();
+                  setFormValues({
+                    ...formValues,
+                    description: data,
+                  });
+                }}
+              />
+            </div>
+
 
             <input type="file" onChange={handleImageChange} />
 
@@ -435,8 +426,6 @@ export default function HomeBannerControl() {
         </div>
       )}
 
-      {/* GET MODAL */}
-
       {showGet && getData && (
         <div className={styles.modal}>
           <div className={styles.modalContent}>
@@ -446,25 +435,25 @@ export default function HomeBannerControl() {
               <tbody>
                 <tr>
                   <th>Tagline</th>
-
                   <td>{getData.headingData.tagline}</td>
                 </tr>
 
                 <tr>
                   <th>Heading</th>
-
                   <td>{getData.headingData.heading}</td>
                 </tr>
 
                 <tr>
                   <th>Description</th>
-
-                  <td>{getData.headingData.description}</td>
+                  <td
+                    dangerouslySetInnerHTML={{
+                      __html: getData.headingData.description,
+                    }}
+                  ></td>
                 </tr>
 
                 <tr>
                   <th>Image</th>
-
                   <td>
                     <img src={getData.image} alt="" />
                   </td>

@@ -13,6 +13,10 @@ import {
   createFile
 } from "../../apis/api";
 
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import { handleSuccess , handleError } from "../../utils";
+
 export default function ServiceControl() {
 
   const queryClient = useQueryClient();
@@ -86,7 +90,7 @@ export default function ServiceControl() {
   const handleDeleteSelected = async () => {
 
     if (selected.length === 0) {
-      alert("Select services first");
+      handleError("Select services first");
       return;
     }
 
@@ -111,6 +115,11 @@ export default function ServiceControl() {
 
   const handleCreate = async () => {
 
+    if (!formValues.title || !imageFile) {
+      handleError("Title and Image are required");
+      return;
+    }
+
     let imageUrl = "";
 
     if (imageFile) {
@@ -130,7 +139,7 @@ export default function ServiceControl() {
       details: formValues.details
     });
 
-    alert("Service Created");
+    handleSuccess("Service Created");
 
     setShowForm(false);
     fetchData();
@@ -157,7 +166,7 @@ export default function ServiceControl() {
       details: formValues.details
     });
 
-    alert("Service Updated");
+    handleSuccess("Service Updated");
 
     setShowForm(false);
     fetchData();
@@ -181,7 +190,7 @@ export default function ServiceControl() {
       setHeadingId(res?.data?._id);
     }
 
-    alert("Heading Saved");
+    handleSuccess("Heading Saved");
 
     setShowHeadingModal(false);
     fetchData();
@@ -194,7 +203,7 @@ export default function ServiceControl() {
 
       <div className={styles.bannerWrap}>
 
-        <h3 className={styles.title}>Service Control</h3>
+        <h3 className={styles.title}>Control As You Want</h3>
 
         <div className={styles.topActions}>
 
@@ -223,11 +232,15 @@ export default function ServiceControl() {
           </button>
 
           <button
-            className={styles.deleteSelected}
+            className={styles.deleteSelected} // About style delete
             onClick={handleDeleteSelected}
           >
-            <i className="bi bi-trash"></i>{" "}
-            {allSelected ? "ALL" : `(${selected.length}/${services.length})`}
+            <i className="bi bi-trash"></i>
+            {selected.length === 0
+              ? ""
+              : allSelected
+                ? " ALL"
+                : ` (${selected.length}/${services.length})`}
           </button>
 
         </div>
@@ -360,13 +373,36 @@ export default function ServiceControl() {
               }
             />
 
-            <textarea
-              placeholder="Details"
-              value={formValues.details}
-              onChange={(e) =>
-                setFormValues({ ...formValues, details: e.target.value })
-              }
-            />
+            <div className={styles.ck}>
+              <CKEditor
+                editor={ClassicEditor}
+                data={formValues.details}
+                config={{
+                  toolbar: [
+                    "heading",
+                    "|",
+                    "bold",
+                    "italic",
+                    "fontColor",
+                    "fontBackgroundColor",
+                    "|",
+                    "bulletedList",
+                    "numberedList",
+                    "|",
+                    "link",
+                    "undo",
+                    "redo"
+                  ]
+                }}
+                onChange={(event, editor) => {
+                  const data = editor.getData();
+                  setFormValues({
+                    ...formValues,
+                    details: data,
+                  });
+                }}
+              />
+            </div>
 
             <input type="file" onChange={handleImageChange} />
 
@@ -446,27 +482,43 @@ export default function ServiceControl() {
       {/* View Modal */}
 
       {showGet && getData && (
-
         <div className={styles.modal}>
-
           <div className={styles.modalContent}>
-
             <h4>View Service</h4>
 
-            <img src={getData.image} alt="" width="120" />
+            <table>
+              <tbody>
+                <tr>
+                  <th>Image</th>
+                  <td>
+                    <img src={getData.image} alt="" />
+                  </td>
+                </tr>
 
-            <p><strong>Title:</strong> {getData.title}</p>
+                <tr>
+                  <th>Title</th>
+                  <td>{getData.title}</td>
+                </tr>
 
-            <p><strong>Details:</strong> {getData.details}</p>
+                <tr>
+                  <th>Details</th>
+                  <td
+                    dangerouslySetInnerHTML={{
+                      __html: getData.details,
+                    }}
+                  />
+                </tr>
+              </tbody>
+            </table>
 
-            <div className={styles.modalActions}>
-              <button onClick={() => setShowGet(false)}>Close</button>
-            </div>
-
+            <button
+              className={styles.closeBtn}
+              onClick={() => setShowGet(false)}
+            >
+              Close
+            </button>
           </div>
-
         </div>
-
       )}
 
     </div>

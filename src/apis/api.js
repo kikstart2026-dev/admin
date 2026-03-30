@@ -384,26 +384,70 @@ export const delAllTest = async () => {
 
 /* ================================ FAQ APIs ================================ */
 
-// ✅ Create FAQ
+
+// ==========================
+// ✅ CREATE FAQ
+// ==========================
 export const createFaq = async (payload) => {
-    const res = await axiosInstance.post(endpoints.createFaq, payload);
-    return res.data;
+  const res = await axiosInstance.post(endpoints.createFaq, payload);
+  return res.data;
 };
 
-// ✅ Get All FAQs
+// ==========================
+// ✅ GET ALL FAQs
+// ==========================
 export const getFaqs = async () => {
-    const res = await axiosInstance.get(endpoints.getFaqs);
-    return res.data;
+  const res = await axiosInstance.get(endpoints.getFaqs);
+  return res.data;
 };
 
-// ✅ Update FAQ
+// ==========================
+// ✅ GET SINGLE FAQ
+// ==========================
+export const getSingleFaq = async (id) => {
+  const res = await axiosInstance.get(endpoints.getSingleFaq(id));
+  return res.data;
+};
+
+// ==========================
+// ✅ UPDATE FAQ
+// ==========================
 export const updateFaq = async (id, payload) => {
-    const res = await axiosInstance.put(endpoints.updateFaq(id), payload);
-    return res.data;
+  const res = await axiosInstance.put(endpoints.updateFaq(id), payload);
+  return res.data;
 };
 
-// ✅ Delete FAQ
+// ==========================
+// ✅ TOGGLE ACTIVE FAQ 🔥
+// ==========================
+export const toggleActiveFaq = async (id) => {
+  const res = await axiosInstance.patch(endpoints.toggleFaq(id));
+  return res.data;
+};
+
+// ==========================
+// ✅ DELETE SINGLE FAQ
+// ==========================
 export const deleteFaq = async (id) => {
-    const res = await axiosInstance.delete(endpoints.deleteFaq(id));
-    return res.data;
+  const res = await axiosInstance.delete(endpoints.deleteFaq(id));
+  return res.data;
+};
+
+// ==========================
+// ✅ SELECTIVE DELETE FAQ
+// ==========================
+export const selectiveDeleteFaq = async (payload) => {
+  const res = await axiosInstance.post(
+    endpoints.deleteSelectedFaq,
+    payload
+  );
+  return res.data;
+};
+
+// ==========================
+// ✅ DELETE ALL FAQ
+// ==========================
+export const deleteAllFaq = async () => {
+  const res = await axiosInstance.delete(endpoints.deleteAllFaq);
+  return res.data;
 };

@@ -13,6 +13,10 @@ import {
   createFile
 } from "../../apis/api";
 
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import { handleSuccess , handleError } from "../../utils";
+
 export default function WhyChooseUsControl() {
 
   const queryClient = useQueryClient();
@@ -86,7 +90,7 @@ export default function WhyChooseUsControl() {
   const handleDeleteSelected = async () => {
 
     if (selected.length === 0) {
-      alert("Select cards first");
+      handleError("Select cards first");
       return;
     }
 
@@ -103,11 +107,11 @@ export default function WhyChooseUsControl() {
 
     if (headingId) {
       await updateHeading(headingId, headingData);
-      alert("Heading Updated");
+      handleSuccess("Heading Updated");
     } else {
       const res = await createHeading(headingData);
       setHeadingId(res?.data?._id);
-      alert("Heading Created");
+      handleSuccess("Heading Created");
     }
 
     fetchData();
@@ -123,34 +127,39 @@ export default function WhyChooseUsControl() {
     setPreview(URL.createObjectURL(file));
   };
 
-  const handleCreate = async () => {
+const handleCreate = async () => {
 
-    if (!headingId) {
-      alert("Create heading first");
-      return;
-    }
+  if (!headingId) {
+    handleError("Create heading first");
+    return;
+  }
 
-    let imageUrl = "";
+  // ✅ ADD HERE
+  if (!formValues.title || !formValues.color || !imageFile) {
+    handleError("Title, Color and Icon are required");
+    return;
+  }
 
-    if (imageFile) {
+  let imageUrl = "";
 
-      const fd = new FormData();
-      fd.append("file", imageFile);
+  if (imageFile) {
+    const fd = new FormData();
+    fd.append("file", imageFile);
 
-      const uploadRes = await createFile(fd);
+    const uploadRes = await createFile(fd);
 
-      imageUrl = "http://localhost:8008" + uploadRes.data[0].path;
-    }
+    imageUrl = "http://localhost:8008" + uploadRes.data[0].path;
+  }
 
-    await createWhyChooseUs({
-      headingId,
-      icon: imageUrl,
-      title: formValues.title,
-      description: formValues.description,
-      color: formValues.color
-    });
+  await createWhyChooseUs({
+    headingId,
+    icon: imageUrl,
+    title: formValues.title,
+    description: formValues.description,
+    color: formValues.color
+  });
 
-    alert("Card Created");
+    handleSuccess("Card Created");
 
     setShowForm(false);
 
@@ -179,7 +188,7 @@ export default function WhyChooseUsControl() {
       color: formValues.color
     });
 
-    alert("Card Updated");
+    handleSuccess("Card Updated");
 
     setShowForm(false);
 
@@ -258,11 +267,15 @@ export default function WhyChooseUsControl() {
           </button>
 
           <button
-            className={styles.deleteSelected}
+            className={styles.deleteSelected} // About style delete
             onClick={handleDeleteSelected}
           >
-            <i className="bi bi-trash"></i>{" "}
-            {allSelected ? "ALL" : `(${selected.length}/${cards.length})`}
+            <i className="bi bi-trash"></i>
+            {selected.length === 0
+              ? ""
+              : allSelected
+                ? " ALL"
+                : ` (${selected.length}/${cards.length})`}
           </button>
 
         </div>
@@ -362,7 +375,6 @@ export default function WhyChooseUsControl() {
 
       </div>
 
-
       {/* Create / Update Modal */}
 
       {showForm && (
@@ -382,13 +394,36 @@ export default function WhyChooseUsControl() {
               }
             />
 
-            <textarea
-              placeholder="Description"
-              value={formValues.description}
-              onChange={(e) =>
-                setFormValues({ ...formValues, description: e.target.value })
-              }
-            />
+            <div className={styles.ck}>
+              <CKEditor
+                editor={ClassicEditor}
+                data={formValues.description}
+                config={{
+                  toolbar: [
+                    "heading",
+                    "|",
+                    "bold",
+                    "italic",
+                    "fontColor",
+                    "fontBackgroundColor",
+                    "|",
+                    "bulletedList",
+                    "numberedList",
+                    "|",
+                    "link",
+                    "undo",
+                    "redo"
+                  ]
+                }}
+                onChange={(event, editor) => {
+                  const data = editor.getData();
+                  setFormValues({
+                    ...formValues,
+                    description: data
+                  });
+                }}
+              />
+            </div>
 
             <input
               type="text"
@@ -401,7 +436,7 @@ export default function WhyChooseUsControl() {
 
             <input type="file" onChange={handleImageChange} />
 
-            {preview && <img src={preview} alt="" width="120" />}
+            {preview && <img src={preview} alt="" width="100" />}
 
             <div className={styles.modalActions}>
 
@@ -447,12 +482,33 @@ export default function WhyChooseUsControl() {
               }
             />
 
-            <textarea
-              placeholder="Description"
-              value={headingData.description}
-              onChange={(e) =>
-                setHeadingData({ ...headingData, description: e.target.value })
-              }
+            <CKEditor
+              editor={ClassicEditor}
+              data={headingData.description}
+              config={{
+                toolbar: [
+                  "heading",
+                  "|",
+                  "bold",
+                  "italic",
+                  "fontColor",
+                  "fontBackgroundColor",
+                  "|",
+                  "bulletedList",
+                  "numberedList",
+                  "|",
+                  "link",
+                  "undo",
+                  "redo"
+                ]
+              }}
+              onChange={(event, editor) => {
+                const data = editor.getData();
+                setHeadingData({
+                  ...headingData,
+                  description: data
+                });
+              }}
             />
 
             <div className={styles.modalActions}>
@@ -479,29 +535,55 @@ export default function WhyChooseUsControl() {
       {/* View Modal */}
 
       {showGet && getData && (
-
         <div className={styles.modal}>
-
           <div className={styles.modalContent}>
 
             <h4>View Card</h4>
 
-            <img src={getData.icon} alt="" width="120" />
+            <table>
+              <tbody>
 
-            <p><strong>Title:</strong> {getData.title}</p>
+                <tr>
+                  <th>Icon</th>
+                  <td>
+                    <img src={getData.icon} alt="" />
+                  </td>
+                </tr>
 
-            <p><strong>Description:</strong> {getData.description}</p>
+                <tr>
+                  <th>Title</th>
+                  <td>{getData.title}</td>
+                </tr>
 
-            <p><strong>Color:</strong> {getData.color}</p>
+                <tr>
+                  <th>Description</th>
+                  <td dangerouslySetInnerHTML={{ __html: getData.description }}></td>
+                </tr>
 
-            <div className={styles.modalActions}>
-              <button onClick={() => setShowGet(false)}>Close</button>
-            </div>
+                <tr>
+                  <th>Color</th>
+                  <td>
+                    <div
+                      className={styles.colorBox}
+                      style={{ background: getData.color }}
+                    >
+                      {getData.color}
+                    </div>
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+
+            <button
+              className={styles.closeBtn}
+              onClick={() => setShowGet(false)}
+            >
+              Close
+            </button>
 
           </div>
-
         </div>
-
       )}
 
     </div>

@@ -85,14 +85,26 @@ textarea {
 
 .actions button:nth-child(1) {
     background: #3b82f6;
+
+    &:hover {
+    background: #2563eb;
+  }
 }
 
 .actions button:nth-child(2) {
     background: #10b981;
+
+    &:hover {
+    background: #059669;
+  }
 }
 
 .actions button:nth-child(3) {
     background: #ef4444;
+
+    &:hover {
+    background: #dc2626;
+  }
 }
 
 .modal {
@@ -105,6 +117,8 @@ textarea {
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
 }
 
 .modalContent {
@@ -149,6 +163,7 @@ textarea {
             color: #fff;
             cursor: pointer;
             background-color: #ED1C24;
+            margin-top: 15px;
         }
 
         button:nth-child(1) {
@@ -161,4 +176,90 @@ textarea {
 .modalContent textarea:focus {
   border-color: #ED1C24;
   outline: none;
+}
+
+.modalContent {
+
+  table {
+    width: 100%;
+    margin: 25px 0;
+
+    th {
+      font-weight: 600;
+      font-size: 16px;
+      padding: 8px;
+    }
+
+    td {
+      padding: 8px;
+      font-size: 14px;
+
+      img {
+        width: 50px;
+      }
+    }
+  }
+
+  .closeBtn {
+    margin-right: 8px;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: white;
+    font-weight: 500;
+    transition: 0.3s ease;
+    background-color: #ED1C24;
+  }
+
+}
+
+.colorBox{
+  padding: 6px 14px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* CKEditor fixed height */
+
+:global(.ck-editor__editable_inline) {
+  min-height: 120px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+/* CKEditor focus border color */
+
+:global(.ck.ck-editor__main>.ck-editor__editable:focus) {
+  border: 1px solid #ED1C24 !important;
+  box-shadow: 0 0 0 1px #ED1C24 !important;
+}
+.ck{
+margin-bottom: 15px;
+// border-radius: 15px;
+}
+:global(.ck-content ul) {
+  list-style: disc;
+  padding-left: 20px ;
+}
+
+:global(.ck-content ol) {
+  list-style: decimal;
+  padding-left: 20px;
+}
+
+:global(.ck-content li) {
+  margin-bottom: 5px;
 }
