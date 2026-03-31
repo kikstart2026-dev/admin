@@ -15,9 +15,9 @@ import {
   createFile,
 } from "../../apis/api";
 
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import { handleSuccess , handleError } from "../../utils";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
+import { handleSuccess, handleError, handleWarning } from "../../utils";
 
 export default function AboutSectionControl() {
 
@@ -52,6 +52,31 @@ export default function AboutSectionControl() {
       return res?.data?.data || res?.data || [];
     },
   });
+   const modules = {
+  toolbar: [
+    // FONT + SIZE
+    [{ font: [] }, { size: [] }],
+
+    // HEADINGS
+    [{ header: [1, 2, 3, false] }],
+
+    // TEXT STYLE
+    ["bold", "italic", "underline", "strike"],
+
+    // COLOR
+    [{ color: [] }, { background: [] }],
+
+    // LIST + ALIGN
+    [{ list: "ordered" }, { list: "bullet" }],
+    [{ align: [] }],
+
+    // LINK
+    ["link"],
+
+    // CLEAN
+    ["clean"],
+  ],
+};
 
   const refresh = () => {
     queryClient.invalidateQueries(["aboutSection"]);
@@ -80,7 +105,7 @@ export default function AboutSectionControl() {
   const handleDeleteSelected = async () => {
 
     if (selected.length === 0) {
-      handleError("Select About first");
+      handleWarning("Select About first");
       return;
     }
 
@@ -438,33 +463,16 @@ export default function AboutSectionControl() {
               onChange={handleChange}
             />
             <div className={styles.ck}>
-              <CKEditor
-                editor={ClassicEditor}
-                data={formValues.description}
-                config={{
-                  toolbar: [
-                    "heading",
-                    "|",
-                    "bold",
-                    "italic",
-                    "fontColor",
-                    "fontBackgroundColor",
-                    "|",
-                    "bulletedList",
-                    "numberedList",
-                    "|",
-                    "link",
-                    "undo",
-                    "redo"
-                  ]
-                }}
-                onChange={(event, editor) => {
-                  const data = editor.getData();
+              <ReactQuill
+                theme="snow"
+                value={formValues.description}
+                onChange={(value) =>
                   setFormValues({
                     ...formValues,
-                    description: data,
-                  });
-                }}
+                    description: value,
+                  })
+                }
+                modules={modules}
               />
             </div>
 

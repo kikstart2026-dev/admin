@@ -33,6 +33,15 @@ export const handleSuccess = (message) => {
   );
 };
 
+export const handleWarning = (message) => {
+  toast.warning(
+    <div className="toast-content">
+      <p className="warning_p">{message}</p>
+    </div>,
+    { ...config, className: "toast-warning" }
+  );
+};
+
 
 export const handleConfirm = (message, onConfirm) => {
   toast.warning(

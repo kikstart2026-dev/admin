@@ -4,13 +4,9 @@
     justify-content: space-between;
 
     p {
-        width: 600;
         font-size: 16px;
+        margin: 0;
     }
-
-    // span {
-    //     margin-right: 10px;
-    // }
 
     p.error_P {
         color: #ED1C24;
@@ -19,30 +15,56 @@
     .success_p {
         color: rgb(60, 218, 100);
     }
+
+    .warning_p {
+        color: #f59e0b;
+        font-weight: 500;
+    }
 }
 
+/* 🔴 ERROR */
 .toast-error {
     width: 100%;
     background-color: #fdf5f5;
     box-shadow: 0px 10px 10px #5d4a4a7a;
+    border-left: 4px solid #ED1C24;
 }
 
-
+/* 🟢 SUCCESS */
 .toast-success {
     width: 100%;
     background-color: #f0fef4;
     box-shadow: 0px 10px 10px #4a5d567a;
+    border-left: 4px solid rgb(60, 218, 100);
 }
 
-.Toastify__close-button>svg {
+/* 🟡 WARNING */
+.toast-warning {
+    width: 100%;
+    background-color: #fffbed;
+    box-shadow: 0px 10px 10px #5d5a4a7a;
+    border-left: 4px solid #f59e0b;
+}
+
+/* ❌ close icon hide */
+.Toastify__close-button > svg {
     display: none;
 }
 
+/* progress bar colors */
 .Toastify__progress-bar--error {
     background: #ED1C24;
 }
 
+.Toastify__progress-bar--success {
+    background: rgb(60, 218, 100);
+}
 
+.Toastify__progress-bar--warning {
+    background: #f59e0b;
+}
+
+/* ✅ CONFIRM (already thik chilo, just keep) */
 .toast-confirm {
     text-align: center;
     width: 100%;
@@ -64,7 +86,7 @@
 
 .btn-confirm {
     background: #1fb04d;
-      font-weight: 600;
+    font-weight: 600;
     color: #fff;
     border: none;
     padding: 6px 15px;
@@ -75,7 +97,7 @@
 
 .btn-cancel {
     background: #ED1C24;
-      font-weight: 600;
+    font-weight: 600;
     border: none;
     padding: 6px 15px;
     border-radius: 6px;

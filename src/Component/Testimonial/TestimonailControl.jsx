@@ -12,10 +12,9 @@ import {
   createFile,
 } from "../../apis/api";
 
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-
-import { handleSuccess , handleError } from "../../utils";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
+import { handleSuccess, handleError } from "../../utils";
 
 export default function TestimonialControl() {
   const queryClient = useQueryClient();
@@ -56,6 +55,31 @@ export default function TestimonialControl() {
       return res?.data || {};
     },
   });
+   const modules = {
+  toolbar: [
+    // FONT + SIZE
+    [{ font: [] }, { size: [] }],
+
+    // HEADINGS
+    [{ header: [1, 2, 3, false] }],
+
+    // TEXT STYLE
+    ["bold", "italic", "underline", "strike"],
+
+    // COLOR
+    [{ color: [] }, { background: [] }],
+
+    // LIST + ALIGN
+    [{ list: "ordered" }, { list: "bullet" }],
+    [{ align: [] }],
+
+    // LINK
+    ["link"],
+
+    // CLEAN
+    ["clean"],
+  ],
+};
 
   useEffect(() => {
     setCards(data.cards || []);
@@ -366,33 +390,16 @@ export default function TestimonialControl() {
             />
 
             <div className={styles.ck}>
-              <CKEditor
-                editor={ClassicEditor}
-                data={formValues.description}
-                config={{
-                  toolbar: [
-                    "heading",
-                    "|",
-                    "bold",
-                    "italic",
-                    "fontColor",
-                    "fontBackgroundColor",
-                    "|",
-                    "bulletedList",
-                    "numberedList",
-                    "|",
-                    "link",
-                    "undo",
-                    "redo"
-                  ]
-                }}
-                onChange={(event, editor) => {
-                  const data = editor.getData();
+              <ReactQuill
+                theme="snow"
+                value={formValues.description}
+                onChange={(value) =>
                   setFormValues({
                     ...formValues,
-                    description: data,
-                  });
-                }}
+                    description: value,
+                  })
+                }
+                modules={modules}
               />
             </div>
 
@@ -488,7 +495,7 @@ export default function TestimonialControl() {
                 </tr>
               </tbody>
             </table>
-              <button className={styles.closeBtn}onClick={() => setShowGet(false)}>Close</button>
+            <button className={styles.closeBtn} onClick={() => setShowGet(false)}>Close</button>
           </div>
         </div>
       )}
