@@ -10,10 +10,10 @@ import {
   updateHeading
 } from "../../apis/api";
 
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import { handleSuccess , handleError } from "../../utils";
+import { handleSuccess, handleError } from "../../utils";
 
 export default function FAQsControl() {
   const queryClient = useQueryClient();
@@ -47,6 +47,31 @@ export default function FAQsControl() {
       return res?.data || [];
     },
   });
+  const modules = {
+    toolbar: [
+      // FONT + SIZE
+      [{ font: [] }, { size: [] }],
+
+      // HEADINGS
+      [{ header: [1, 2, 3, false] }],
+
+      // TEXT STYLE
+      ["bold", "italic", "underline", "strike"],
+
+      // COLOR
+      [{ color: [] }, { background: [] }],
+
+      // LIST + ALIGN
+      [{ list: "ordered" }, { list: "bullet" }],
+      [{ align: [] }],
+
+      // LINK
+      ["link"],
+
+      // CLEAN
+      ["clean"],
+    ],
+  };
 
   // ✅ FIX: useQuery instead of useEffect
   useQuery({
@@ -274,13 +299,16 @@ export default function FAQsControl() {
               }
             />
 
-            <CKEditor
-              editor={ClassicEditor}
-              data={formValues.answer}
-              config={{ placeholder: "Write answer here..." }}
-              onChange={(event, editor) =>
-                setFormValues({ ...formValues, answer: editor.getData() })
+            <ReactQuill
+              theme="snow"
+              value={formValues.answer}
+              onChange={(value) =>
+                setFormValues({
+                  ...formValues,
+                  answer: value,
+                })
               }
+              modules={modules}
             />
 
             <div className={styles.modalActions}>

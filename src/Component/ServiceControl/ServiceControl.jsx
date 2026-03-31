@@ -13,9 +13,9 @@ import {
   createFile
 } from "../../apis/api";
 
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import { handleSuccess , handleError } from "../../utils";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
+import { handleSuccess, handleError } from "../../utils";
 
 export default function ServiceControl() {
 
@@ -54,6 +54,31 @@ export default function ServiceControl() {
       return res || {};
     }
   });
+  const modules = {
+    toolbar: [
+      // FONT + SIZE
+      [{ font: [] }, { size: [] }],
+
+      // HEADINGS
+      [{ header: [1, 2, 3, false] }],
+
+      // TEXT STYLE
+      ["bold", "italic", "underline", "strike"],
+
+      // COLOR
+      [{ color: [] }, { background: [] }],
+
+      // LIST + ALIGN
+      [{ list: "ordered" }, { list: "bullet" }],
+      [{ align: [] }],
+
+      // LINK
+      ["link"],
+
+      // CLEAN
+      ["clean"],
+    ],
+  };
 
   const services = data.data || [];
 
@@ -373,36 +398,17 @@ export default function ServiceControl() {
               }
             />
 
-            <div className={styles.ck}>
-              <CKEditor
-                editor={ClassicEditor}
-                data={formValues.details}
-                config={{
-                  toolbar: [
-                    "heading",
-                    "|",
-                    "bold",
-                    "italic",
-                    "fontColor",
-                    "fontBackgroundColor",
-                    "|",
-                    "bulletedList",
-                    "numberedList",
-                    "|",
-                    "link",
-                    "undo",
-                    "redo"
-                  ]
-                }}
-                onChange={(event, editor) => {
-                  const data = editor.getData();
-                  setFormValues({
-                    ...formValues,
-                    details: data,
-                  });
-                }}
-              />
-            </div>
+            <ReactQuill
+              theme="snow"
+              value={formValues.details}
+              onChange={(value) =>
+                setFormValues({
+                  ...formValues,
+                  details: value,
+                })
+              }
+              modules={modules}
+            />
 
             <input type="file" onChange={handleImageChange} />
 

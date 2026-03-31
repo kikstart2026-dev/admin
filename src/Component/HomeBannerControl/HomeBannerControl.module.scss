@@ -281,36 +281,34 @@ textarea {
   }
 }
 
-/* CKEditor fixed height */
-
-:global(.ck-editor__editable_inline) {
+:global(.ql-container) {
   min-height: 120px;
   max-height: 120px;
   overflow-y: auto;
+  border-radius: 8px;
 }
 
-/* CKEditor focus border color */
-
-:global(.ck.ck-editor__main>.ck-editor__editable:focus) {
-  border: 1px solid #ED1C24 !important;
-  box-shadow: 0 0 0 1px #ED1C24 !important;
-  
-}
-.ck{
-margin-bottom: 15px;
-// border-radius: 15px;
+:global(.ql-toolbar) {
+  border-radius: 8px 8px 0 0;
 }
 
-// :global(.ck-content ul) {
-//   list-style: disc;
-//   padding-left: 20px ;
-// }
+:global(.ql-container.ql-snow) {
+  border: 1px solid #ddd;
+}
 
-// :global(.ck-content ol) {
-//   list-style: decimal;
-//   padding-left: 20px;
-// }
+:global(.ql-editor:focus) {
+  border-color: #ED1C24;
+}
 
-// :global(.ck-content li) {
-//   margin-bottom: 5px;
-// }
+/* FONT FAMILY FIX */
+:global(.ql-font-serif) {
+  font-family: Georgia, serif;
+}
+
+:global(.ql-font-monospace) {
+  font-family: "Courier New", monospace;
+}
+
+:global(.ql-font-sans-serif) {
+  font-family: Arial, sans-serif;
+}
