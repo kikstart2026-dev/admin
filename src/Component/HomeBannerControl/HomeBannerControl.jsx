@@ -13,10 +13,10 @@ import {
   toggleActiveBanner,
 } from "../../apis/api";
 
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
 import "../../Main.scss";
+import { handleConfirm, handleError, handleSuccess } from "../../utils";
 
 export default function HomeBannerControl() {
   const queryClient = useQueryClient(); // catch control and data refresh
@@ -43,6 +43,31 @@ export default function HomeBannerControl() {
       return res?.data?.data || res?.data || []; // for safe data fetch
     },
   });
+ const modules = {
+  toolbar: [
+    // FONT + SIZE
+    [{ font: [] }, { size: [] }],
+
+    // HEADINGS
+    [{ header: [1, 2, 3, false] }],
+
+    // TEXT STYLE
+    ["bold", "italic", "underline", "strike"],
+
+    // COLOR
+    [{ color: [] }, { background: [] }],
+
+    // LIST + ALIGN
+    [{ list: "ordered" }, { list: "bullet" }],
+    [{ align: [] }],
+
+    // LINK
+    ["link"],
+
+    // CLEAN
+    ["clean"],
+  ],
+};
 
   const fetchBanner = () => {
     queryClient.invalidateQueries(["homeBanners"]);
@@ -65,7 +90,7 @@ export default function HomeBannerControl() {
 
   const handleDeleteSelected = async () => {
     if (selected.length === 0) {
-      alert("Select banners first");
+      handleError("Select banners first");
       return;
     }
 
@@ -100,7 +125,7 @@ export default function HomeBannerControl() {
 
     // multi validation
     if (!formValues.tagline || !formValues.heading || !imageFile) {
-      alert("Tagline, Heading and Image are required"); return;
+      handleError("Tagline, Heading and Image are required"); return;
 
     }
 
@@ -129,7 +154,7 @@ export default function HomeBannerControl() {
         await toggleActiveBanner(newBannerId);
       }
 
-      alert("Banner Created Successfully");
+      handleSuccess("Banner Created Successfully");
 
       setShowForm(false);
       setImageFile(null);
@@ -158,7 +183,7 @@ export default function HomeBannerControl() {
         image: imageUrl,
       });
 
-      alert("Banner Updated Successfully");
+      handleSuccess("Banner Updated Successfully");
 
       setShowForm(false);
       setImageFile(null);
@@ -168,15 +193,28 @@ export default function HomeBannerControl() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Delete Banner?")) return;
+  // const handleDelete = async (id) => {
+  //   if (!window.confirm("Delete Banner?")) return;
 
-    try {
-      await singleDeleteHomeBanner(id);
-      fetchBanner();
-    } catch (err) {
-      console.error(err);
-    }
+  //   try {
+  //     await singleDeleteHomeBanner(id);
+  //     fetchBanner();
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
+
+  const handleDelete = (id) => {
+    handleConfirm("Delete Banner?", async () => {
+      try {
+        await singleDeleteHomeBanner(id);
+        handleSuccess("Banner deleted successfully ✅");
+        fetchBanner();
+      } catch (err) {
+        console.error(err);
+        handleError("Failed to delete banner ❌");
+      }
+    });
   };
 
   const handleEdit = (item) => {
@@ -363,34 +401,16 @@ export default function HomeBannerControl() {
             />
 
             <div className={styles.ck}>
-              <CKEditor
-                editor={ClassicEditor}
-                data={formValues.description}
-                className={styles.ckdes}
-                config={{
-                  toolbar: [
-                    "heading",
-                    "|",
-                    "bold",
-                    "italic",
-                    "fontColor",
-                    "fontBackgroundColor",
-                    "|",
-                    "bulletedList",
-                    "numberedList",
-                    "|",
-                    "link",
-                    "undo",
-                    "redo"
-                  ]
-                }}
-                onChange={(event, editor) => {
-                  const data = editor.getData();
+              <ReactQuill
+                theme="snow"
+                value={formValues.description}
+                onChange={(value) =>
                   setFormValues({
                     ...formValues,
-                    description: data,
-                  });
-                }}
+                    description: value,
+                  })
+                }
+                modules={modules}
               />
             </div>
 

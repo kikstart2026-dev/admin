@@ -13,8 +13,9 @@ import {
   createFile
 } from "../../apis/api";
 
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
+import { handleSuccess, handleError } from "../../utils";
 
 export default function WhyChooseUsControl() {
 
@@ -55,6 +56,31 @@ export default function WhyChooseUsControl() {
       return res?.data || {};
     }
   });
+   const modules = {
+  toolbar: [
+    // FONT + SIZE
+    [{ font: [] }, { size: [] }],
+
+    // HEADINGS
+    [{ header: [1, 2, 3, false] }],
+
+    // TEXT STYLE
+    ["bold", "italic", "underline", "strike"],
+
+    // COLOR
+    [{ color: [] }, { background: [] }],
+
+    // LIST + ALIGN
+    [{ list: "ordered" }, { list: "bullet" }],
+    [{ align: [] }],
+
+    // LINK
+    ["link"],
+
+    // CLEAN
+    ["clean"],
+  ],
+};
 
   const cards = data.cards || [];
 
@@ -89,7 +115,7 @@ export default function WhyChooseUsControl() {
   const handleDeleteSelected = async () => {
 
     if (selected.length === 0) {
-      alert("Select cards first");
+      handleError("Select cards first");
       return;
     }
 
@@ -106,11 +132,11 @@ export default function WhyChooseUsControl() {
 
     if (headingId) {
       await updateHeading(headingId, headingData);
-      alert("Heading Updated");
+      handleSuccess("Heading Updated");
     } else {
       const res = await createHeading(headingData);
       setHeadingId(res?.data?._id);
-      alert("Heading Created");
+      handleSuccess("Heading Created");
     }
 
     fetchData();
@@ -126,39 +152,39 @@ export default function WhyChooseUsControl() {
     setPreview(URL.createObjectURL(file));
   };
 
-const handleCreate = async () => {
+  const handleCreate = async () => {
 
-  if (!headingId) {
-    alert("Create heading first");
-    return;
-  }
+    if (!headingId) {
+      handleError("Create heading first");
+      return;
+    }
 
-  // ✅ ADD HERE
-  if (!formValues.title || !formValues.color || !imageFile) {
-    alert("Title, Color and Icon are required");
-    return;
-  }
+    // ✅ ADD HERE
+    if (!formValues.title || !formValues.color || !imageFile) {
+      handleError("Title, Color and Icon are required");
+      return;
+    }
 
-  let imageUrl = "";
+    let imageUrl = "";
 
-  if (imageFile) {
-    const fd = new FormData();
-    fd.append("file", imageFile);
+    if (imageFile) {
+      const fd = new FormData();
+      fd.append("file", imageFile);
 
-    const uploadRes = await createFile(fd);
+      const uploadRes = await createFile(fd);
 
-    imageUrl = "http://localhost:8008" + uploadRes.data[0].path;
-  }
+      imageUrl = "http://localhost:8008" + uploadRes.data[0].path;
+    }
 
-  await createWhyChooseUs({
-    headingId,
-    icon: imageUrl,
-    title: formValues.title,
-    description: formValues.description,
-    color: formValues.color
-  });
+    await createWhyChooseUs({
+      headingId,
+      icon: imageUrl,
+      title: formValues.title,
+      description: formValues.description,
+      color: formValues.color
+    });
 
-    alert("Card Created");
+    handleSuccess("Card Created");
 
     setShowForm(false);
 
@@ -187,7 +213,7 @@ const handleCreate = async () => {
       color: formValues.color
     });
 
-    alert("Card Updated");
+    handleSuccess("Card Updated");
 
     setShowForm(false);
 
@@ -394,33 +420,16 @@ const handleCreate = async () => {
             />
 
             <div className={styles.ck}>
-              <CKEditor
-                editor={ClassicEditor}
-                data={formValues.description}
-                config={{
-                  toolbar: [
-                    "heading",
-                    "|",
-                    "bold",
-                    "italic",
-                    "fontColor",
-                    "fontBackgroundColor",
-                    "|",
-                    "bulletedList",
-                    "numberedList",
-                    "|",
-                    "link",
-                    "undo",
-                    "redo"
-                  ]
-                }}
-                onChange={(event, editor) => {
-                  const data = editor.getData();
+              <ReactQuill
+                theme="snow"
+                value={formValues.description}
+                onChange={(value) =>
                   setFormValues({
                     ...formValues,
-                    description: data
-                  });
-                }}
+                    description: value,
+                  })
+                }
+                modules={modules}
               />
             </div>
 
@@ -481,34 +490,18 @@ const handleCreate = async () => {
               }
             />
 
-            <CKEditor
-              editor={ClassicEditor}
-              data={headingData.description}
-              config={{
-                toolbar: [
-                  "heading",
-                  "|",
-                  "bold",
-                  "italic",
-                  "fontColor",
-                  "fontBackgroundColor",
-                  "|",
-                  "bulletedList",
-                  "numberedList",
-                  "|",
-                  "link",
-                  "undo",
-                  "redo"
-                ]
-              }}
-              onChange={(event, editor) => {
-                const data = editor.getData();
-                setHeadingData({
-                  ...headingData,
-                  description: data
-                });
-              }}
-            />
+            <div className={styles.ck}>
+              <ReactQuill
+                theme="snow"
+                value={formValues.description}
+                onChange={(value) =>
+                  setFormValues({
+                    ...formValues,
+                    description: value,
+                  })
+                }
+              />
+            </div>
 
             <div className={styles.modalActions}>
 

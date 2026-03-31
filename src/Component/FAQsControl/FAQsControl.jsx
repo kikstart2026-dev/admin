@@ -10,9 +10,10 @@ import {
   updateHeading
 } from "../../apis/api";
 
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import { handleSuccess, handleError } from "../../utils";
 
 export default function FAQsControl() {
   const queryClient = useQueryClient();
@@ -46,6 +47,31 @@ export default function FAQsControl() {
       return res?.data || [];
     },
   });
+  const modules = {
+    toolbar: [
+      // FONT + SIZE
+      [{ font: [] }, { size: [] }],
+
+      // HEADINGS
+      [{ header: [1, 2, 3, false] }],
+
+      // TEXT STYLE
+      ["bold", "italic", "underline", "strike"],
+
+      // COLOR
+      [{ color: [] }, { background: [] }],
+
+      // LIST + ALIGN
+      [{ list: "ordered" }, { list: "bullet" }],
+      [{ align: [] }],
+
+      // LINK
+      ["link"],
+
+      // CLEAN
+      ["clean"],
+    ],
+  };
 
   // ✅ FIX: useQuery instead of useEffect
   useQuery({
@@ -76,22 +102,22 @@ export default function FAQsControl() {
   const handleSubmit = async () => {
     try {
       if (!headingId) {
-        alert("Create heading first");
+        handleError("Create heading first");
         return;
       }
 
       // ✅ FIX: answer validation
       if (!formValues.question || !formValues.answer || formValues.answer.trim() === "") {
-        alert("Quetion and Answer both are required");
+        handleError("Quetion and Answer both are required");
         return;
       }
 
       if (mode === "create") {
         await createFaq({ ...formValues, headingId });
-        alert("FAQ Created");
+        handleSuccess("FAQ Created");
       } else {
         await updateFaq(faqId, { ...formValues, headingId });
-        alert("FAQ Updated");
+        handleSuccess("FAQ Updated");
       }
 
       closeModal();
@@ -106,11 +132,11 @@ export default function FAQsControl() {
     try {
       if (headingId) {
         await updateHeading(headingId, headingData);
-        alert("Heading Updated");
+        handleSuccess("Heading Updated");
       } else {
         const res = await createHeading(headingData);
         setHeadingId(res?.data?._id);
-        alert("Heading Created");
+        handleSuccess("Heading Created");
       }
       refresh();
     } catch (err) {
@@ -126,7 +152,7 @@ export default function FAQsControl() {
 
   const handleBulkDelete = async () => {
     if (selected.length === 0) {
-      alert("Select FAQs first");
+      handleError("Select FAQs first");
       return;
     }
     if (!window.confirm("Delete selected FAQs?")) return;
@@ -273,13 +299,16 @@ export default function FAQsControl() {
               }
             />
 
-            <CKEditor
-              editor={ClassicEditor}
-              data={formValues.answer}
-              config={{ placeholder: "Write answer here..." }}
-              onChange={(event, editor) =>
-                setFormValues({ ...formValues, answer: editor.getData() })
+            <ReactQuill
+              theme="snow"
+              value={formValues.answer}
+              onChange={(value) =>
+                setFormValues({
+                  ...formValues,
+                  answer: value,
+                })
               }
+              modules={modules}
             />
 
             <div className={styles.modalActions}>

@@ -12,8 +12,9 @@ import {
   createFile,
 } from "../../apis/api";
 
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
+import { handleSuccess, handleError } from "../../utils";
 
 export default function TestimonialControl() {
   const queryClient = useQueryClient();
@@ -54,6 +55,31 @@ export default function TestimonialControl() {
       return res?.data || {};
     },
   });
+   const modules = {
+  toolbar: [
+    // FONT + SIZE
+    [{ font: [] }, { size: [] }],
+
+    // HEADINGS
+    [{ header: [1, 2, 3, false] }],
+
+    // TEXT STYLE
+    ["bold", "italic", "underline", "strike"],
+
+    // COLOR
+    [{ color: [] }, { background: [] }],
+
+    // LIST + ALIGN
+    [{ list: "ordered" }, { list: "bullet" }],
+    [{ align: [] }],
+
+    // LINK
+    ["link"],
+
+    // CLEAN
+    ["clean"],
+  ],
+};
 
   useEffect(() => {
     setCards(data.cards || []);
@@ -90,7 +116,7 @@ export default function TestimonialControl() {
 
   const handleDeleteSelected = async () => {
     if (selected.length === 0) {
-      alert("Select cards first");
+      handleError("Select cards first");
       return;
     }
 
@@ -107,12 +133,12 @@ export default function TestimonialControl() {
     try {
       if (headingId) {
         await updateHeading(headingId, headingData);
-        alert("Heading Updated");
+        handleSuccess("Heading Updated");
       } else {
         const res = await createHeading(headingData);
         setHeadingId(res?.data?._id);
 
-        alert("Heading Created");
+        handleSuccess("Heading Created");
       }
 
       fetchData();
@@ -133,12 +159,12 @@ export default function TestimonialControl() {
 
   const handleCreate = async () => {
     if (!headingId) {
-      alert("Create heading first");
+      handleError("Create heading first");
       return;
     }
 
     if (!formValues.name || !formValues.designation || !imageFile) {
-      alert("Name, Designation and Image are required");
+      handleError("Name, Designation and Image are required");
       return;
     }
 
@@ -161,7 +187,7 @@ export default function TestimonialControl() {
       description: formValues.description,
     });
 
-    alert("Card Created");
+    handleSuccess("Card Created");
 
     setShowForm(false);
 
@@ -189,7 +215,7 @@ export default function TestimonialControl() {
       description: formValues.description,
     });
 
-    alert("Card Updated");
+    handleSuccess("Card Updated");
 
     setShowForm(false);
 
@@ -364,33 +390,16 @@ export default function TestimonialControl() {
             />
 
             <div className={styles.ck}>
-              <CKEditor
-                editor={ClassicEditor}
-                data={formValues.description}
-                config={{
-                  toolbar: [
-                    "heading",
-                    "|",
-                    "bold",
-                    "italic",
-                    "fontColor",
-                    "fontBackgroundColor",
-                    "|",
-                    "bulletedList",
-                    "numberedList",
-                    "|",
-                    "link",
-                    "undo",
-                    "redo"
-                  ]
-                }}
-                onChange={(event, editor) => {
-                  const data = editor.getData();
+              <ReactQuill
+                theme="snow"
+                value={formValues.description}
+                onChange={(value) =>
                   setFormValues({
                     ...formValues,
-                    description: data,
-                  });
-                }}
+                    description: value,
+                  })
+                }
+                modules={modules}
               />
             </div>
 
@@ -486,7 +495,7 @@ export default function TestimonialControl() {
                 </tr>
               </tbody>
             </table>
-              <button className={styles.closeBtn}onClick={() => setShowGet(false)}>Close</button>
+            <button className={styles.closeBtn} onClick={() => setShowGet(false)}>Close</button>
           </div>
         </div>
       )}
