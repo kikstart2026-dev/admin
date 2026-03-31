@@ -17,7 +17,7 @@ import {
 
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
-import { handleSuccess, handleError } from "../../utils";
+import { handleSuccess, handleError, handleWarning } from "../../utils";
 
 export default function AboutSectionControl() {
 
@@ -105,7 +105,7 @@ export default function AboutSectionControl() {
   const handleDeleteSelected = async () => {
 
     if (selected.length === 0) {
-      handleError("Select About first");
+      handleWarning("Select About first");
       return;
     }
 
