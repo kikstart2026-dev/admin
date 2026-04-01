@@ -15,7 +15,8 @@ import "react-quill-new/dist/quill.snow.css";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { handleSuccess, handleError } from "../../utils";
 
-export default function FAQsControl() {
+// ✅ Added isFullPage prop to control the view
+export default function FAQsControl({ isFullPage = false }) {
   const queryClient = useQueryClient();
 
   const [selected, setSelected] = useState([]);
@@ -39,41 +40,40 @@ export default function FAQsControl() {
     description: ""
   });
 
+  // ================= PAGINATION & LIMIT LOGIC =================
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(() => {
+    if (isFullPage) return 1000; 
+    return Number(localStorage.getItem("faqLimit")) || 5;
+  });
+
   // ================= FETCH =================
-  const { data = [] } = useQuery({
-    queryKey: ["faqs"],
+  const { data: response = {} } = useQuery({
+    queryKey: ["faqs", page, limit, isFullPage],
     queryFn: async () => {
-      const res = await getFaqs();
-      return res?.data || [];
+      const res = await getFaqs(page, limit);
+      return res || {};
     },
   });
+
+  const data = response.data || [];
+  const totalPages = response.totalPages || 1;
+
+  // ✅ Quill Modules Setup
   const modules = {
     toolbar: [
-      // FONT + SIZE
       [{ font: [] }, { size: [] }],
-
-      // HEADINGS
       [{ header: [1, 2, 3, false] }],
-
-      // TEXT STYLE
       ["bold", "italic", "underline", "strike"],
-
-      // COLOR
       [{ color: [] }, { background: [] }],
-
-      // LIST + ALIGN
       [{ list: "ordered" }, { list: "bullet" }],
       [{ align: [] }],
-
-      // LINK
       ["link"],
-
-      // CLEAN
       ["clean"],
     ],
   };
 
-  // ✅ FIX: useQuery instead of useEffect
+  // ================= HEADING FETCH =================
   useQuery({
     queryKey: ["faqHeading"],
     enabled: data.length > 0 && !headingId,
@@ -106,7 +106,6 @@ export default function FAQsControl() {
         return;
       }
 
-      // ✅ FIX: answer validation
       if (!formValues.question || !formValues.answer || formValues.answer.trim() === "") {
         handleError("Quetion and Answer both are required");
         return;
@@ -202,7 +201,6 @@ export default function FAQsControl() {
     setFaqId(null);
   };
 
-
   return (
     <div className={styles.banner}>
 
@@ -225,7 +223,7 @@ export default function FAQsControl() {
           </button>
 
           <button
-            className={styles.deleteSelected} // About style delete
+            className={styles.deleteSelected}
             onClick={handleBulkDelete}
           >
             <i className="bi bi-trash"></i>
@@ -243,7 +241,7 @@ export default function FAQsControl() {
         <table className={styles.table}>
           <thead>
             <tr>
-              <th><input type="checkbox" checked={allSelected} onChange={handleSelectAll} />{" "}Select All</th>
+              <th><input type="checkbox" checked={allSelected} onChange={handleSelectAll} /> Select All</th>
               <th>Question</th>
               <th>Answer</th>
               <th>Active</th>
@@ -284,7 +282,7 @@ export default function FAQsControl() {
         </table>
       </div>
 
-      {/* FORM MODAL */}
+      {/* CREATE/UPDATE MODAL */}
       {showForm && (
         <div className={styles.modal}>
           <div className={styles.modalContent}>
@@ -299,6 +297,7 @@ export default function FAQsControl() {
               }
             />
 
+            {/* ✅ ReactQuill Added here for Answer */}
             <ReactQuill
               theme="snow"
               value={formValues.answer}
@@ -326,7 +325,6 @@ export default function FAQsControl() {
         <div className={styles.modal}>
           <div className={styles.modalContent}>
             <h4>Heading</h4>
-
             <input
               placeholder="Tagline"
               value={headingData.tagline}
@@ -341,16 +339,6 @@ export default function FAQsControl() {
                 setHeadingData({ ...headingData, heading: e.target.value })
               }
             />
-
-            {/* <CKEditor
-              editor={ClassicEditor}
-              data={headingData.description}
-              config={{ placeholder: "Write heading description..." }}
-              onChange={(event, editor) =>
-                setHeadingData({ ...headingData, description: editor.getData() })
-              }
-            /> */}
-
             <div className={styles.modalActions}>
               <button onClick={() => setShowHeadingModal(false)}>Cancel</button>
               <button
@@ -366,7 +354,7 @@ export default function FAQsControl() {
         </div>
       )}
 
-      {/* GET MODAL */}
+      {/* GET/DETAILS MODAL */}
       {showGet && getData && (
         <div className={styles.modal}>
           <div className={styles.modalContent}>
@@ -383,7 +371,6 @@ export default function FAQsControl() {
                 </tr>
               </tbody>
             </table>
-
             <button
               className={styles.closeBtn}
               onClick={() => setShowGet(false)}
@@ -392,7 +379,57 @@ export default function FAQsControl() {
             </button>
           </div>
         </div>
+      )}
 
+      {/* PAGINATION */}
+      {!isFullPage && (
+        <div className={styles.paginationWrap}>
+          <button
+            className={styles.createBtn}
+            disabled={page === 1}
+            onClick={() => {
+              const newPage = page - 1;
+              setPage(newPage);
+              localStorage.setItem("faqPage", newPage);
+            }}
+          >
+            Prev
+          </button>
+
+          <span className={styles.pageText}>
+            Page <strong>{page}</strong>
+            <span className={styles.divider}> / </span>
+            <strong>{totalPages}</strong>
+          </span>
+
+          <button
+            className={styles.createBtn}
+            disabled={page === totalPages}
+            onClick={() => {
+              const newPage = page + 1;
+              setPage(newPage);
+              localStorage.setItem("faqPage", newPage);
+            }}
+          >
+            Next
+          </button>
+
+          <select
+            className={styles.limitSelect}
+            value={limit}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+              setLimit(value);
+              localStorage.setItem("faqLimit", value);
+              setPage(1);
+              localStorage.setItem("faqPage", 1);
+            }}
+          >
+            <option value={5}>Show 5 FAQs</option>
+            <option value={10}>Show 10 FAQs</option>
+            <option value={20}>Show 20 FAQs</option>
+          </select>
+        </div>
       )}
 
     </div>

@@ -20,6 +20,8 @@ export default function HomePage() {
     }
   };
 
+
+
   return (
     <div className={styles.wrap}>
       <div className={styles.left}>
@@ -149,24 +151,17 @@ export default function HomePage() {
         </div>
 
         {/* FAQ */}
-        <div className={styles.section}>
-          <div
-            className={`${styles.sectionHeader} ${activeSection === "faq" ? styles.active : ""
-              }`}
-            onClick={() => toggleSection("faq")}
-          >
-            <span>FAQ Control</span>
 
-            <i
-              className={`bi ${activeSection === "faq"
-                  ? "bi-chevron-up"
-                  : "bi-chevron-down"
-                }`}
-            ></i>
+        <div className={styles.section}>
+          <div className={styles.sectionHeader} onClick={() => toggleSection("faq")}>
+            <span>Home FAQ Control</span>
+            <i className={`bi ${activeSection === "faq" ? "bi-chevron-up" : "bi-chevron-down"}`}></i>
           </div>
 
+          {/* FAQ Control Section in HomePage */}
           {activeSection === "faq" && (
             <div className={styles.sectionBody}>
+              {/* ✅ Ekhane kichu pass korar dorkar nai, default logic-e pagination kaj korbe */}
               <FAQsControl />
             </div>
           )}
