@@ -6,7 +6,7 @@ import FAQsControl from "../../Component/FAQsControl/FAQsControl";
 
 export default function FaqPage() {
     // Section toggle korar jonno state
-    const [activeSection, setActiveSection] = useState("faq"); // Default "faq" active rakha hoyeche
+    const [activeSection, setActiveSection] = useState("faq"); // Default "faq" active 
 
     const toggleSection = (section) => {
         if (activeSection === section) {

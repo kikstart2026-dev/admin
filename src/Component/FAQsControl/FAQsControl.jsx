@@ -185,15 +185,25 @@ export default function FAQsControl({ isFullPage = false, visibleCount = 5 }) {
                 <td>
                   <i
                     className={item.isActive ? "bi bi-toggle-on" : "bi bi-toggle-off"}
-                    style={{ fontSize: "26px", cursor: "pointer" }}
+                    style={{ fontSize: "26px", cursor: "pointer", color: item.isActive ? "#ED1C24" : "#aaa", }}
                     onClick={() => handleToggle(item._id)}
                   />
                 </td>
 
                 <td className={styles.actions}>
-                  <button onClick={() => handleEdit(item)}>Edit</button>
-                  <button onClick={() => handleGet(item)}>View</button>
-                  <button onClick={() => handleDelete(item._id)}>Delete</button>
+
+                  <button onClick={() => handleEdit(item)}>
+                    <i className="bi bi-pencil-square"></i>
+                  </button>
+
+                  <button onClick={() => handleGet(item)}>
+                    <i className="bi bi-eye"></i>
+                  </button>
+
+                  <button onClick={() => handleDelete(item._id)}>
+                    <i className="bi bi-trash"></i>
+                  </button>
+
                 </td>
               </tr>
             ))}
