@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import styles from "./WhyChooseUsControl.module.scss";
+import styles from "./WhyUsControl.module.scss";
 
 import {
   getAllWhyChooseUs,
@@ -49,40 +49,45 @@ export default function WhyChooseUsControl() {
     color: ""
   });
 
-  const { data = {}, isLoading } = useQuery({
-    queryKey: ["whyChooseUs"],
-    queryFn: async () => {
-      const res = await getAllWhyChooseUs({ limit: 4 });
-      return res?.data || {};
-    }
-  });
-   const modules = {
-  toolbar: [
-    // FONT + SIZE
-    [{ font: [] }, { size: [] }],
+  const [page, setPage] = useState(1);
 
-    // HEADINGS
-    [{ header: [1, 2, 3, false] }],
+const { data = {}, isLoading } = useQuery({
+  queryKey: ["whyChooseUs", page],
+  queryFn: () =>
+    getAllWhyChooseUs({
+      page,
+      limit: 8,
+    }),
+});
 
-    // TEXT STYLE
-    ["bold", "italic", "underline", "strike"],
+  const modules = {
+    toolbar: [
+      // FONT + SIZE
+      [{ font: [] }, { size: [] }],
 
-    // COLOR
-    [{ color: [] }, { background: [] }],
+      // HEADINGS
+      [{ header: [1, 2, 3, false] }],
 
-    // LIST + ALIGN
-    [{ list: "ordered" }, { list: "bullet" }],
-    [{ align: [] }],
+      // TEXT STYLE
+      ["bold", "italic", "underline", "strike"],
 
-    // LINK
-    ["link"],
+      // COLOR
+      [{ color: [] }, { background: [] }],
 
-    // CLEAN
-    ["clean"],
-  ],
-};
+      // LIST + ALIGN
+      [{ list: "ordered" }, { list: "bullet" }],
+      [{ align: [] }],
 
-  const cards = data.cards || [];
+      // LINK
+      ["link"],
+
+      // CLEAN
+      ["clean"],
+    ],
+  };
+
+  const cards = data?.data?.cards || [];
+  const totalPages = data.totalPages || 1;
 
   if (data.heading && headingId === null) {
     setHeadingId(data.heading._id);
@@ -94,7 +99,7 @@ export default function WhyChooseUsControl() {
   }
 
   const fetchData = () => {
-    queryClient.invalidateQueries(["whyChooseUs"]);
+    queryClient.invalidateQueries(["whyChooseUs", page]);
   };
 
   const allSelected = selected.length === cards.length && cards.length > 0;
@@ -399,6 +404,48 @@ export default function WhyChooseUsControl() {
         </table>
 
       </div>
+      <nav className="mt-4">
+        <ul className={`pagination justify-content-center ${styles.customPagination}`}>
+
+          {/* LEFT ARROW */}
+          <li className={`page-item ${page === 1 ? "disabled" : ""}`}>
+            <button
+              className="page-link arrow"
+              onClick={() => setPage(page - 1)}
+              disabled={page === 1}
+            >
+              &lt;
+            </button>
+          </li>
+
+          {/* PAGE NUMBERS */}
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
+            <li
+              key={num}
+              className={`page-item ${page === num ? "active" : ""}`}
+            >
+              <button
+                className={`page-link ${page === num ? "num" : ""}`}
+                onClick={() => setPage(num)}
+              >
+                {num}
+              </button>
+            </li>
+          ))}
+
+          {/* RIGHT ARROW */}
+          <li className={`page-item ${page === totalPages ? "disabled" : ""}`}>
+            <button
+              className="page-link arrow"
+              onClick={() => setPage(page + 1)}
+              disabled={page === totalPages}
+            >
+              &gt;
+            </button>
+          </li>
+
+        </ul>
+      </nav>
 
       {/* Create / Update Modal */}
 
