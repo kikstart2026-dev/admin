@@ -6,9 +6,12 @@ import Dashboard from './Pages/Dashboard/Dashboard';
 import About from './Pages/About/About';
 import Contact from './Pages/Contact/Contact';
 import FaqPage from './Pages/FaqPage/FaqPage';
+import InterestedSchoolsPage from './Pages/InteretedSchools/InterestedSchoolsPage';
+
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
 
 function Layout() {
 
@@ -32,6 +35,7 @@ function Layout() {
         <Route path='/about-control' element={<About />} />
         <Route path='/contact-control' element={<Contact />} />
         <Route path="/faq-page" element={<FaqPage />} />
+        <Route path="/interested-schools" element={<InterestedSchoolsPage />} />
       </Routes>
     </>
   );
