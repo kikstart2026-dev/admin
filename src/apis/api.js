@@ -457,3 +457,85 @@ export const deleteAllFaq = async () => {
   const res = await axiosInstance.delete(endpoints.deleteAllFaq);
   return res.data;
 };
+
+/* ================================ 
+   Schools APIs 
+================================ */
+
+
+// ==========================
+// ✅ CREATE SCHOOL
+// ==========================
+export const createSchool = async (payload) => {
+  const res = await axiosInstance.post(
+    endpoints.createSchool,
+    payload
+  );
+  return res.data;
+};
+
+
+// ==========================
+// ✅ GET ALL SCHOOLS
+// ==========================
+export const getSchools = async (page = 1, limit = 1000) => {
+  const url = `${endpoints.getSchools}?page=${page}&limit=${limit}`;
+  const res = await axiosInstance.get(url);
+  return res.data?.data || [];  // <-- return the array only
+};
+
+// ==========================
+// ✅ GET SINGLE SCHOOL
+// ==========================
+export const getSingleSchool = async (id) => {
+  const res = await axiosInstance.get(
+    endpoints.getSchoolById(id)
+  );
+  return res.data;
+};
+
+
+// ==========================
+// ✅ UPDATE SCHOOL
+// ==========================
+export const updateSchool = async (id, payload) => {
+  const res = await axiosInstance.put(
+    endpoints.updateSchool(id),
+    payload
+  );
+  return res.data;
+};
+
+
+// ==========================
+// ✅ DELETE SINGLE SCHOOL
+// ==========================
+export const deleteSchool = async (id) => {
+  const res = await axiosInstance.delete(
+    endpoints.deleteSchool(id)
+  );
+  return res.data;
+};
+
+
+// ==========================
+// ✅ SELECTIVE DELETE SCHOOL
+// ==========================
+export const selectiveDeleteSchool = async (payload) => {
+  const res = await axiosInstance.post(
+    endpoints.deleteSelectedSchools,
+    payload
+  );
+  return res.data;
+};
+
+
+// ==========================
+// ✅ DELETE ALL SCHOOLS
+// ==========================
+export const deleteAllSchools = async () => {
+  const res = await axiosInstance.delete(
+    endpoints.deleteAllSchools
+  );
+  return res.data;
+};

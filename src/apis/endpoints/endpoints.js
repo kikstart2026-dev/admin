@@ -103,5 +103,31 @@ export const endpoints = {
 
   // 🔥 DELETE ALL
   deleteAllFaq: "/admin/faq/delete-all",
+
+// ================================
+// Schools Admin APIs
+// ================================
+
+  //  GET ALL
+  getSchools: "admin/schools/",
+
+  //  GET BY ID
+  getSchoolById: (id) => `admin/schools/${id}`,
+
+  //  CREATE
+  createSchool: "admin/schools/create",
+
+  //  UPDATE
+  updateSchool: (id) => `admin/schools/${id}`,
+
+  //  DELETE BY ID
+  deleteSchool: (id) => `admin/schools/${id}`,
+
+  //  DELETE ALL
+  deleteAllSchools: "admin/schools/",
+
+  //  DELETE SELECTED
+  deleteSelectedSchools: "admin/schools/delete-selected",
+
 };
 

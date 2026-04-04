@@ -1,0 +1,284 @@
+textarea {
+  resize: none;
+  overflow: hidden;
+  min-height: 80px;
+}
+
+.title {
+  font-size: 20px;
+  color: #9f0005;
+  font-weight: 500;
+}
+
+.bannerWrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+}
+
+.topActions button {
+  transition: 0.3s ease;
+}
+
+.topActions button:nth-child(1) {
+  margin-right: 20px;
+}
+
+.topActions button:hover {
+  transform: scale(1.08);
+}
+
+.deleteSelected {
+  background: #ED1C24;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-left: 20px;
+}
+
+.createBtn {
+  background: #2ed57c;
+  color: #ffffff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+
+  th,
+  td {
+    padding: 12px;
+    text-align: center;
+
+    .checkbox {
+      accent-color: #ED1C24;
+    }
+  }
+
+  img {
+    width: 60px;
+  }
+}
+
+
+
+.actions button {
+  margin-right: 8px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #fff;
+  font-weight: 500;
+  transition: 0.3s ease;
+}
+
+.actions button:hover {
+  transform: scale(1.08);
+}
+
+.actions button:nth-child(1) {
+  background: #3b82f6;
+}
+
+.actions button:nth-child(2) {
+  background: #10b981;
+}
+
+.actions button:nth-child(3) {
+  background: #ef4444;
+}
+.modal {
+  position: fixed;
+  top: 0; // Changed from 30px to 0 for full screen coverage
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center; // Keeps modal centered if content is short
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+  
+  /* ADD THESE FOR SCROLLING */
+  overflow-y: auto; 
+  padding: 20px; // Gives some breathing room at top/bottom when scrolling
+}
+
+.modalContent {
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 700px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  position: relative;
+  top: 50px;
+  
+  /* ADD THESE FOR SCROLLING */
+  margin: auto; // Works with flexbox to ensure padding is respected
+  max-height: calc(100vh - 160px); // Prevents modal from being taller than screen
+  overflow-y: auto; // Internal scroll if the table/form is too long
+
+  h4 {
+    font-size: 20px;
+    margin-bottom: 20px;
+    color: #ED1C24;
+    font-weight: 600;
+    text-align: center;
+  }
+  table {
+    width: 100%;
+    margin: 25px 0;
+
+    th {
+      font-weight: 600;
+      font-size: 16px;
+      padding: 8px;
+    }
+
+    td {
+      padding: 8px;
+      font-size: 14px;
+
+      img {
+        width: 150px;
+        // height: 100PX;
+      }
+    }
+  }
+    .closeBtn {
+    margin-right: 8px;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: white;
+    font-weight: 500;
+    transition: 0.3s ease;
+    background-color: #ED1C24;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+
+    &:focus {
+      border-color: #ED1C24;
+    }
+  }
+
+  .modalActions {
+    display: flex;
+    justify-content: flex-end;
+    margin: 10px;
+
+    button {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      cursor: pointer;
+      background-color: #ED1C24;
+    }
+
+    button:nth-child(1) {
+      background: #000;
+      margin-right: 10px;
+    }
+  }
+}
+  
+.modalContent input:focus,
+.modalContent textarea:focus {
+  border-color: #ED1C24;
+  outline: none;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* CKEditor Style Fix */
+
+:global(.ck-editor__editable_inline) {
+  min-height: 120px;
+  max-height: 120px;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+/* Focus border color */
+
+:global(.ck.ck-editor__main > .ck-editor__editable:focus) {
+  border: 1px solid #ED1C24 !important;
+  box-shadow: 0 0 0 1px #ED1C24 !important;
+}
+
+/* Remove Powered by CKEditor */
+
+:global(.ck-powered-by) {
+  display: none !important;
+}
+
+/* Prevent editor from expanding modal */
+
+:global(.ck-editor) {
+  width: 100%;
+}
+
+/* Toolbar style fix */
+
+:global(.ck-toolbar) {
+  border-radius: 6px 6px 0 0;
+}
+
+/* Editor body */
+
+:global(.ck-editor__editable) {
+  border-radius: 0 0 6px 6px;
+}
+.ck{
+margin-bottom: 15px;
+// border-radius: 15px;
+}
+:global(.ck-content ul) {
+  list-style: disc;
+  padding-left: 20px;
+}
+
+:global(.ck-content ol) {
+  list-style: decimal;
+  padding-left: 20px;
+}
+:global(.ck-content ul li) {
+  margin-bottom: 6px;
+}
+:global(.ck-content li) {
+  margin-bottom: 5px;
+}
+
+
+
+
+
