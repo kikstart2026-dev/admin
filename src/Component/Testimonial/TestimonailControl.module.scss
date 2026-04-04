@@ -299,8 +299,8 @@ margin-bottom: 15px;
   margin-bottom: 5px;
 }
 :global(.ql-editor) {
-  white-space: normal !important;
-  word-break: break-word;
-  overflow-wrap: break-word;
-  line-height: 1.6;
+  white-space: nowrap;
+  // word-break: break-word;
+  // overflow-wrap: break-word;
+  // line-height: 1.6;
 }
