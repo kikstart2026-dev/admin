@@ -159,9 +159,11 @@ export const createWhyChooseUs = async (payload) => {
 };
 
 // ✅ Get All 
-export const getAllWhyChooseUs = async () => {
-    const res = await axiosInstance.get(endpoints.getAllWhyChooseUs);
-    return res.data;
+export const getAllWhyChooseUs = async (params) => {
+  const res = await axiosInstance.get(endpoints.getAllWhyChooseUs, {
+    params,   // ✅ THIS LINE IS THE FIX
+  });
+  return res.data;
 };
 
 // ✅ Get By ID

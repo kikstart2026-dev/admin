@@ -5,6 +5,7 @@ import HomePage from './Pages/Home/HomePage';
 import Dashboard from './Pages/Dashboard/Dashboard';
 import About from './Pages/About/About';
 import Contact from './Pages/Contact/Contact';
+import WhyUsPage from './Pages/WhyUs/WhyUsPage';
 import FaqPage from './Pages/FaqPage/FaqPage';
 import InterestedSchoolsPage from './Pages/InteretedSchools/InterestedSchoolsPage';
 
@@ -34,6 +35,7 @@ function Layout() {
         <Route path="/home-page" element={<HomePage />} />
         <Route path='/about-control' element={<About />} />
         <Route path='/contact-control' element={<Contact />} />
+        <Route path='/why-us' element={<WhyUsPage />} />
         <Route path="/faq-page" element={<FaqPage />} />
         <Route path="/interested-schools" element={<InterestedSchoolsPage />} />
       </Routes>
