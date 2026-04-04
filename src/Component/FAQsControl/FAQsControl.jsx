@@ -29,22 +29,28 @@ export default function FAQsControl({ isFullPage = false, visibleCount = 5 }) {
     answer: "",
   });
 
-  // ✅ page and limit setup
-  const page = 1;
-  const limit = isFullPage ? 1000 : visibleCount; // HomePage: 5, FAQPage: all
+  /* ================= PAGINATION ================= */
+
+  const [page, setPage] = useState(1);
+  const currentPage = isFullPage ? page : 1;
+  const limit = visibleCount;
 
   const { data: response = {} } = useQuery({
-    queryKey: ["faqs", isFullPage],
+    queryKey: ["faqs", currentPage, isFullPage],
     queryFn: async () => {
-      const res = await getFaqs(page, limit);
+      const res = await getFaqs(currentPage, limit);
       return res || {};
     },
   });
 
   const data = response.data || [];
-  const displayedData = isFullPage ? data : data.slice(0, visibleCount);
+  const totalPages = response.totalPages || 1;
 
-  // ✅ Quill modules
+  // ❗ IMPORTANT (NO SLICE)
+  const displayedData = data;
+
+  /* ================= QUILL ================= */
+
   const modules = {
     toolbar: [
       [{ font: [] }, { size: [] }],
@@ -58,7 +64,11 @@ export default function FAQsControl({ isFullPage = false, visibleCount = 5 }) {
     ],
   };
 
-  const refresh = () => queryClient.invalidateQueries(["faqs", isFullPage]);
+  /* ================= REFRESH ================= */
+
+  const refresh = () => queryClient.invalidateQueries(["faqs"]);
+
+  /* ================= ACTIONS ================= */
 
   const handleToggle = async (id) => {
     await toggleActiveFaq(id);
@@ -99,18 +109,19 @@ export default function FAQsControl({ isFullPage = false, visibleCount = 5 }) {
     for (let id of selected) {
       await deleteFaq(id);
     }
+
     setSelected([]);
     refresh();
   };
 
   const handleSelect = (id) => {
-    setSelected(prev =>
-      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    setSelected((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
     );
   };
 
   const handleSelectAll = (e) => {
-    setSelected(e.target.checked ? data.map(i => i._id) : []);
+    setSelected(e.target.checked ? data.map((i) => i._id) : []);
   };
 
   const handleEdit = (item) => {
@@ -131,6 +142,8 @@ export default function FAQsControl({ isFullPage = false, visibleCount = 5 }) {
     setFormValues({ question: "", answer: "" });
     setFaqId(null);
   };
+
+  /* ================= UI ================= */
 
   return (
     <div className={styles.banner}>
@@ -159,7 +172,9 @@ export default function FAQsControl({ isFullPage = false, visibleCount = 5 }) {
         <table className={styles.table}>
           <thead>
             <tr>
-              <th><input type="checkbox" onChange={handleSelectAll} /> Select All</th>
+              <th>
+                <input type="checkbox" onChange={handleSelectAll} /> Select All
+              </th>
               <th>Question</th>
               <th>Answer</th>
               <th>Active</th>
@@ -168,7 +183,7 @@ export default function FAQsControl({ isFullPage = false, visibleCount = 5 }) {
           </thead>
 
           <tbody>
-            {displayedData.map(item => (
+            {displayedData.map((item) => (
               <tr key={item._id}>
                 <td>
                   <input
@@ -180,18 +195,27 @@ export default function FAQsControl({ isFullPage = false, visibleCount = 5 }) {
 
                 <td>{item.question}</td>
 
-                <td dangerouslySetInnerHTML={{ __html: item.answer.substring(0, 80) }}></td>
+                <td
+                  dangerouslySetInnerHTML={{
+                    __html: item.answer.substring(0, 80),
+                  }}
+                ></td>
 
                 <td>
                   <i
-                    className={item.isActive ? "bi bi-toggle-on" : "bi bi-toggle-off"}
-                    style={{ fontSize: "26px", cursor: "pointer", color: item.isActive ? "#ED1C24" : "#aaa", }}
+                    className={
+                      item.isActive ? "bi bi-toggle-on" : "bi bi-toggle-off"
+                    }
+                    style={{
+                      fontSize: "26px",
+                      cursor: "pointer",
+                      color: item.isActive ? "#ED1C24" : "#aaa",
+                    }}
                     onClick={() => handleToggle(item._id)}
                   />
                 </td>
 
                 <td className={styles.actions}>
-
                   <button onClick={() => handleEdit(item)}>
                     <i className="bi bi-pencil-square"></i>
                   </button>
@@ -203,16 +227,61 @@ export default function FAQsControl({ isFullPage = false, visibleCount = 5 }) {
                   <button onClick={() => handleDelete(item._id)}>
                     <i className="bi bi-trash"></i>
                   </button>
-
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-
       </div>
 
-      {/* CREATE/UPDATE MODAL */}
+      {/* ✅ PAGINATION ONLY FAQ PAGE */}
+      {isFullPage && (
+        <nav className="mt-4">
+          <ul
+            className={`pagination justify-content-center ${styles.customPagination}`}
+          >
+            <li className={`page-item ${page === 1 ? "disabled" : ""}`}>
+              <button
+                className="page-link arrow"
+                onClick={() => setPage(page - 1)}
+                disabled={page === 1}
+              >
+                &lt;
+              </button>
+            </li>
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
+              <li
+                key={num}
+                className={`page-item ${page === num ? "active" : ""}`}
+              >
+                <button
+                  className={`page-link ${page === num ? "num" : ""}`}
+                  onClick={() => setPage(num)}
+                >
+                  {num}
+                </button>
+              </li>
+            ))}
+
+            <li
+              className={`page-item ${
+                page === totalPages ? "disabled" : ""
+              }`}
+            >
+              <button
+                className="page-link arrow"
+                onClick={() => setPage(page + 1)}
+                disabled={page === totalPages}
+              >
+                &gt;
+              </button>
+            </li>
+          </ul>
+        </nav>
+      )}
+
+      {/* CREATE / UPDATE MODAL */}
       {showForm && (
         <div className={styles.modal}>
           <div className={styles.modalContent}>

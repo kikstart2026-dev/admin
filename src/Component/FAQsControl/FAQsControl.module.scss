@@ -277,6 +277,61 @@ textarea {
   }
 
 
+  .customPagination {
+  margin-top: 38px;
+  display: flex;
+  justify-content: center;
+}
+
+}
+
+:global(.pagination) {
+  margin-bottom: 0;
+}
+
+:global(.page-link) {
+  width: 32px;
+  height: 32px;
+  border-radius: 5px;
+  border: 2px solid #E1E1E1;
+  background-color: #FFFFFF;
+  color: #2B2B2B;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 6px;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+/* hover */
+:global(.page-link:hover) {
+  border: 2px solid #ED1C24;
+  color: #ED1C24;
+}
+
+/* active */
+:global(.page-item.active .page-link) {
+  border: 2px solid #ED1C24;
+  color: #ED1C24;
+  background-color: #fff;
+}
+
+/* disabled */
+:global(.page-item.disabled .page-link) {
+  border: none;
+  background-color: #F5F5F5;
+  color: #C0C0C0;
+  cursor: not-allowed;
+}
+
+/* arrow */
+:global(.page-link.arrow) {
+  font-size: 18px;
+  font-weight: 700;
+}
+
 
   @keyframes fadeIn {
     from {
@@ -289,7 +344,6 @@ textarea {
       transform: translateY(0);
     }
   }
-}
 
 /* CKEditor fixed height */
 
