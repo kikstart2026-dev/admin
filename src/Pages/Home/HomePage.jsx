@@ -154,15 +154,14 @@ export default function HomePage() {
 
         <div className={styles.section}>
           <div className={styles.sectionHeader} onClick={() => toggleSection("faq")}>
-            <span>Home FAQ Control</span>
+            <span>FAQ Control</span>
             <i className={`bi ${activeSection === "faq" ? "bi-chevron-up" : "bi-chevron-down"}`}></i>
           </div>
 
           {/* FAQ Control Section in HomePage */}
           {activeSection === "faq" && (
             <div className={styles.sectionBody}>
-              {/* ✅ Ekhane kichu pass korar dorkar nai, default logic-e pagination kaj korbe */}
-              <FAQsControl />
+              <FAQsControl limit={5} />
             </div>
           )}
         </div>
