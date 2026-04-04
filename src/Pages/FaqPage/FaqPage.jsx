@@ -46,8 +46,6 @@ export default function FaqPage() {
                     {/* SECTION BODY */}
                     {activeSection === "faq" && (
                         <div className={styles.sectionBody}>
-                            {/* ✅ isFullPage={true} pass korle sob data dekhabe ar pagination hide thakbe. 
-                                Quill editor-er design FAQsControl component-er bhetore handle kora hoyeche. */}
                             <FAQsControl isFullPage={true} />
                         </div>
                     )}

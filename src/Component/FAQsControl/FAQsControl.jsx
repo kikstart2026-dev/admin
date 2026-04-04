@@ -13,7 +13,7 @@ import "react-quill-new/dist/quill.snow.css";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { handleSuccess, handleError } from "../../utils";
 
-export default function FAQsControl({ isFullPage = false }) {
+export default function FAQsControl({ isFullPage = false, visibleCount = 5 }) {
   const queryClient = useQueryClient();
 
   const [selected, setSelected] = useState([]);
@@ -29,13 +29,12 @@ export default function FAQsControl({ isFullPage = false }) {
     answer: "",
   });
 
-  const [visibleCount, setVisibleCount] = useState(5);
-
+  // ✅ page and limit setup
   const page = 1;
-  const limit = 1000;
+  const limit = isFullPage ? 1000 : visibleCount; // HomePage: 5, FAQPage: all
 
   const { data: response = {} } = useQuery({
-    queryKey: ["faqs"],
+    queryKey: ["faqs", isFullPage],
     queryFn: async () => {
       const res = await getFaqs(page, limit);
       return res || {};
@@ -45,7 +44,7 @@ export default function FAQsControl({ isFullPage = false }) {
   const data = response.data || [];
   const displayedData = isFullPage ? data : data.slice(0, visibleCount);
 
-  // ✅ FIXED modules
+  // ✅ Quill modules
   const modules = {
     toolbar: [
       [{ font: [] }, { size: [] }],
@@ -59,7 +58,7 @@ export default function FAQsControl({ isFullPage = false }) {
     ],
   };
 
-  const refresh = () => queryClient.invalidateQueries(["faqs"]);
+  const refresh = () => queryClient.invalidateQueries(["faqs", isFullPage]);
 
   const handleToggle = async (id) => {
     await toggleActiveFaq(id);
@@ -121,7 +120,6 @@ export default function FAQsControl({ isFullPage = false }) {
     setShowForm(true);
   };
 
-  // ✅ FIXED VIEW
   const handleGet = (item) => {
     setGetData(item);
     setShowGet(true);
@@ -235,7 +233,7 @@ export default function FAQsControl({ isFullPage = false }) {
         </div>
       )}
 
-      {/* ✅ VIEW MODAL FIX */}
+      {/* VIEW MODAL */}
       {showGet && getData && (
         <div className={styles.modal}>
           <div className={styles.modalContent}>

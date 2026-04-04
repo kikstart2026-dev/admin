@@ -161,7 +161,7 @@ export default function HomePage() {
           {/* FAQ Control Section in HomePage */}
           {activeSection === "faq" && (
             <div className={styles.sectionBody}>
-              <FAQsControl />
+              <FAQsControl limit={5} />
             </div>
           )}
         </div>
