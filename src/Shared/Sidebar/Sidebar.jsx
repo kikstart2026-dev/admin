@@ -23,7 +23,8 @@ export default function Sidebar() {
     if (
       location.pathname === "/home-page" ||
       location.pathname === "/about-control" ||
-      location.pathname === "/contact-control"
+      location.pathname === "/contact-control"||
+      location.pathname === "/faq-page" 
     ) //check the users current path // run after hook component render 
     {
       setContentOpen(true); //open dropdown automatically 
@@ -108,6 +109,17 @@ export default function Sidebar() {
                     }
                   >
                     Contact Page
+                  </NavLink>
+                </li>
+
+                <li>
+                  <NavLink
+                    to="/faq-page"
+                    className={({ isActive }) =>
+                      isActive ? styles.active : ""
+                    }
+                  >
+                    Faq Page
                   </NavLink>
                 </li>
 

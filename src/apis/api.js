@@ -396,8 +396,14 @@ export const createFaq = async (payload) => {
 // ==========================
 // ✅ GET ALL FAQs
 // ==========================
-export const getFaqs = async () => {
-  const res = await axiosInstance.get(endpoints.getFaqs);
+export const getFaqs = async (page = 1, limit = 5, active = false) => {
+  let url = `${endpoints.getFaqs}?page=${page}&limit=${limit}`;
+
+  if (active) {
+    url += `&active=true`;
+  }
+
+  const res = await axiosInstance.get(url);
   return res.data;
 };
 

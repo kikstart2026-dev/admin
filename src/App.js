@@ -5,6 +5,7 @@ import HomePage from './Pages/Home/HomePage';
 import Dashboard from './Pages/Dashboard/Dashboard';
 import About from './Pages/About/About';
 import Contact from './Pages/Contact/Contact';
+import FaqPage from './Pages/FaqPage/FaqPage';
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -30,6 +31,7 @@ function Layout() {
         <Route path="/home-page" element={<HomePage />} />
         <Route path='/about-control' element={<About />} />
         <Route path='/contact-control' element={<Contact />} />
+        <Route path="/faq-page" element={<FaqPage />} />
       </Routes>
     </>
   );

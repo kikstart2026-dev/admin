@@ -319,3 +319,78 @@ textarea {
 :global(.faq-desc li) {
   margin-bottom: 5px;
 }
+
+.paginationWrap {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 20px;
+}
+
+/* Prev button */
+.paginationWrap button:first-child {
+  margin-right: 8px;   
+}
+
+/* Page text */
+.pageText {
+  margin: 0 8px;     
+}
+
+/* Next button */
+.paginationWrap button:nth-of-type(2) {
+  margin-right: 10px;
+}
+
+/* Select */
+.limitSelect {
+  margin-left: 8px;
+}
+
+/* Page text */
+.pageText {
+  background: #fff5f5;
+  color: #ED1C24;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.divider {
+  color: #ED1C24; 
+  margin: 0 6px;
+  font-weight: 600;
+}
+
+/* Select box */
+.limitSelect {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.limitSelect {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid #ED1C24;
+  background: #fff;
+  color: #ED1C24;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.3s ease;
+
+  &:hover {
+    background: #ED1C24;
+    color: #fff;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(237, 28, 36, 0.2);
+  }
+}
