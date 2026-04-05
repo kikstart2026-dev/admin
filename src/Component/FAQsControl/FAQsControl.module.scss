@@ -1,6 +1,5 @@
 textarea {
   resize: none;
-  /* user cannot manually resize */
   overflow: hidden;
   min-height: 80px;
 }
@@ -24,7 +23,6 @@ textarea {
   padding: 20px;
 }
 
-
 /* Top Buttons */
 .topActions button {
   transition: 0.3s ease;
@@ -41,7 +39,6 @@ textarea {
   padding: 10px 18px;
   border-radius: 6px;
   cursor: pointer;
-  // margin-left: 20px;
 }
 
 .createBtn {
@@ -52,7 +49,23 @@ textarea {
   border-radius: 6px;
   cursor: pointer;
   margin-right: 20px;
+}
 
+/* ✅ NEW: Update Heading Button (same as create) */
+.updateHeadingBtn {
+  background: #2ed57c;
+  color: #ffffff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 20px;
+
+  transition: 0.3s ease;
+
+  &:hover {
+    transform: scale(1.08);
+  }
 }
 
 /* Table */
@@ -60,8 +73,7 @@ textarea {
   width: 100%;
   border-collapse: collapse;
   background-color: #ffffff;
-   margin: 25px 0;
-  // box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+  margin: 25px 0;
 
   td:nth-child(3) {
     max-width: 350px;
@@ -72,13 +84,9 @@ textarea {
     padding: 12px;
     text-align: center;
 
-
-
-
     .checkbox {
       accent-color: #ED1C24;
     }
-
   }
 
   img {
@@ -154,7 +162,6 @@ textarea {
   position: relative;
   margin: 0;
 
-  /* Table in GET modal */
   table {
     width: 100%;
     margin: 25px 0;
@@ -167,12 +174,10 @@ textarea {
 
     td {
       padding: 8px;
-      // border-bottom: 1px solid #eee;
       font-size: 14px;
 
       img {
         width: 150px;
-        // height: 100PX;
       }
     }
   }
@@ -217,10 +222,8 @@ textarea {
   .preview {
     text-align: center;
     width: 150px;
-    // height: 300PX;
 
     img {
-
       border-radius: 8px;
       margin-bottom: 15px;
     }
@@ -248,9 +251,6 @@ textarea {
       background: #000000;
     }
 
-
-
-
     .saveBtn {
       background: #ED1C24;
       color: #fff;
@@ -276,13 +276,11 @@ textarea {
     accent-color: #6c4d4e;
   }
 
-
   .customPagination {
-  margin-top: 38px;
-  display: flex;
-  justify-content: center;
-}
-
+    margin-top: 38px;
+    display: flex;
+    justify-content: center;
+  }
 }
 
 :global(.pagination) {
@@ -305,20 +303,17 @@ textarea {
   font-size: 14px;
 }
 
-/* hover */
 :global(.page-link:hover) {
   border: 2px solid #ED1C24;
   color: #ED1C24;
 }
 
-/* active */
 :global(.page-item.active .page-link) {
   border: 2px solid #ED1C24;
   color: #ED1C24;
   background-color: #fff;
 }
 
-/* disabled */
 :global(.page-item.disabled .page-link) {
   border: none;
   background-color: #F5F5F5;
@@ -326,34 +321,28 @@ textarea {
   cursor: not-allowed;
 }
 
-/* arrow */
 :global(.page-link.arrow) {
   font-size: 18px;
   font-weight: 700;
 }
 
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(-20px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
   }
 
-/* CKEditor fixed height */
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 :global(.ck-editor__editable_inline) {
   min-height: 120px;
   max-height: 120px;
   overflow-y: auto;
 }
-
-/* CKEditor focus border color */
 
 :global(.ck.ck-editor__main>.ck-editor__editable:focus) {
   border: 1px solid #ED1C24;
@@ -362,12 +351,12 @@ textarea {
 
 :global(.faq-desc ul) {
   list-style: disc;
-  padding-left: 20px ;
+  padding-left: 20px;
 }
 
 :global(.faq-desc ol) {
   list-style: decimal;
-  padding-left: 20px ;
+  padding-left: 20px;
 }
 
 :global(.faq-desc li) {
@@ -381,27 +370,22 @@ textarea {
   margin-top: 20px;
 }
 
-/* Prev button */
 .paginationWrap button:first-child {
-  margin-right: 8px;   
+  margin-right: 8px;
 }
 
-/* Page text */
 .pageText {
-  margin: 0 8px;     
+  margin: 0 8px;
 }
 
-/* Next button */
 .paginationWrap button:nth-of-type(2) {
   margin-right: 10px;
 }
 
-/* Select */
 .limitSelect {
   margin-left: 8px;
 }
 
-/* Page text */
 .pageText {
   background: #fff5f5;
   color: #ED1C24;
@@ -415,17 +399,9 @@ textarea {
 }
 
 .divider {
-  color: #ED1C24; 
+  color: #ED1C24;
   margin: 0 6px;
   font-weight: 600;
-}
-
-/* Select box */
-.limitSelect {
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: 1px solid #ddd;
-  cursor: pointer;
 }
 
 .limitSelect {
