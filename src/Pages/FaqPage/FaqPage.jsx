@@ -6,7 +6,7 @@ import FAQsControl from "../../Component/FAQsControl/FAQsControl";
 
 export default function FaqPage() {
     // Section toggle korar jonno state
-    const [activeSection, setActiveSection] = useState("faq"); // Default "faq" active rakha hoyeche
+    const [activeSection, setActiveSection] = useState("faq"); // Default "faq" active 
 
     const toggleSection = (section) => {
         if (activeSection === section) {
@@ -46,8 +46,6 @@ export default function FaqPage() {
                     {/* SECTION BODY */}
                     {activeSection === "faq" && (
                         <div className={styles.sectionBody}>
-                            {/* ✅ isFullPage={true} pass korle sob data dekhabe ar pagination hide thakbe. 
-                                Quill editor-er design FAQsControl component-er bhetore handle kora hoyeche. */}
                             <FAQsControl isFullPage={true} />
                         </div>
                     )}

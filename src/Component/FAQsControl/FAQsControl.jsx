@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./FAQsControl.module.scss";
 import {
   getFaqs,
   deleteFaq,
   updateFaq,
   createFaq,
+  createHeading,
+  updateHeading,
   toggleActiveFaq,
 } from "../../apis/api";
 
@@ -13,7 +15,7 @@ import "react-quill-new/dist/quill.snow.css";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { handleSuccess, handleError } from "../../utils";
 
-export default function FAQsControl({ isFullPage = false }) {
+export default function FAQsControl({ isFullPage = false, visibleCount = 5 }) {
   const queryClient = useQueryClient();
 
   const [selected, setSelected] = useState([]);
@@ -22,6 +24,7 @@ export default function FAQsControl({ isFullPage = false }) {
 
   const [mode, setMode] = useState("create");
   const [faqId, setFaqId] = useState(null);
+  
   const [getData, setGetData] = useState(null);
 
   const [formValues, setFormValues] = useState({
@@ -29,23 +32,46 @@ export default function FAQsControl({ isFullPage = false }) {
     answer: "",
   });
 
-  const [visibleCount, setVisibleCount] = useState(5);
+  /* ================= HEADING STATES ================= */
+  const [headingId, setHeadingId] = useState(null); 
+  const [headingData, setHeadingData] = useState({
+    tagline: "", // Added tagline
+    heading: "",
+  });
+  const [showHeadingModal, setShowHeadingModal] = useState(false);
 
-  const page = 1;
-  const limit = 1000;
+  /* ================= PAGINATION & DATA ================= */
+  const [page, setPage] = useState(1);
+  const currentPage = isFullPage ? page : 1;
+  const limit = visibleCount;
 
   const { data: response = {} } = useQuery({
-    queryKey: ["faqs"],
+    queryKey: ["faqs", currentPage, isFullPage],
     queryFn: async () => {
-      const res = await getFaqs(page, limit);
+      const res = await getFaqs(currentPage, limit);
       return res || {};
     },
   });
 
   const data = response.data || [];
-  const displayedData = isFullPage ? data : data.slice(0, visibleCount);
+  const totalPages = response.totalPages || 1;
 
-  // ✅ FIXED modules
+  /* ================= FETCH HEADING DATA (Like ServiceControl) ================= */
+  useEffect(() => {
+    if (data.length > 0 && headingId === null) {
+      // Assuming headingData comes with the FAQ list or from the same API structure
+      const hData = data[0]?.headingData; 
+      if (hData) {
+        setHeadingId(hData._id);
+        setHeadingData({
+          tagline: hData.tagline || "",
+          heading: hData.heading || "",
+        });
+      }
+    }
+  }, [data, headingId]);
+
+  /* ================= QUILL MODULES ================= */
   const modules = {
     toolbar: [
       [{ font: [] }, { size: [] }],
@@ -59,8 +85,10 @@ export default function FAQsControl({ isFullPage = false }) {
     ],
   };
 
+  /* ================= REFRESH ================= */
   const refresh = () => queryClient.invalidateQueries(["faqs"]);
 
+  /* ================= ACTIONS ================= */
   const handleToggle = async (id) => {
     await toggleActiveFaq(id);
     refresh();
@@ -92,6 +120,7 @@ export default function FAQsControl({ isFullPage = false }) {
     await deleteFaq(id);
     refresh();
   };
+  
 
   const handleBulkDelete = async () => {
     if (!selected.length) return handleError("Select FAQs first");
@@ -100,18 +129,19 @@ export default function FAQsControl({ isFullPage = false }) {
     for (let id of selected) {
       await deleteFaq(id);
     }
+
     setSelected([]);
     refresh();
   };
 
   const handleSelect = (id) => {
-    setSelected(prev =>
-      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    setSelected((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
     );
   };
 
   const handleSelectAll = (e) => {
-    setSelected(e.target.checked ? data.map(i => i._id) : []);
+    setSelected(e.target.checked ? data.map((i) => i._id) : []);
   };
 
   const handleEdit = (item) => {
@@ -121,7 +151,6 @@ export default function FAQsControl({ isFullPage = false }) {
     setShowForm(true);
   };
 
-  // ✅ FIXED VIEW
   const handleGet = (item) => {
     setGetData(item);
     setShowGet(true);
@@ -134,10 +163,35 @@ export default function FAQsControl({ isFullPage = false }) {
     setFaqId(null);
   };
 
+  /* ================= HEADING SAVE ================= */
+  const handleHeadingSave = async () => {
+    try {
+      if (headingId) {
+        await updateHeading(headingId, headingData);
+        handleSuccess("Heading Updated");
+      } else {
+        const res = await createHeading(headingData);
+        setHeadingId(res?.data?._id);
+        handleSuccess("Heading Created");
+      }
+      setShowHeadingModal(false);
+      refresh();
+    } catch (err) {
+      console.error(err);
+      handleError("Failed to save heading");
+    }
+  };
+
+  /* ================= UI ================= */
   return (
     <div className={styles.banner}>
       <div className={styles.bannerWrap}>
-        <h3 className={styles.title}>Control As You Want</h3>
+        {!isFullPage && (
+          <div className={styles.headingText}>
+             <p>{headingData.tagline}</p>
+             <h3 className={styles.title}>{headingData.heading || "Control As You Want"}</h3>
+          </div>
+        )}
 
         <div className={styles.topActions}>
           <button
@@ -150,6 +204,15 @@ export default function FAQsControl({ isFullPage = false }) {
             Create FAQ
           </button>
 
+          {!isFullPage && (
+            <button
+              className={styles.createBtn}
+              onClick={() => setShowHeadingModal(true)}
+            >
+              Update Heading
+            </button>
+          )}
+
           <button className={styles.deleteSelected} onClick={handleBulkDelete}>
             <i className="bi bi-trash"></i>
           </button>
@@ -161,16 +224,17 @@ export default function FAQsControl({ isFullPage = false }) {
         <table className={styles.table}>
           <thead>
             <tr>
-              <th><input type="checkbox" onChange={handleSelectAll} /> Select All</th>
+              <th>
+                <input type="checkbox" onChange={handleSelectAll} /> Select All
+              </th>
               <th>Question</th>
               <th>Answer</th>
               <th>Active</th>
               <th>Action</th>
             </tr>
           </thead>
-
           <tbody>
-            {displayedData.map(item => (
+            {data.map((item) => (
               <tr key={item._id}>
                 <td>
                   <input
@@ -182,29 +246,46 @@ export default function FAQsControl({ isFullPage = false }) {
 
                 <td>{item.question}</td>
 
-                <td dangerouslySetInnerHTML={{ __html: item.answer.substring(0, 80) }}></td>
+                <td
+                  dangerouslySetInnerHTML={{
+                    __html: item.answer.substring(0, 80),
+                  }}
+                ></td>
 
                 <td>
                   <i
-                    className={item.isActive ? "bi bi-toggle-on" : "bi bi-toggle-off"}
-                    style={{ fontSize: "26px", cursor: "pointer" }}
+                    className={
+                      item.isActive ? "bi bi-toggle-on" : "bi bi-toggle-off"
+                    }
+                    style={{
+                      fontSize: "26px",
+                      cursor: "pointer",
+                      color: item.isActive ? "#ED1C24" : "#aaa",
+                    }}
                     onClick={() => handleToggle(item._id)}
                   />
                 </td>
 
                 <td className={styles.actions}>
-                  <button onClick={() => handleEdit(item)}>Edit</button>
-                  <button onClick={() => handleGet(item)}>View</button>
-                  <button onClick={() => handleDelete(item._id)}>Delete</button>
+                  <button onClick={() => handleEdit(item)}>
+                    <i className="bi bi-pencil-square"></i>
+                  </button>
+
+                  <button onClick={() => handleGet(item)}>
+                    <i className="bi bi-eye"></i>
+                  </button>
+
+                  <button onClick={() => handleDelete(item._id)}>
+                    <i className="bi bi-trash"></i>
+                  </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-
       </div>
 
-      {/* CREATE/UPDATE MODAL */}
+      {/* CREATE / UPDATE MODAL */}
       {showForm && (
         <div className={styles.modal}>
           <div className={styles.modalContent}>
@@ -235,34 +316,56 @@ export default function FAQsControl({ isFullPage = false }) {
         </div>
       )}
 
-      {/* ✅ VIEW MODAL FIX */}
+      {/* VIEW MODAL */}
       {showGet && getData && (
         <div className={styles.modal}>
           <div className={styles.modalContent}>
             <h4>FAQ Details</h4>
-
             <table>
               <tbody>
                 <tr>
                   <th>Question</th>
                   <td>{getData.question}</td>
                 </tr>
-
                 <tr>
                   <th>Answer</th>
-                  <td
-                    dangerouslySetInnerHTML={{ __html: getData.answer }}
-                  ></td>
+                  <td dangerouslySetInnerHTML={{ __html: getData.answer }}></td>
                 </tr>
               </tbody>
             </table>
+            <button className={styles.closeBtn} onClick={() => setShowGet(false)}>Close</button>
+          </div>
+        </div>
+      )}
 
-            <button
-              className={styles.closeBtn}
-              onClick={() => setShowGet(false)}
-            >
-              Close
-            </button>
+      {/* HEADING MODAL (Updated to match your screenshot) */}
+      {!isFullPage && showHeadingModal && (
+        <div className={styles.modal}>
+          <div className={styles.modalContent}>
+            <h4 style={{ color: '#ED1C24', textAlign: 'center' }}>Update Heading</h4>
+
+            <input
+              type="text"
+              placeholder="Tagline"
+              value={headingData.tagline}
+              onChange={(e) =>
+                setHeadingData({ ...headingData, tagline: e.target.value })
+              }
+            />
+
+            <input
+              type="text"
+              placeholder="Heading"
+              value={headingData.heading}
+              onChange={(e) =>
+                setHeadingData({ ...headingData, heading: e.target.value })
+              }
+            />
+
+            <div className={styles.modalActions}>
+              <button style={{ backgroundColor: '#000' }} onClick={() => setShowHeadingModal(false)}>Cancel</button>
+              <button style={{ backgroundColor: '#ED1C24' }} onClick={handleHeadingSave}>Save Heading</button>
+            </div>
           </div>
         </div>
       )}
