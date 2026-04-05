@@ -56,10 +56,15 @@ export default function InterestedSchoolsControl() {
     };
 
     // ---------------- FETCH ALL SCHOOLS ----------------
-    const { data: schools = [], isLoading } = useQuery({
-        queryKey: ["schools"],
-        queryFn: () => getSchools(1, 100)
+    const [page, setPage] = useState(1);
+
+    const { data = {}, isLoading } = useQuery({
+        queryKey: ["schools", page],
+        queryFn: () => getSchools(page, 6)
     });
+
+    const schools = data?.data || [];
+    const totalPages = data?.totalPages || 1;
 
     const allSelected = schools.length > 0 && selected.length === schools.length;
 
@@ -67,7 +72,7 @@ export default function InterestedSchoolsControl() {
     const createMutation = useMutation({
         mutationFn: (payload) => createSchool(payload),
         onSuccess: () => {
-            queryClient.invalidateQueries(["schools"]);
+            queryClient.invalidateQueries(["schools", page]);
             handleSuccess("School created successfully");
         },
         onError: (err) => handleError(err.message)
@@ -76,7 +81,7 @@ export default function InterestedSchoolsControl() {
     const updateMutation = useMutation({
         mutationFn: ({ id, payload }) => updateSchool(id, payload),
         onSuccess: () => {
-            queryClient.invalidateQueries(["schools"]);
+            queryClient.invalidateQueries(["schools", page]);
             handleSuccess("School updated successfully");
         },
         onError: (err) => handleError(err.message)
@@ -85,7 +90,7 @@ export default function InterestedSchoolsControl() {
     const deleteMutation = useMutation({
         mutationFn: (id) => deleteSchool(id),
         onSuccess: () => {
-            queryClient.invalidateQueries(["schools"]);
+            queryClient.invalidateQueries(["schools", page]);
             handleSuccess("School deleted successfully");
         },
         onError: (err) => handleError(err.message)
@@ -94,7 +99,7 @@ export default function InterestedSchoolsControl() {
     const deleteSelectedMutation = useMutation({
         mutationFn: (ids) => selectiveDeleteSchool({ ids }),
         onSuccess: () => {
-            queryClient.invalidateQueries(["schools"]);
+            queryClient.invalidateQueries(["schools", page]);
             handleSuccess("Selected schools deleted successfully");
         },
         onError: (err) => handleError(err.message)
@@ -294,6 +299,49 @@ export default function InterestedSchoolsControl() {
                 </table>
             </div>
 
+            <nav className="mt-4">
+                <ul className={`pagination justify-content-center ${styles.customPagination}`}>
+
+                    {/* LEFT ARROW */}
+                    <li className={`page-item ${page === 1 ? "disabled" : ""}`}>
+                        <button
+                            className="page-link arrow"
+                            onClick={() => setPage(page - 1)}
+                            disabled={page === 1}
+                        >
+                            &lt;
+                        </button>
+                    </li>
+
+                    {/* PAGE NUMBERS */}
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
+                        <li
+                            key={num}
+                            className={`page-item ${page === num ? "active" : ""}`}
+                        >
+                            <button
+                                className={`page-link ${page === num ? "num" : ""}`}
+                                onClick={() => setPage(num)}
+                            >
+                                {num}
+                            </button>
+                        </li>
+                    ))}
+
+                    {/* RIGHT ARROW */}
+                    <li className={`page-item ${page === totalPages ? "disabled" : ""}`}>
+                        <button
+                            className="page-link arrow"
+                            onClick={() => setPage(page + 1)}
+                            disabled={page === totalPages}
+                        >
+                            &gt;
+                        </button>
+                    </li>
+
+                </ul>
+            </nav>
+
             {/* Form Modal */}
             {showForm && (
                 <div className={styles.modal}>
@@ -331,7 +379,7 @@ export default function InterestedSchoolsControl() {
                             {preview && <img src={preview} width="100" />}
 
                             <input type="file" onChange={handleAuthorImageChange} />
-                            {authorPreview && <img src={authorPreview} width="80"/>}
+                            {authorPreview && <img src={authorPreview} width="80" />}
                         </div>
                         <div className={styles.modalActions}>
                             <button onClick={() => setShowForm(false)}>Cancel</button>

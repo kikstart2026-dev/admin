@@ -483,7 +483,7 @@ export const createSchool = async (payload) => {
 export const getSchools = async (page = 1, limit = 1000) => {
   const url = `${endpoints.getSchools}?page=${page}&limit=${limit}`;
   const res = await axiosInstance.get(url);
-  return res.data?.data || [];  // <-- return the array only
+  return res.data; // ✅ FULL RESPONSE return করো
 };
 
 // ==========================

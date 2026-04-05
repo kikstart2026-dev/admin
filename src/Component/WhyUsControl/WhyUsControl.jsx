@@ -404,6 +404,7 @@ const { data = {}, isLoading } = useQuery({
         </table>
 
       </div>
+      
       <nav className="mt-4">
         <ul className={`pagination justify-content-center ${styles.customPagination}`}>
 

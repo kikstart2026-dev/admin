@@ -24,7 +24,6 @@ export default function FAQsControl({ isFullPage = false, visibleCount = 5 }) {
 
   const [mode, setMode] = useState("create");
   const [faqId, setFaqId] = useState(null);
-  
   const [getData, setGetData] = useState(null);
 
   const [formValues, setFormValues] = useState({
@@ -33,20 +32,21 @@ export default function FAQsControl({ isFullPage = false, visibleCount = 5 }) {
   });
 
   /* ================= HEADING STATES ================= */
-  const [headingId, setHeadingId] = useState(null); 
+  const [headingId, setHeadingId] = useState(null);
   const [headingData, setHeadingData] = useState({
-    tagline: "", // Added tagline
+    tagline: "",
     heading: "",
   });
   const [showHeadingModal, setShowHeadingModal] = useState(false);
 
-  /* ================= PAGINATION & DATA ================= */
+  /* ================= PAGINATION ================= */
   const [page, setPage] = useState(1);
   const currentPage = isFullPage ? page : 1;
   const limit = visibleCount;
 
+  /* ================= FETCH FAQ ================= */
   const { data: response = {} } = useQuery({
-    queryKey: ["faqs", currentPage, isFullPage],
+    queryKey: ["faqs", currentPage],
     queryFn: async () => {
       const res = await getFaqs(currentPage, limit);
       return res || {};
@@ -56,37 +56,37 @@ export default function FAQsControl({ isFullPage = false, visibleCount = 5 }) {
   const data = response.data || [];
   const totalPages = response.totalPages || 1;
 
-  /* ================= FETCH HEADING DATA (Like ServiceControl) ================= */
+  /* ================= 🔥 FIXED HEADING LOGIC ================= */
   useEffect(() => {
-    if (data.length > 0 && headingId === null) {
-      // Assuming headingData comes with the FAQ list or from the same API structure
-      const hData = data[0]?.headingData; 
-      if (hData) {
-        setHeadingId(hData._id);
+    if (data.length > 0) {
+      const validHeading = data.find((item) => item.headingData);
+
+      if (validHeading?.headingData) {
+        setHeadingId(validHeading.headingData._id);
         setHeadingData({
-          tagline: hData.tagline || "",
-          heading: hData.heading || "",
+          tagline: validHeading.headingData.tagline || "",
+          heading: validHeading.headingData.heading || "",
         });
       }
     }
-  }, [data, headingId]);
+  }, [data]);
 
-  /* ================= QUILL MODULES ================= */
+  /* ================= QUILL ================= */
   const modules = {
     toolbar: [
       [{ font: [] }, { size: [] }],
       [{ header: [1, 2, 3, false] }],
-      ["bold", "italic", "underline", "strike"],
-      [{ color: [] }, { background: [] }],
+      ["bold", "italic", "underline"],
       [{ list: "ordered" }, { list: "bullet" }],
-      [{ align: [] }],
       ["link"],
       ["clean"],
     ],
   };
 
   /* ================= REFRESH ================= */
-  const refresh = () => queryClient.invalidateQueries(["faqs"]);
+  const refresh = () => {
+    queryClient.invalidateQueries({ queryKey: ["faqs"] });
+  };
 
   /* ================= ACTIONS ================= */
   const handleToggle = async (id) => {
@@ -120,7 +120,6 @@ export default function FAQsControl({ isFullPage = false, visibleCount = 5 }) {
     await deleteFaq(id);
     refresh();
   };
-  
 
   const handleBulkDelete = async () => {
     if (!selected.length) return handleError("Select FAQs first");
@@ -163,7 +162,7 @@ export default function FAQsControl({ isFullPage = false, visibleCount = 5 }) {
     setFaqId(null);
   };
 
-  /* ================= HEADING SAVE ================= */
+  /* ================= 🔥 FIXED HEADING SAVE ================= */
   const handleHeadingSave = async () => {
     try {
       if (headingId) {
@@ -174,25 +173,34 @@ export default function FAQsControl({ isFullPage = false, visibleCount = 5 }) {
         setHeadingId(res?.data?._id);
         handleSuccess("Heading Created");
       }
+
       setShowHeadingModal(false);
       refresh();
     } catch (err) {
-      console.error(err);
       handleError("Failed to save heading");
     }
+  };
+
+  /* ================= OPEN HEADING MODAL FIX ================= */
+  const openHeadingModal = () => {
+    const validHeading = data.find((item) => item.headingData);
+
+    if (validHeading?.headingData) {
+      setHeadingId(validHeading.headingData._id);
+      setHeadingData({
+        tagline: validHeading.headingData.tagline || "",
+        heading: validHeading.headingData.heading || "",
+      });
+    }
+
+    setShowHeadingModal(true);
   };
 
   /* ================= UI ================= */
   return (
     <div className={styles.banner}>
       <div className={styles.bannerWrap}>
-        {!isFullPage && (
-          <div className={styles.headingText}>
-             <p>{headingData.tagline}</p>
-             <h3 className={styles.title}>{headingData.heading || "Control As You Want"}</h3>
-          </div>
-        )}
-
+        <h3 className={styles.title}>Control As You Want</h3>
         <div className={styles.topActions}>
           <button
             className={styles.createBtn}
@@ -205,10 +213,7 @@ export default function FAQsControl({ isFullPage = false, visibleCount = 5 }) {
           </button>
 
           {!isFullPage && (
-            <button
-              className={styles.createBtn}
-              onClick={() => setShowHeadingModal(true)}
-            >
+            <button className={styles.createBtn} onClick={openHeadingModal}>
               Update Heading
             </button>
           )}
@@ -233,6 +238,7 @@ export default function FAQsControl({ isFullPage = false, visibleCount = 5 }) {
               <th>Action</th>
             </tr>
           </thead>
+
           <tbody>
             {data.map((item) => (
               <tr key={item._id}>
@@ -250,7 +256,7 @@ export default function FAQsControl({ isFullPage = false, visibleCount = 5 }) {
                   dangerouslySetInnerHTML={{
                     __html: item.answer.substring(0, 80),
                   }}
-                ></td>
+                />
 
                 <td>
                   <i
@@ -285,7 +291,7 @@ export default function FAQsControl({ isFullPage = false, visibleCount = 5 }) {
         </table>
       </div>
 
-      {/* CREATE / UPDATE MODAL */}
+      {/* FORM MODAL */}
       {showForm && (
         <div className={styles.modal}>
           <div className={styles.modalContent}>
@@ -329,23 +335,24 @@ export default function FAQsControl({ isFullPage = false, visibleCount = 5 }) {
                 </tr>
                 <tr>
                   <th>Answer</th>
-                  <td dangerouslySetInnerHTML={{ __html: getData.answer }}></td>
+                  <td dangerouslySetInnerHTML={{ __html: getData.answer }} />
                 </tr>
               </tbody>
             </table>
-            <button className={styles.closeBtn} onClick={() => setShowGet(false)}>Close</button>
+            <button onClick={() => setShowGet(false)}>Close</button>
           </div>
         </div>
       )}
 
-      {/* HEADING MODAL (Updated to match your screenshot) */}
+      {/* HEADING MODAL */}
       {!isFullPage && showHeadingModal && (
         <div className={styles.modal}>
           <div className={styles.modalContent}>
-            <h4 style={{ color: '#ED1C24', textAlign: 'center' }}>Update Heading</h4>
+            <h4 style={{ color: "#ED1C24", textAlign: "center" }}>
+              Update Heading
+            </h4>
 
             <input
-              type="text"
               placeholder="Tagline"
               value={headingData.tagline}
               onChange={(e) =>
@@ -354,7 +361,6 @@ export default function FAQsControl({ isFullPage = false, visibleCount = 5 }) {
             />
 
             <input
-              type="text"
               placeholder="Heading"
               value={headingData.heading}
               onChange={(e) =>
@@ -363,8 +369,12 @@ export default function FAQsControl({ isFullPage = false, visibleCount = 5 }) {
             />
 
             <div className={styles.modalActions}>
-              <button style={{ backgroundColor: '#000' }} onClick={() => setShowHeadingModal(false)}>Cancel</button>
-              <button style={{ backgroundColor: '#ED1C24' }} onClick={handleHeadingSave}>Save Heading</button>
+              <button onClick={() => setShowHeadingModal(false)}>
+                Cancel
+              </button>
+              <button onClick={handleHeadingSave}>
+                Save Heading
+              </button>
             </div>
           </div>
         </div>

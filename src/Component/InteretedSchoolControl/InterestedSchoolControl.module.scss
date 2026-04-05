@@ -219,6 +219,62 @@ textarea {
   }
 }
 
+.customPagination {
+  margin-top: 38px;
+
+  /* REMOVE BLUE OUTLINE */
+  :global(.page-link:focus) {
+    outline: none;
+    box-shadow: none;
+  }
+
+  /* DEFAULT BUTTON */
+  :global(.page-link) {
+    width: 32px;
+    height: 32px;
+    border-radius: 5px;
+    border: 2px solid #E1E1E1;
+    background-color: #FFFFFF;
+    color: #2B2B2B;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 8px;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  /* HOVER */
+  :global(.page-link:hover) {
+    border: 2px solid #ED1C24;
+    color: #ED1C24;
+  }
+
+  /* ACTIVE PAGE */
+  :global(.page-item.active .page-link) {
+    border: 2px solid #ED1C24;
+    color: #ED1C24;
+    background-color: #FFFFFF;
+  }
+
+  /* DISABLED BUTTON */
+  :global(.page-item.disabled .page-link) {
+    border: none;
+    background-color: #F5F5F5;
+    color: #C0C0C0;
+    cursor: not-allowed;
+    pointer-events: none; // 🔥 important
+  }
+
+  /* ARROW BUTTON */
+  :global(.page-link.arrow) {
+    font-size: 18px;
+    font-weight: 700;
+  }
+}
+
 /* CKEditor Style Fix */
 
 :global(.ck-editor__editable_inline) {
@@ -277,6 +333,9 @@ margin-bottom: 15px;
 :global(.ck-content li) {
   margin-bottom: 5px;
 }
+
+
+
 
 
 
