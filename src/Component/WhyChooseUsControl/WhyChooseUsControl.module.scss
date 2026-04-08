@@ -263,3 +263,20 @@ margin-bottom: 15px;
 :global(.ck-content li) {
   margin-bottom: 5px;
 }
+
+.ck{
+  :global(.ql-editor) {
+    box-sizing: border-box;
+    counter-reset: list-0 list-1 list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9;
+    line-height: 1.42;
+    outline: none;
+    min-height: 300px;
+    overflow-x: hidden;
+    padding: 12px 15px;
+    tab-size: 4;
+    -moz-tab-size: 4;
+    text-align: left;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+}
