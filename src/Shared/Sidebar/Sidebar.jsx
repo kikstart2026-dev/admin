@@ -37,7 +37,7 @@ export default function Sidebar() {
           {/* Content Management - No Dropdown, Direct Link */}
           <li>
             <NavLink
-              to="/home-page"
+              to="/all-page"
               className={({ isActive }) =>
                 isActive ? styles.active : ""
               }

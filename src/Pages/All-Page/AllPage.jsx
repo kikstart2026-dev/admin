@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styles from "./HomePage.module.scss";
+import styles from "./AllPage.module.scss";
 import HomeBannerControl from "../../Component/HomeBannerControl/HomeBannerControl";
 import TestimonialControl from "../../Component/Testimonial/TestimonailControl";
 import Sidebar from "../../Shared/Sidebar/Sidebar";
@@ -165,6 +165,7 @@ export default function HomePage() {
             </div>
           )}
         </div>
+
 
       </div>
     </div>

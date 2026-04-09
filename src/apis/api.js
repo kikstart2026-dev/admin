@@ -213,9 +213,10 @@ export const createService = async (payload) => {
     const res = await axiosInstance.post(endpoints.createService, payload);
     return res.data;
 };
-// ✅ Get All services
-export const getAllService = async () => {
-    const res = await axiosInstance.get(endpoints.getAllService);
+// ✅ Get All services - Ekhane limit 1000 kora hoyeche sob data anar jonno
+export const getAllService = async (page = 1, limit = 1000) => {
+    const url = `${endpoints.getAllService}?page=${page}&limit=${limit}`;
+    const res = await axiosInstance.get(url);
     return res.data;
 };
 // ✅ Get sevice By ID
@@ -541,3 +542,4 @@ export const deleteAllSchools = async () => {
   );
   return res.data;
 };
+
