@@ -1,37 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { NavLink, useLocation } from "react-router-dom"; // use for create Navigation link
+import React, { useState } from "react";
+import { NavLink } from "react-router-dom"; 
 import styles from "./Sidebar.module.scss";
 import "../../Main.scss";
 
 export default function Sidebar() {
-
   const [isOpen, setIsOpen] = useState(true);
-  const [contentOpen, setContentOpen] = useState(false);
-
-  const location = useLocation(); //for current route path
 
   const toggleSidebar = () => {
-    setIsOpen(!isOpen); // for toggle open close
+    setIsOpen(!isOpen); 
   };
-
-  const toggleContent = () => {
-    setContentOpen(!contentOpen);
-  };
-
-  // ✅ submenu route active থাকলে dropdown open থাকবে
-  useEffect(() => {
-    if (
-      location.pathname === "/home-page" ||
-      location.pathname === "/about-control" ||
-      location.pathname === "/contact-control" ||
-      location.pathname === "/faq-page"||
-      location.pathname === "/interested-schools" ||
-      location.pathname === "/why-us" 
-    ) //check the users current path // run after hook component render 
-    {
-      setContentOpen(true); //open dropdown automatically 
-    }
-  }, [location.pathname]);
 
   return (
     <>
@@ -41,12 +18,9 @@ export default function Sidebar() {
       </div>
 
       <div
-        className={`${styles.sidebar} ${isOpen ? styles.open : styles.close
-          }`}
+        className={`${styles.sidebar} ${isOpen ? styles.open : styles.close}`}
       >
-        {/* Bullet remove */}
         <ul className="list-unstyled">
-
           {/* Dashboard */}
           <li>
             <NavLink
@@ -60,94 +34,17 @@ export default function Sidebar() {
             </NavLink>
           </li>
 
-          {/* Content Management */}
+          {/* Content Management - No Dropdown, Direct Link */}
           <li>
-
-            <div
-              onClick={toggleContent}
-              className={styles.dropdownTitle}
+            <NavLink
+              to="/home-page"
+              className={({ isActive }) =>
+                isActive ? styles.active : ""
+              }
             >
-              <div className={styles.dropdownLeft}>
-                <i className={`bi bi-layout-text-window-reverse ${styles.icon}`}></i>
-                <span>Content Management</span>
-              </div>
-
-              <i
-                className={`bi ${contentOpen ? "bi-chevron-up" : "bi-chevron-down"
-                  }`}
-              ></i>
-            </div>
-
-            {contentOpen && (
-              <ul className={styles.submenu}>
-
-                <li>
-                  <NavLink
-                    to="/home-page"
-                    className={({ isActive }) =>
-                      isActive ? styles.active : ""
-                    }
-                  >
-                    Home Page
-                  </NavLink>
-                </li>
-
-                <li>
-                  <NavLink
-                    to="/about-control"
-                    className={({ isActive }) =>
-                      isActive ? styles.active : ""
-                    }
-                  >
-                    About Page
-                  </NavLink>
-                </li>
-
-                <li>
-                  <NavLink
-                    to="/contact-control"
-                    className={({ isActive }) =>
-                      isActive ? styles.active : ""
-                    }
-                  >
-                    Contact Page
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="/why-us"
-                    className={({ isActive }) =>
-                      isActive ? styles.active : ""
-                    }
-                  >
-                    Why Us Page
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="/faq-page"
-                    className={({ isActive }) =>
-                      isActive ? styles.active : ""
-                    }
-                  >
-                    Faq Page
-                  </NavLink>
-                </li>
-
-                <li>
-                  <NavLink
-                    to="/interested-schools"
-                    className={({ isActive }) =>
-                      isActive ? styles.active : ""
-                    }
-                  >
-                    Interested Schools
-                  </NavLink>
-                </li>
-
-              </ul>
-            )}
-
+              <i className={`bi bi-layout-text-window-reverse ${styles.icon}`}></i>
+              <span>Content Management</span>
+            </NavLink>
           </li>
 
           {/* User Control */}
@@ -170,7 +67,6 @@ export default function Sidebar() {
               <span>Logout</span>
             </NavLink>
           </li>
-
         </ul>
       </div>
     </>

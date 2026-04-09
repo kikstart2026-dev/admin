@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styles from "../FaqPage/FaqPage.module.scss";
+import styles from "./WhyUsPage.module.scss";
 import "../../Main.scss";
 import Sidebar from "../../Shared/Sidebar/Sidebar";
 import WhyUsControl from "../../Component/WhyUsControl/WhyUsControl";

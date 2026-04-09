@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styles from "../FaqPage/FaqPage.module.scss";
+import styles from "./InterestedSchoolsPage.module.scss";
 import "../../Main.scss";
 import Sidebar from "../../Shared/Sidebar/Sidebar";
 
