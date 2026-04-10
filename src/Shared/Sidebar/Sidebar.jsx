@@ -16,28 +16,23 @@ export default function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // ✅ admin email from localStorage
   const email = JSON.parse(localStorage.getItem("adminUser"))?.email;
 
   // ================= TOGGLE =================
   const toggleSidebar = () => setIsOpen((prev) => !prev);
   const toggleContent = () => setContentOpen((prev) => !prev);
 
-  // ================= LOGOUT API =================
+  // ================= LOGOUT =================
   const { mutate: logoutMutate, isPending } = useMutation({
     mutationKey: ["admin-logout"],
     mutationFn: adminLogout,
 
-    onSuccess: (data) => {
-      console.log("Logout Success:", data);
-
-      // clear auth
+    onSuccess: () => {
       Cookies.remove("token");
       localStorage.removeItem("adminUser");
       localStorage.clear();
 
       setShowLogoutModal(false);
-
       navigate("/login", { replace: true });
     },
 
@@ -46,7 +41,7 @@ export default function Sidebar() {
     },
   });
 
-  // ================= AUTO OPEN DROPDOWN =================
+  // ================= AUTO DROPDOWN =================
   useEffect(() => {
     const paths = [
       "/home-page",
@@ -62,51 +57,88 @@ export default function Sidebar() {
     }
   }, [location.pathname]);
 
+  // ================= BODY LOCK =================
+  useEffect(() => {
+    if (showLogoutModal) {
+      // Lock scroll
+      const scrollY = window.scrollY;
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = "100%";
+      document.body.style.overflow = "hidden";
+    } else {
+      // Unlock scroll
+      const scrollY = -parseInt(document.body.style.top || "0", 10);
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+      document.body.style.overflow = "";
+      window.scrollTo(0, scrollY);
+    }
+  }, [showLogoutModal]);
+
   return (
     <>
-      {/* ================= HAMBURGER ================= */}
+      {/* HAMBURGER */}
       <div className={styles.hamburger} onClick={toggleSidebar}>
         <i className="bi bi-list"></i>
       </div>
 
-      {/* ================= SIDEBAR ================= */}
+      {/* SIDEBAR */}
       <div
         className={`${styles.sidebar} ${isOpen ? styles.open : styles.close}`}
       >
         <ul className="list-unstyled">
-
           {/* DASHBOARD */}
           <li>
-            <NavLink to="/" className={({ isActive }) => isActive ? styles.active : ""}>
+            <NavLink
+              to="/"
+              className={({ isActive }) => (isActive ? styles.active : "")}
+            >
               <i className={`bi bi-speedometer2 ${styles.icon}`}></i>
               <span>Dashboard</span>
             </NavLink>
           </li>
 
-          {/* CONTENT MANAGEMENT */}
+          {/* CONTENT */}
           <li>
             <div onClick={toggleContent} className={styles.dropdownTitle}>
               <div className={styles.dropdownLeft}>
-                <i className={`bi bi-layout-text-window-reverse ${styles.icon}`}></i>
+                <i
+                  className={`bi bi-layout-text-window-reverse ${styles.icon}`}
+                ></i>
                 <span>Content Management</span>
               </div>
-
-              <i className={`bi ${contentOpen ? "bi-chevron-up" : "bi-chevron-down"}`} />
+              <i
+                className={`bi ${contentOpen ? "bi-chevron-up" : "bi-chevron-down"}`}
+              />
             </div>
 
             {contentOpen && (
               <ul className={styles.submenu}>
-                <li><NavLink to="/home-page">Home Page</NavLink></li>
-                <li><NavLink to="/about-control">About Page</NavLink></li>
-                <li><NavLink to="/contact-control">Contact Page</NavLink></li>
-                <li><NavLink to="/why-us">Why Us Page</NavLink></li>
-                <li><NavLink to="/faq-page">Faq Page</NavLink></li>
-                <li><NavLink to="/interested-schools">Interested Schools</NavLink></li>
+                <li>
+                  <NavLink to="/home-page">Home Page</NavLink>
+                </li>
+                <li>
+                  <NavLink to="/about-control">About Page</NavLink>
+                </li>
+                <li>
+                  <NavLink to="/contact-control">Contact Page</NavLink>
+                </li>
+                <li>
+                  <NavLink to="/why-us">Why Us Page</NavLink>
+                </li>
+                <li>
+                  <NavLink to="/faq-page">Faq Page</NavLink>
+                </li>
+                <li>
+                  <NavLink to="/interested-schools">Interested Schools</NavLink>
+                </li>
               </ul>
             )}
           </li>
 
-          {/* USER CONTROL */}
+          {/* USER */}
           <li>
             <NavLink to="/user-control">
               <i className={`bi bi-people ${styles.icon}`}></i>
@@ -114,7 +146,7 @@ export default function Sidebar() {
             </NavLink>
           </li>
 
-          {/* ================= LOGOUT ================= */}
+          {/* LOGOUT */}
           <li>
             <div
               className={styles.logoutItem}
@@ -124,22 +156,20 @@ export default function Sidebar() {
               <span>Logout</span>
             </div>
           </li>
-
         </ul>
       </div>
 
       {/* ================= LOGOUT MODAL ================= */}
       {showLogoutModal && (
-        <div
-          className={styles.modalOverlay}
-          onClick={() => setShowLogoutModal(false)}
-        >
+        <div className={styles.modalOverlay}>
           <div
             className={styles.logoutToast}
             onClick={(e) => e.stopPropagation()}
           >
             <div className={styles.logoutIconCircle}>
-              <i className="bi bi-box-arrow-left"></i>
+              <div className={styles.logoutIcon}>
+                <i className="bi bi-box-arrow-left"></i>
+              </div>
             </div>
 
             <p className={styles.logoutText}>
@@ -161,11 +191,10 @@ export default function Sidebar() {
                     alert("Email not found ❌");
                     return;
                   }
-
-                  logoutMutate({ email }); // ✅ API CALL
+                  logoutMutate({ email });
                 }}
               >
-                {isPending ? "logging out..." : "Yes"}
+                {isPending ? "Logging out..." : "Confirm"}
               </button>
             </div>
           </div>
