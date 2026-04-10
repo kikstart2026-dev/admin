@@ -1,0 +1,144 @@
+.signin {
+  .signinWrap {
+    margin: 30px 30px;
+  }
+
+  .right {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 121px;
+  }
+
+  .formBox {
+    width: 100%;
+  }
+
+  .head {
+    margin-bottom: 35px;
+    text-align: center;
+
+    .fig {
+      height: 89px;
+      width: 204px;
+      margin: 0 auto 40px;
+    }
+
+    .head2 {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #2B2B2B;
+    }
+
+    .para {
+      font-size: 15px;
+      color: #494949;
+    }
+  }
+
+  .loginToggle {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+
+    .btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 30px;
+      border: 1px solid #ff2d2d;
+      background: transparent;
+      color: #ff2d2d;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.3s ease;
+
+      &.active,
+      &:hover {
+        background: #ff2d2d;
+        color: #fff;
+      }
+    }
+  }
+
+  .authForm {
+    display: flex;
+    flex-direction: column;
+
+    .inputWrapper {
+      position: relative;
+      margin-bottom: 15px;
+
+      .inp {
+        width: 100%;
+        padding: 40px 20px 20px 20px;  
+        border-radius: 15px;
+        border: 1px solid #B3B3B3;
+        font-size: 16px;
+        outline: none;
+        transition: 0.3s ease;
+
+        &:focus {
+          border-color: #ff2d2d;
+          background: #f5f5f5;
+          
+          // padding: 25px;
+        }
+      }
+
+      .lbl {
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 16px;
+        color: #B3B3B3;
+        transition: 0.3s ease;
+        pointer-events: none;
+      }
+
+      .inp:focus+label,
+      .inp:not(:placeholder-shown)+label {
+        top: 22px; // 👈 change only this
+        transform: none;
+        font-size: 14px;
+      }
+    }
+
+    .forgotPassword {
+      text-align: left;
+      margin-bottom: 10px;
+      margin-left: 10px;
+
+      .a {
+        font-size: 14px;
+        color: #ff2d2d;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 1s ease-in-out;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .submitBtn {
+
+      height: 60px;
+      border-radius: 40px;
+      background: #ff2d2d;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s ease;
+      padding: 14px 48px;
+      margin: 0 auto;
+
+      &:active {
+        transform: scale(0.98);
+      }
+    }
+  }
+}

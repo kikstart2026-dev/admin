@@ -51,7 +51,7 @@
   z-index: 1100;
 }
 
-/* Sidebar States */
+/* Sidebar open/close */
 .open {
   transform: translateX(0);
 }
@@ -61,7 +61,6 @@
 }
 
 /* Dropdown */
-
 .dropdownTitle {
   display: flex;
   align-items: center;
@@ -103,8 +102,79 @@
   }
 }
 
-/* Responsive */
+/* ✅ FIXED LOGOUT */
+.logoutItem {
+  display: flex;
+  align-items: center;
+  padding: 20px 30px;
+  cursor: pointer;
+  color: #555;
+  font-weight: 500;
+  transition: 0.3s;
+  width: 100%;
+}
 
+.logoutItem:hover {
+  background: #FFF8F8;
+  border-right: 4px solid #ED1C24;
+  color: #e63946;
+}
+
+/* ================= MODAL FIX ================= */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.logoutToast {
+  background: #fff;
+  padding: 25px;
+  border-radius: 10px;
+  width: 320px;
+  text-align: center;
+}
+
+.logoutIconCircle {
+  font-size: 30px;
+  margin-bottom: 10px;
+}
+
+.logoutText {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.logoutActions {
+  display: flex;
+  gap: 10px;
+}
+
+.btnCancel {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  background: #ddd;
+}
+
+.btnConfirm {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  background: #e63946;
+  color: #fff;
+}
+
+/* Responsive */
 @media (max-width: 992px) {
   .sidebar {
     transform: translateX(-100%);
