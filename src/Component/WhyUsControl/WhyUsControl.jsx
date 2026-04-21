@@ -51,14 +51,14 @@ export default function WhyChooseUsControl() {
 
   const [page, setPage] = useState(1);
 
-const { data = {}, isLoading } = useQuery({
-  queryKey: ["whyChooseUs", page],
-  queryFn: () =>
-    getAllWhyChooseUs({
-      page,
-      limit: 8,
-    }),
-});
+  const { data = {}, isLoading } = useQuery({
+    queryKey: ["whyChooseUs", page],
+    queryFn: () =>
+      getAllWhyChooseUs({
+        page,
+        limit: 8,
+      }),
+  });
 
   const modules = {
     toolbar: [
@@ -89,14 +89,8 @@ const { data = {}, isLoading } = useQuery({
   const cards = data?.data?.cards || [];
   const totalPages = data.totalPages || 1;
 
-  if (data.heading && headingId === null) {
-    setHeadingId(data.heading._id);
-    setHeadingData({
-      tagline: data.heading.tagline || "",
-      heading: data.heading.heading || "",
-      description: data.heading.description || ""
-    });
-  }
+  const heading = data?.data?.heading || null;
+  const headingIdFromData = heading?._id || null;
 
   const fetchData = () => {
     queryClient.invalidateQueries(["whyChooseUs", page]);
@@ -291,9 +285,19 @@ const { data = {}, isLoading } = useQuery({
 
           <button
             className={styles.createBtn}
-            onClick={() => setShowHeadingModal(true)}
+            onClick={() => {
+              if (heading) {
+                setHeadingData({
+                  tagline: heading.tagline || "",
+                  heading: heading.heading || "",
+                  description: heading.description || ""
+                });
+                setHeadingId(heading._id);
+              }
+              setShowHeadingModal(true);
+            }}
           >
-            {data?.heading ? "Update Heading" : "Create Heading"}
+            {heading ? "Update Heading" : "Create Heading"}
           </button>
 
           <button
@@ -404,7 +408,7 @@ const { data = {}, isLoading } = useQuery({
         </table>
 
       </div>
-      
+
       <nav className="mt-4">
         <ul className={`pagination justify-content-center ${styles.customPagination}`}>
 
@@ -470,10 +474,10 @@ const { data = {}, isLoading } = useQuery({
             <div className={styles.ck}>
               <ReactQuill
                 theme="snow"
-                value={formValues.description}
+                value={headingData.description}
                 onChange={(value) =>
-                  setFormValues({
-                    ...formValues,
+                  setHeadingData({
+                    ...headingData,
                     description: value,
                   })
                 }
@@ -541,10 +545,10 @@ const { data = {}, isLoading } = useQuery({
             <div className={styles.ck}>
               <ReactQuill
                 theme="snow"
-                value={formValues.description}
+                value={headingData.description}
                 onChange={(value) =>
-                  setFormValues({
-                    ...formValues,
+                  setHeadingData({
+                    ...headingData,
                     description: value,
                   })
                 }
