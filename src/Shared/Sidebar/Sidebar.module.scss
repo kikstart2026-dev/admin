@@ -1,11 +1,10 @@
 .sidebar {
   background: #ffffff;
   height: 100vh;
-  transition: all 0.3s ease;
   border-right: 1px solid #ddd;
-  z-index: 1000;
   position: fixed;
   width: 20%;
+  transition: 0.3s;
 
   ul {
     padding-left: 0;
@@ -21,7 +20,6 @@
       text-decoration: none;
       color: #555;
       font-weight: 500;
-      transition: 0.3s;
 
       &:hover {
         background: #FFF8F8;
@@ -33,7 +31,6 @@
 
 .icon {
   margin-right: 12px;
-  font-size: 18px;
 }
 
 .active {
@@ -48,10 +45,8 @@
   left: 20px;
   font-size: 24px;
   cursor: pointer;
-  z-index: 1100;
 }
 
-/* Sidebar States */
 .open {
   transform: translateX(0);
 }
@@ -60,17 +55,12 @@
   transform: translateX(-100%);
 }
 
-/* Dropdown */
-
+/* DROPDOWN */
 .dropdownTitle {
   display: flex;
-  align-items: center;
   justify-content: space-between;
   padding: 20px 30px;
   cursor: pointer;
-  color: #555;
-  font-weight: 500;
-  transition: 0.3s;
 
   &:hover {
     background: #FFF8F8;
@@ -86,25 +76,110 @@
 .submenu {
   padding-left: 20px;
 
-  li {
-    margin-bottom: 6px;
-
-    a {
-      padding: 12px 30px;
-      font-size: 14px;
-      color: #666;
-      display: block;
-
-      &:hover {
-        background: #FFF8F8;
-        border-right: 4px solid #ED1C24;
-      }
-    }
+  li a {
+    padding: 10px 30px;
+    font-size: 14px;
   }
 }
 
-/* Responsive */
+/* LOGOUT */
+.logoutItem {
+  display: flex;
+  align-items: center;
+  padding: 20px 30px;
+  cursor: pointer;
 
+  &:hover {
+    background: #FFF8F8;
+    border-right: 4px solid #ED1C24;
+    color: #e63946;
+  }
+}
+
+/* ================= MODAL ================= */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(6px);
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.logoutToast {
+  background: #fff;
+  padding: 40px 30px;
+  border-radius: 20px;
+  text-align: center;
+  max-width: 600px;
+  width: 90%;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.logoutIconCircle {
+  background: #FFF8F8;
+  border-radius: 50%;
+  width: 111px;
+  height: 111px;
+  margin: 0 auto 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logoutIcon {
+  width: 92px;
+  height: 92px;
+  background: #ED1C24;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+
+.logoutText {
+  font-weight: 700;
+  font-size: 20px;
+  margin-bottom: 25px;
+}
+
+.logoutActions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.btnCancel {
+  padding: 14px 35px;
+  border-radius: 50px;
+  border: none;
+  background: #2B2B2B;
+  color: #fff;
+  cursor: pointer;
+}
+
+.btnConfirm {
+  padding: 14px 35px;
+  border-radius: 50px;
+  border: none;
+  background: #ED1C24;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* BODY LOCK */
+body.modalOpen {
+  overflow: hidden;
+}
+
+/* RESPONSIVE */
 @media (max-width: 992px) {
   .sidebar {
     transform: translateX(-100%);

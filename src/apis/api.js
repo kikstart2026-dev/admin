@@ -543,3 +543,75 @@ export const deleteAllSchools = async () => {
   return res.data;
 };
 
+
+
+//Admin Auth--------------------------------->>
+
+// ================= ADMIN AUTH =================
+
+// 🔐 LOGIN
+export const adminLogin = async (payload) => {
+  const res = await axiosInstance.post(endpoints.adminLogin, payload);
+  return res.data;
+};
+
+// 🔢 VERIFY OTP
+export const adminVerifyOtp = async (payload) => {
+  const res = await axiosInstance.post(endpoints.adminVerifyOtp, payload);
+  return res.data;
+};
+
+// 🔁 RESEND OTP
+export const adminResendOtp = async (payload) => {
+  const res = await axiosInstance.post(endpoints.adminResendOtp, payload);
+  return res.data;
+};
+
+// 🔑 FORGOT PASSWORD
+export const adminForgotPass = async (payload) => {
+  const res = await axiosInstance.post(endpoints.adminForgotPass, payload);
+  return res.data;
+};
+
+// 🔄 RESET PASSWORD
+export const adminResetPass = async (payload) => {
+  const res = await axiosInstance.post(endpoints.adminResetPass, payload);
+  return res.data;
+};
+
+// 🚪 LOGOUT
+export const adminLogout = async (payload) => {
+  const res = await axiosInstance.post(endpoints.adminLogout, payload);
+  return res.data;
+};
+
+export const adminGoogleAuth = async (payload) => {
+  const res = await axiosInstance.post(
+    endpoints.adminGoogleAuth,
+    payload
+  );
+  return res.data;
+};
+
+
+
+// // 👥 GET USERS
+// export const getAllUsers = async () => {
+//   const res = await axiosInstance.get(endpoints.getUsers);
+//   return res.data;
+// };
+
+// // ❌ DELETE ALL
+// export const deleteAllUsers = async () => {
+//   const res = await axiosInstance.delete(endpoints.deleteAllUsers);
+//   return res.data;
+// };
+
+// // ❌ DELETE MULTIPLE
+// export const deleteMultipleUsers = async (userIds) => {
+//   const res = await axiosInstance.delete(
+//     endpoints.deleteMultipleUsers,
+//     { data: { userIds } }
+//   );
+//   return res.data;
+// };

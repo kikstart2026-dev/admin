@@ -1,0 +1,210 @@
+.left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #FFF8F8;
+  border-radius: 65px;
+  transition: 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  padding: 40px 20px;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 40px;
+    left: 30%;
+    width: 43px;
+    height: 43px;
+    background-image: url("../../../assets/images/Vector.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 65px;
+    left: 36%;
+    width: 22px;
+    height: 22px;
+    background-image: url("../../../assets/images/borfi.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.6;
+    pointer-events: none;
+  }
+}
+
+.leftDiv {
+  max-width: 900px;
+  text-align: center;
+  margin: 30px 0;
+  position: relative;
+  padding: 20px;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 40px;
+    right: 8px;
+    width: 42px;
+    height: 22px;
+    background-image: url("../../../assets/images/cloud.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 50%;
+    right: -17%;
+    width: 85px;
+    height: 98px;
+    background-image: url("../../../assets/images/flower2.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.6;
+    pointer-events: none;
+  }
+}
+
+.toggleWrap {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.toggleBtn {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #2B2B2B;
+}
+
+.figu {
+  max-width: 800px;
+  margin: 0 auto 30px auto;
+}
+
+.ima {
+  width: 100%;
+  height: auto;
+}
+
+.paragraph {
+  margin-top: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.com {
+  font-size: 16px;
+  color: #2B2B2B;
+  font-weight: 500;
+}
+
+.redL {
+  margin-left: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ff2d2d;
+  text-decoration: none;
+}
+
+/* ================= SOCIAL ================= */
+
+.socialLogin {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+
+  i{
+    margin-right: 10px;
+  font-size: 16px;
+  }
+}
+
+.socialLogin button {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 40px;
+  border: 2px solid #ff2d2d;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.3s ease;
+  background-color: #ffffff;
+  color: #ff2d2d;
+  margin-bottom: 15px;
+}
+
+.socialLogin button:last-child {
+  margin-bottom: 0;
+}
+
+.socialLogin button.active,
+.socialLogin button:hover {
+  background: #ff2d2d;
+  color: #fff;
+}
+
+.socialLogin button .ii {
+  color: #ff2d2d;
+}
+
+.socialLogin button.activeGoogle,
+.socialLogin button.activeFacebook {
+  background-color: #ff2d2d;
+  border-color: #ff2d2d;
+  color: #ffffff;
+}
+
+.socialLogin button.activeGoogle .ii,
+.socialLogin button.activeFacebook .ii {
+  color: #ffffff;
+}
+
+/* ================= DARK MODE ================= */
+
+.dark {
+  background-color: #121212;
+}
+
+.dark .com {
+  color: #f1f1f1;
+}
+
+.dark .toggleBtn {
+  color: #ffffff;
+}
+
+/* ================= DECOR ================= */
+
+.decor {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+
+  &::before {
+    content: "";
+    position: absolute;
+    bottom: 30%;
+    left: -15%;
+    width: 106px;
+    height: 107px;
+    background: url("../../../assets/images/Group.png") no-repeat center;
+    background-size: contain;
+  }
+}

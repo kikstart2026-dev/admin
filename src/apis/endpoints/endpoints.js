@@ -104,9 +104,9 @@ export const endpoints = {
   // 🔥 DELETE ALL
   deleteAllFaq: "/admin/faq/delete-all",
 
-// ================================
-// Schools Admin APIs
-// ================================
+  // ================================
+  // Schools Admin APIs
+  // ================================
 
   //  GET ALL
   getSchools: "admin/schools/",
@@ -129,5 +129,23 @@ export const endpoints = {
   //  DELETE SELECTED
   deleteSelectedSchools: "admin/schools/delete-selected",
 
-};
 
+
+
+// Admin Auth -------------------------------------->>>
+
+
+  adminLogin: "admin/login",
+  adminVerifyOtp: "admin/verify-otp",
+  adminResendOtp: "admin/resend-otp",
+  adminForgotPass: "admin/forgot-password",
+  adminResetPass: "admin/reset-password",
+  adminLogout: "admin/logout",
+  adminGoogleAuth: "/admin/google",
+
+  // protected
+  getUsers: "admin/users",
+  deleteAllUsers: "api/admin/users/delete-all",
+  deleteMultipleUsers: "admin/users/delete-multiple"
+
+};
