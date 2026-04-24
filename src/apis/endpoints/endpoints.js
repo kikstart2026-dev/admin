@@ -21,8 +21,8 @@ export const endpoints = {
 
   // Heading-------------------------->>
 
-  updateHeading: (id) => `/${id}`,
-  createHeading: "/create",
+  updateHeading: (id) => `headings/${id}`,
+  createHeading: "headings/create",
 
 
   createFile: "/media/create",
