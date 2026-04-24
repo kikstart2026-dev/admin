@@ -268,3 +268,55 @@ margin-bottom: 15px;
 :global(.ck-content li) {
   margin-bottom: 5px;
 }
+
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+  gap: 8px;
+
+  button {
+    background: transparent;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    transition: all 0.3s ease;
+
+    &:hover:not(:disabled) {
+      border-color: #ed1c24;
+      color: #ed1c24;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.3;
+    }
+  }
+
+  .activePage {
+    border: 1px solid #ed1c24 !important; 
+    color: #ed1c24 !important;
+    background-color: transparent; 
+  }
+
+  .arrowBtn {
+    border: none; 
+    font-size: 16px;
+    color: #999;
+    
+    &:hover:not(:disabled) {
+      color: #333;
+    }
+  }
+
+}

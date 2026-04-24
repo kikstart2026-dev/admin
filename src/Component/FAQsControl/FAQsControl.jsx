@@ -15,7 +15,8 @@ import "react-quill-new/dist/quill.snow.css";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { handleSuccess, handleError } from "../../utils";
 
-export default function FAQsControl({ isFullPage = false, visibleCount = 5 }) {
+// Ekhane visibleCount default 1000 kora hoyeche jate sob data show hoy
+export default function FAQsControl({ isFullPage = false, visibleCount = 1000 }) {
   const queryClient = useQueryClient();
 
   const [selected, setSelected] = useState([]);
@@ -42,11 +43,11 @@ export default function FAQsControl({ isFullPage = false, visibleCount = 5 }) {
   /* ================= PAGINATION ================= */
   const [page, setPage] = useState(1);
   const currentPage = isFullPage ? page : 1;
-  const limit = visibleCount;
+  const limit = visibleCount; // Akhon limit 1000 ba apnar deya prop onujayi hobe
 
   /* ================= FETCH FAQ ================= */
   const { data: response = {} } = useQuery({
-    queryKey: ["faqs", currentPage],
+    queryKey: ["faqs", currentPage, limit], // limit queryKey-te add kora hoyeche update track korar jonno
     queryFn: async () => {
       const res = await getFaqs(currentPage, limit);
       return res || {};
@@ -163,23 +164,34 @@ export default function FAQsControl({ isFullPage = false, visibleCount = 5 }) {
   };
 
   /* ================= 🔥 FIXED HEADING SAVE ================= */
-  const handleHeadingSave = async () => {
-    try {
-      if (headingId) {
-        await updateHeading(headingId, headingData);
-        handleSuccess("Heading Updated");
-      } else {
-        const res = await createHeading(headingData);
-        setHeadingId(res?.data?._id);
-        handleSuccess("Heading Created");
-      }
+ const handleHeadingSave = async () => {
+  try {
+    console.log("DATA:", headingData);
 
-      setShowHeadingModal(false);
-      refresh();
-    } catch (err) {
-      handleError("Failed to save heading");
+    if (!headingData.tagline || !headingData.heading) {
+      return handleError("All fields required");
     }
-  };
+
+    if (headingId) {
+      console.log("UPDATING...");
+      await updateHeading(headingId, headingData);
+    } else {
+      console.log("CREATING...");
+      const res = await createHeading(headingData);
+      console.log("RES:", res);
+      setHeadingId(res?._id);
+    }
+
+    handleSuccess("Done");
+    setShowHeadingModal(false);
+    refresh();
+  } catch (err) {
+    console.error("ERROR:", err);
+    console.error("RESPONSE:", err?.response);
+    console.error("DATA:", err?.response?.data);
+    handleError("Failed to save heading");
+  }
+};
 
   /* ================= OPEN HEADING MODAL FIX ================= */
   const openHeadingModal = () => {
@@ -230,7 +242,11 @@ export default function FAQsControl({ isFullPage = false, visibleCount = 5 }) {
           <thead>
             <tr>
               <th>
-                <input type="checkbox" onChange={handleSelectAll} /> Select All
+                <input 
+                   type="checkbox" 
+                   onChange={handleSelectAll} 
+                   checked={data.length > 0 && selected.length === data.length}
+                /> Select All
               </th>
               <th>Question</th>
               <th>Answer</th>
@@ -254,7 +270,7 @@ export default function FAQsControl({ isFullPage = false, visibleCount = 5 }) {
 
                 <td
                   dangerouslySetInnerHTML={{
-                    __html: item.answer.substring(0, 80),
+                    __html: item.answer.substring(0, 80) + (item.answer.length > 80 ? "..." : ""),
                   }}
                 />
 

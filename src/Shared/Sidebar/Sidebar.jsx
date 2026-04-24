@@ -102,42 +102,16 @@ export default function Sidebar() {
           </li>
 
           {/* CONTENT */}
-          <li>
-            <div onClick={toggleContent} className={styles.dropdownTitle}>
-              <div className={styles.dropdownLeft}>
-                <i
-                  className={`bi bi-layout-text-window-reverse ${styles.icon}`}
-                ></i>
-                <span>Content Management</span>
-              </div>
-              <i
-                className={`bi ${contentOpen ? "bi-chevron-up" : "bi-chevron-down"}`}
-              />
-            </div>
+            <li>
+              <NavLink
+                to="/home-page"
+                className={({ isActive }) => (isActive ? styles.active : "")}
+              >
+                <i className={`bi bi-layout-text-window-reverse ${styles.icon}`}></i>
+                <span>CMS</span>
+              </NavLink>
+            </li>
 
-            {contentOpen && (
-              <ul className={styles.submenu}>
-                <li>
-                  <NavLink to="/home-page">Home Page</NavLink>
-                </li>
-                <li>
-                  <NavLink to="/about-control">About Page</NavLink>
-                </li>
-                <li>
-                  <NavLink to="/contact-control">Contact Page</NavLink>
-                </li>
-                <li>
-                  <NavLink to="/why-us">Why Us Page</NavLink>
-                </li>
-                <li>
-                  <NavLink to="/faq-page">Faq Page</NavLink>
-                </li>
-                <li>
-                  <NavLink to="/interested-schools">Interested Schools</NavLink>
-                </li>
-              </ul>
-            )}
-          </li>
 
           {/* USER */}
           <li>
