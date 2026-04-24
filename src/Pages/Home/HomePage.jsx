@@ -8,6 +8,9 @@ import WhyChooseUsControl from "../../Component/WhyChooseUsControl/WhyChooseUsCo
 import AboutSectionControl from "../../Component/AboutSectionControl/AboutSectionControl";
 import ServiceControl from "../../Component/ServiceControl/ServiceControl";
 import FAQsControl from "../../Component/FAQsControl/FAQsControl";
+import InterestedSchoolsControl from "../../Component/InteretedSchoolControl/InterestedSchoolControl";
+
+
 export default function HomePage() {
 
   const [activeSection, setActiveSection] = useState(null);
@@ -162,6 +165,31 @@ export default function HomePage() {
           {activeSection === "faq" && (
             <div className={styles.sectionBody}>
               <FAQsControl limit={5} />
+            </div>
+          )}
+        </div>
+
+
+        {/* INTERESTED SCHOOLS */}
+        <div className={styles.section}>
+          <div
+            className={`${styles.sectionHeader} ${activeSection === "schools" ? styles.active : ""
+              }`}
+            onClick={() => toggleSection("schools")}
+          >
+            <span>Interested Schools</span>
+
+            <i
+              className={`bi ${activeSection === "schools"
+                  ? "bi-chevron-up"
+                  : "bi-chevron-down"
+                }`}
+            ></i>
+          </div>
+
+          {activeSection === "schools" && (
+            <div className={styles.sectionBody}>
+              <InterestedSchoolsControl />  
             </div>
           )}
         </div>

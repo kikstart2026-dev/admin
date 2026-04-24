@@ -12,9 +12,7 @@ import Dashboard from "./Pages/Dashboard/Dashboard";
 import HomePage from "./Pages/Home/HomePage";
 import About from "./Pages/About/About";
 import Contact from "./Pages/Contact/Contact";
-import WhyUsPage from "./Pages/WhyUs/WhyUsPage";
-import FaqPage from "./Pages/FaqPage/FaqPage";
-import InterestedSchoolsPage from "./Pages/InteretedSchools/InterestedSchoolsPage";
+
 
 import AdminLogin from "./Pages/Authentication/AdminLogin/AdminLogin";
 import AdminOtpVerify from "./Pages/Authentication/AdminOtpVerify/AdminOtpVerify";
@@ -133,32 +131,7 @@ function Layout() {
           }
         />
 
-        <Route
-          path="/why-us"
-          element={
-            <AdminProtectedRoute>
-              <WhyUsPage />
-            </AdminProtectedRoute>
-          }
-        />
 
-        <Route
-          path="/faq-page"
-          element={
-            <AdminProtectedRoute>
-              <FaqPage />
-            </AdminProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/interested-schools"
-          element={
-            <AdminProtectedRoute>
-              <InterestedSchoolsPage />
-            </AdminProtectedRoute>
-          }
-        />
 
       </Routes>
     </>

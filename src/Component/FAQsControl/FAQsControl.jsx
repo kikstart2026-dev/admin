@@ -164,23 +164,34 @@ export default function FAQsControl({ isFullPage = false, visibleCount = 1000 })
   };
 
   /* ================= 🔥 FIXED HEADING SAVE ================= */
-  const handleHeadingSave = async () => {
-    try {
-      if (headingId) {
-        await updateHeading(headingId, headingData);
-        handleSuccess("Heading Updated");
-      } else {
-        const res = await createHeading(headingData);
-        setHeadingId(res?.data?._id);
-        handleSuccess("Heading Created");
-      }
+ const handleHeadingSave = async () => {
+  try {
+    console.log("DATA:", headingData);
 
-      setShowHeadingModal(false);
-      refresh();
-    } catch (err) {
-      handleError("Failed to save heading");
+    if (!headingData.tagline || !headingData.heading) {
+      return handleError("All fields required");
     }
-  };
+
+    if (headingId) {
+      console.log("UPDATING...");
+      await updateHeading(headingId, headingData);
+    } else {
+      console.log("CREATING...");
+      const res = await createHeading(headingData);
+      console.log("RES:", res);
+      setHeadingId(res?._id);
+    }
+
+    handleSuccess("Done");
+    setShowHeadingModal(false);
+    refresh();
+  } catch (err) {
+    console.error("ERROR:", err);
+    console.error("RESPONSE:", err?.response);
+    console.error("DATA:", err?.response?.data);
+    handleError("Failed to save heading");
+  }
+};
 
   /* ================= OPEN HEADING MODAL FIX ================= */
   const openHeadingModal = () => {
