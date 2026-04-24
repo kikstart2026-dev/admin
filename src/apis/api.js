@@ -615,7 +615,6 @@ export const adminGoogleAuth = async (payload) => {
 //   );
 //   return res.data;
 // };
-<<<<<<< HEAD
 
 
 
@@ -672,5 +671,3 @@ export const assignDynamicRole = async (id, payload) => {
   );
   return res.data;
 };
-=======
->>>>>>> de1b73115efe04b83a57d1c2fea3f01e179a9d36
