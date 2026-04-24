@@ -50,6 +50,7 @@ export default function Sidebar() {
       "/faq-page",
       "/interested-schools",
       "/why-us",
+      "/role-management"
     ];
 
     if (paths.includes(location.pathname)) {
@@ -143,6 +144,13 @@ export default function Sidebar() {
             <NavLink to="/user-control">
               <i className={`bi bi-people ${styles.icon}`}></i>
               <span>User Control</span>
+            </NavLink>
+          </li>
+
+          <li>
+            <NavLink to="/role-management">
+              <i className={`bi bi-person-gear ${styles.icon}`}></i>
+              <span>Role Management</span>
             </NavLink>
           </li>
 

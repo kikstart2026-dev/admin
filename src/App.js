@@ -27,6 +27,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import RoleManagementPage from "./Pages/RoleManagementPage/RoleManagementPage";
 
 // ================= 🔐 ADMIN PROTECTED ROUTE =================
 function AdminProtectedRoute({ children }) {
@@ -156,6 +157,15 @@ function Layout() {
           element={
             <AdminProtectedRoute>
               <InterestedSchoolsPage />
+            </AdminProtectedRoute>
+          }
+        />
+
+         <Route
+          path="/role-management"
+          element={
+            <AdminProtectedRoute>
+              <RoleManagementPage />
             </AdminProtectedRoute>
           }
         />

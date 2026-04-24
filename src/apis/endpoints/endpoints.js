@@ -146,6 +146,17 @@ export const endpoints = {
   // protected
   getUsers: "admin/users",
   deleteAllUsers: "api/admin/users/delete-all",
-  deleteMultipleUsers: "admin/users/delete-multiple"
+  deleteMultipleUsers: "admin/users/delete-multiple",
+
+
+
+// USER MANAGEMENT ---------------------->>
+
+createSubAdmin: "admin/emp",
+getAllSubAdmins: "admin/emp",
+getSubAdminById: (id) => `admin/emp/${id}`,
+updateSubAdmin: (id) => `admin/emp/${id}`,
+deleteSubAdmin: (id) => `admin/emp/${id}`,
+assignDynamicRole: (id) => `admin/emp/assign-role/${id}`,
 
 };

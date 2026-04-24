@@ -614,3 +614,59 @@ export const adminGoogleAuth = async (payload) => {
 //   );
 //   return res.data;
 // };
+
+
+
+// ================= USER MANAGEMENT =================
+
+// ✅ CREATE
+export const createSubAdmin = async (payload) => {
+  const res = await axiosInstance.post(endpoints.createSubAdmin, payload);
+  return res.data;
+};
+
+// // ✅ GET ALL
+// export const getAllSubAdmins = async () => {
+//   const res = await axiosInstance.get(endpoints.getAllSubAdmins);
+//   return res.data;
+// };
+
+
+export const getAllSubAdmins = async (params) => {
+  const res = await axiosInstance.get(endpoints.getAllSubAdmins, {
+    params,   // ✅ THIS LINE IS THE FIX
+  });
+  return res.data;
+};
+
+// ✅ GET BY ID
+export const getSubAdminById = async (id) => {
+  const res = await axiosInstance.get(endpoints.getSubAdminById(id));
+  return res.data;
+};
+
+// ✅ UPDATE
+export const updateSubAdmin = async (id, payload) => {
+  const res = await axiosInstance.put(
+    endpoints.updateSubAdmin(id),
+    payload
+  );
+  return res.data;
+};
+
+// ✅ DELETE
+export const deleteSubAdmin = async (id) => {
+  const res = await axiosInstance.delete(
+    endpoints.deleteSubAdmin(id)
+  );
+  return res.data;
+};
+
+// ✅ ASSIGN ROLE
+export const assignDynamicRole = async (id, payload) => {
+  const res = await axiosInstance.put(
+    endpoints.assignDynamicRole(id),
+    payload
+  );
+  return res.data;
+};
