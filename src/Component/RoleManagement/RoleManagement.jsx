@@ -26,6 +26,10 @@ const RoleManagement = () => {
     const [editData, setEditData] = useState({ email: "", password: "" });
     const [updateLoading, setUpdateLoading] = useState(false);
 
+    const [deleteModal, setDeleteModal] = useState(false);
+    const [deleteId, setDeleteId] = useState(null);
+    const [deleteLoading, setDeleteLoading] = useState(false);
+
     const [form, setForm] = useState({ fullname: "", email: "", password: "" });
     const [loading, setLoading] = useState(false);
 
@@ -101,11 +105,33 @@ const RoleManagement = () => {
         }
     };
 
-    const handleDelete = async (id) => {
-        if (!window.confirm("Delete this user?")) return;
-        await deleteSubAdmin(id);
-        fetchUsers();
+    // ✅ UPDATED DELETE FLOW
+    const handleDelete = (id) => {
+        setDeleteId(id);
+        setDeleteModal(true);
     };
+    const confirmDelete = async () => {
+        try {
+            setDeleteLoading(true);
+            await deleteSubAdmin(deleteId);
+            setDeleteModal(false);
+            fetchUsers();
+        } finally {
+            setDeleteLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (openModal || roleModal || viewModal || editModal) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "auto";
+        }
+
+        return () => {
+            document.body.style.overflow = "auto";
+        };
+    }, [openModal, roleModal, viewModal, editModal]);
 
     return (
         <div className={styles.wrap}>
@@ -133,7 +159,9 @@ const RoleManagement = () => {
                         <tr key={user._id} className={styles.row}>
                             <td>
                                 <div className={styles.userCell}>
-                                    <div className={styles.avatar}>👤</div>
+                                    <div className={styles.avatar}>
+                                        <i className={`bi bi-person-fill ${styles.person}`}></i>
+                                    </div>
                                     {user.fullname}
                                 </div>
                             </td>
@@ -247,7 +275,6 @@ const RoleManagement = () => {
                 </div>
             )}
 
-            {/* ROLE MODAL */}
             {roleModal && (
                 <div className={styles.modalOverlay}>
                     <div className={styles.modal}>
@@ -256,22 +283,41 @@ const RoleManagement = () => {
                         <form
                             onSubmit={(e) => {
                                 e.preventDefault();
-                                handleAssignRole();
+                                handleAssignRole(); // ✅ only call here
                             }}
                             className={styles.form}
                         >
-                            <input className={styles.input}
+
+                            <input
+                                className={styles.input}
                                 value={roleValue}
                                 placeholder="Enter Role"
                                 onChange={(e) => setRoleValue(e.target.value)}
                             />
 
                             <div className={styles.modalActions}>
-                                <button className={styles.cancelBtn} onClick={() => setRoleModal(false)}>Cancel</button>
-                                <button className={styles.submitBtn} onClick={handleAssignRole}>{assignLoading ? "Assigning..." : "Assign"}</button>
-                            </div>
-                        </form>
+                                <button
+                                    type="button"
+                                    className={styles.cancelBtn}
+                                    onClick={() => setRoleModal(false)}
+                                >
+                                    Cancel
+                                </button>
 
+                                <button
+                                    type="submit"
+                                    className={styles.submitBtn}
+                                    disabled={
+                                        assignLoading ||
+                                        !roleValue.trim() ||
+                                        selectedUser?.dynamicRole?.toLowerCase() === roleValue.trim().toLowerCase() 
+                                    } // if the input is different then the assign button enable 
+                                >
+                                    {assignLoading ? "Assigning..." : "Assign"}
+                                </button>
+                            </div>
+
+                        </form>
                     </div>
                 </div>
             )}
@@ -280,14 +326,19 @@ const RoleManagement = () => {
             {viewModal && selectedUser && (
                 <div className={styles.modalOverlay}>
                     <div className={styles.modal}>
-                        <h3>User Details</h3>
-                        <p><b>Name:</b> {selectedUser.fullname}</p>
-                        <p><b>Email:</b> {selectedUser.email}</p>
-                        <p><b>Role:</b> {selectedUser.dynamicRole}</p>
-                        <button className={styles.cancelBtn2} onClick={() => setViewModal(false)}>Close</button>
+                        <h3 className={styles.modalTitle}>User Details</h3>
+                        <div className={styles.modalInfo}>
+                            <p><b>Name:</b> {selectedUser.fullname}</p>
+                            <p><b>Email:</b> {selectedUser.email}</p>
+                            <p><b>Role:</b> {selectedUser.dynamicRole}</p>
+                        </div>
+                        <div className={styles.modalAaction2}>
+                            <button className={styles.cancelBtn2} onClick={() => setViewModal(false)}>Close</button>
+                        </div>
                     </div>
                 </div>
-            )}
+            )
+            }
 
             {/* EDIT MODAL */}
             {editModal && (
@@ -321,9 +372,46 @@ const RoleManagement = () => {
                         </form>
                     </div>
                 </div>
+            )
+            }
+
+
+            {/* DELETE MODAL */}
+            {deleteModal && (
+                <div className={styles.modalOverlay}>
+                    <div className={styles.deleteModal}>
+
+                        <div className={styles.deleteIcon}>
+                            <i className="bi bi-person-dash"></i>
+                        </div>
+
+                        <h3 className={styles.deleteTitle}>
+                            Are you sure you want to delete?
+                        </h3>
+
+                        <div className={styles.deleteActions}>
+                            <button
+                                className={styles.cancelBtn}
+                                onClick={() => setDeleteModal(false)}
+                            >
+                                Cancel
+                            </button>
+
+                            <button
+                                className={styles.submitBtn}
+                                onClick={confirmDelete}
+                                disabled={deleteLoading}
+                            >
+                                {deleteLoading ? "Confirming..." : "Confirm"}
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
             )}
 
-        </div>
+
+        </div >
     );
 };
 

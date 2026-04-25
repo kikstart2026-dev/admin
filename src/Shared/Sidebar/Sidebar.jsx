@@ -102,27 +102,31 @@ export default function Sidebar() {
           </li>
 
           {/* CONTENT */}
-            <li>
-              <NavLink
-                to="/home-page"
-                className={({ isActive }) => (isActive ? styles.active : "")}
-              >
-                <i className={`bi bi-layout-text-window-reverse ${styles.icon}`}></i>
-                <span>CMS</span>
-              </NavLink>
-            </li>
+          <li>
+            <NavLink
+              to="/home-page"
+              className={({ isActive }) => (isActive ? styles.active : "")}
+            >
+              <i className={`bi bi-layout-text-window-reverse ${styles.icon}`}></i>
+              <span>CMS</span>
+            </NavLink>
+          </li>
 
 
           {/* USER */}
           <li>
-            <NavLink to="/user-control">
+            <NavLink to="/user-control"
+              className={({ isActive }) => (isActive ? styles.active : "")}
+            >
               <i className={`bi bi-people ${styles.icon}`}></i>
               <span>User Control</span>
             </NavLink>
           </li>
 
           <li>
-            <NavLink to="/role-management">
+            <NavLink to="/role-management"
+              className={({ isActive }) => (isActive ? styles.active : "")}
+            >
               <i className={`bi bi-person-gear ${styles.icon}`}></i>
               <span>Role Management</span>
             </NavLink>
