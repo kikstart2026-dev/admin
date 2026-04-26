@@ -310,7 +310,7 @@ const RoleManagement = () => {
                                     disabled={
                                         assignLoading ||
                                         !roleValue.trim() ||
-                                        selectedUser?.dynamicRole?.toLowerCase() === roleValue.trim().toLowerCase() 
+                                        selectedUser?.dynamicRole?.toLowerCase() === roleValue.trim().toLowerCase()
                                     } // if the input is different then the assign button enable 
                                 >
                                     {assignLoading ? "Assigning..." : "Assign"}
@@ -372,8 +372,7 @@ const RoleManagement = () => {
                         </form>
                     </div>
                 </div>
-            )
-            }
+            )}
 
 
             {/* DELETE MODAL */}
