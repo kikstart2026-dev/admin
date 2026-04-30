@@ -427,3 +427,76 @@ font-size: 18px;
      vertical-align: 0;
 
 }
+/* important for dropdown positioning */
+td {
+  position: relative;
+}
+/* Wrapper */
+.dropdownWrapper {
+  position: relative;
+}
+
+/* Button */
+.dropdownBtn {
+  background: transparent;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+
+  &:hover {
+    background: #f2f2f2;
+  }
+}
+
+/* Icon (rotation works here) */
+.dropdownIcon {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+/* Rotate when open */
+.rotate {
+  transform: rotate(180deg);
+}
+
+/* Selected role highlight */
+.activeRole {
+  background: #fff1f1 !important;
+  font-weight: 500;
+}
+
+/* ✅ Dropdown (NO animation, NO scroll issue) */
+:global(.dropdown-menu) {
+  position: absolute !important;
+  z-index: 9999;
+  display: none;
+
+  top: auto !important;
+  bottom: -100px !important;
+  transform: translateY(-6px);
+
+}
+
+  
+
+
+/* Show dropdown */
+:global(.dropdown-menu.show) {
+  display: block;
+}
+
+
+/* parent wrapper */
+.wrap {
+  overflow: visible !important;
+}
+
+/* যদি table responsive wrapper থাকে */
+.table {
+  overflow: visible !important;
+}
+
+
+
+

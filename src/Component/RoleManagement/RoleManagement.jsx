@@ -15,10 +15,9 @@ const RoleManagement = () => {
     const [users, setUsers] = useState([]);
     const [openModal, setOpenModal] = useState(false);
 
-    const [roleModal, setRoleModal] = useState(false);
+    const [assignLoadingId, setAssignLoadingId] = useState(null); // 👈 per user loading
+
     const [selectedUser, setSelectedUser] = useState(null);
-    const [roleValue, setRoleValue] = useState("");
-    const [assignLoading, setAssignLoading] = useState(false);
 
     const [viewModal, setViewModal] = useState(false);
 
@@ -33,9 +32,25 @@ const RoleManagement = () => {
     const [form, setForm] = useState({ fullname: "", email: "", password: "" });
     const [loading, setLoading] = useState(false);
 
+    const [openDropdownId, setOpenDropdownId] = useState(null);
+
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const limit = 5;
+
+    // ✅ predefined roles
+    const rolesList = [
+        "Admin",
+        "Sub Admin",
+        "Manager",
+        "Editor",
+        "Viewer",
+        "Support",
+        "Sales",
+        "HR",
+        "Finance",
+        "Moderator"
+    ];
 
     const fetchUsers = async () => {
         try {
@@ -64,24 +79,34 @@ const RoleManagement = () => {
         }
     };
 
-    const openAssignModal = (user) => {
-        setSelectedUser(user);
-        setRoleValue(user.dynamicRole || "");
-        setRoleModal(true);
-    };
+    // ✅ NEW ROLE ASSIGN FUNCTION
+ 
+    const handleRoleSelect = async (userId, role) => {
+        // instant UI update
+        setUsers((prev) =>
+            prev.map((u) =>
+                u._id === userId ? { ...u, dynamicRole: role } : u
+            )
+        );
 
-    const handleAssignRole = async () => {
+        setOpenDropdownId(null); // close dropdown 
+
         try {
-            setAssignLoading(true);
-            await assignDynamicRole(selectedUser._id, { dynamicRole: roleValue });
-            setRoleModal(false);
-            fetchUsers();
+            setAssignLoadingId(userId);
+            await assignDynamicRole(userId, { dynamicRole: role });
+        } catch (err) {
+            fetchUsers(); // rollback
         } finally {
-            setAssignLoading(false);
+            setAssignLoadingId(null);
         }
     };
 
-    // 🔥 UPDATED → now fetching fresh data
+    useEffect(() => {
+        const handleClickOutside = () => setOpenDropdownId(null);
+        window.addEventListener("click", handleClickOutside);
+        return () => window.removeEventListener("click", handleClickOutside);
+    }, []);
+
     const handleView = async (id) => {
         const res = await getSubAdminById(id);
         setSelectedUser(res.data);
@@ -105,11 +130,11 @@ const RoleManagement = () => {
         }
     };
 
-    // ✅ UPDATED DELETE FLOW
     const handleDelete = (id) => {
         setDeleteId(id);
         setDeleteModal(true);
     };
+
     const confirmDelete = async () => {
         try {
             setDeleteLoading(true);
@@ -122,7 +147,7 @@ const RoleManagement = () => {
     };
 
     useEffect(() => {
-        if (openModal || roleModal || viewModal || editModal) {
+        if (openModal || viewModal || editModal) {
             document.body.style.overflow = "hidden";
         } else {
             document.body.style.overflow = "auto";
@@ -131,7 +156,7 @@ const RoleManagement = () => {
         return () => {
             document.body.style.overflow = "auto";
         };
-    }, [openModal, roleModal, viewModal, editModal]);
+    }, [openModal, viewModal, editModal]);
 
     return (
         <div className={styles.wrap}>
@@ -174,10 +199,41 @@ const RoleManagement = () => {
                                 </span>
                             </td>
 
+                            {/* ✅ DROPDOWN REPLACED */}
                             <td>
-                                <span className={styles.plusBtn} onClick={() => openAssignModal(user)}>
-                                    ＋
-                                </span>
+                                <div className={`dropdown position-static`}>
+                                    <button
+                                        className={`btn ${styles.dropdownBtn}`}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setOpenDropdownId((prev) =>
+                                                prev === user._id ? null : user._id
+                                            );
+                                        }}
+                                    >
+                                        <i
+                                            className={`bi bi-chevron-down ${styles.dropdownIcon} ${openDropdownId === user._id ? styles.rotate : ""
+                                                }`}
+                                        ></i>
+                                    </button>
+
+                                    <ul
+                                        className={`dropdown-menu shadow ${openDropdownId === user._id ? "show" : ""
+                                            }`}
+                                    >
+                                        {rolesList.map((role) => (
+                                            <li key={role}>
+                                                <button
+                                                    className={`dropdown-item ${user.dynamicRole === role ? styles.activeRole : ""
+                                                        }`}
+                                                    onClick={() => handleRoleSelect(user._id, role)}
+                                                >
+                                                    {role}
+                                                </button>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
                             </td>
 
                             <td className={styles.actions}>
@@ -189,6 +245,7 @@ const RoleManagement = () => {
                     ))}
                 </tbody>
             </table>
+
 
 
             <nav className="mt-4">
@@ -275,52 +332,7 @@ const RoleManagement = () => {
                 </div>
             )}
 
-            {roleModal && (
-                <div className={styles.modalOverlay}>
-                    <div className={styles.modal}>
-                        <h3 className={styles.modalTitle}>Assign Role</h3>
-
-                        <form
-                            onSubmit={(e) => {
-                                e.preventDefault();
-                                handleAssignRole(); // ✅ only call here
-                            }}
-                            className={styles.form}
-                        >
-
-                            <input
-                                className={styles.input}
-                                value={roleValue}
-                                placeholder="Enter Role"
-                                onChange={(e) => setRoleValue(e.target.value)}
-                            />
-
-                            <div className={styles.modalActions}>
-                                <button
-                                    type="button"
-                                    className={styles.cancelBtn}
-                                    onClick={() => setRoleModal(false)}
-                                >
-                                    Cancel
-                                </button>
-
-                                <button
-                                    type="submit"
-                                    className={styles.submitBtn}
-                                    disabled={
-                                        assignLoading ||
-                                        !roleValue.trim() ||
-                                        selectedUser?.dynamicRole?.toLowerCase() === roleValue.trim().toLowerCase()
-                                    } // if the input is different then the assign button enable 
-                                >
-                                    {assignLoading ? "Assigning..." : "Assign"}
-                                </button>
-                            </div>
-
-                        </form>
-                    </div>
-                </div>
-            )}
+         
 
             {/* VIEW MODAL */}
             {viewModal && selectedUser && (
