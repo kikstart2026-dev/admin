@@ -155,7 +155,6 @@ export const endpoints = {
 createSubAdmin: "admin/emp",
 getAllSubAdmins: "admin/emp",
 getSubAdminById: (id) => `admin/emp/${id}`,
-updateSubAdmin: (id) => `admin/emp/${id}`,
 deleteSubAdmin: (id) => `admin/emp/${id}`,
 assignDynamicRole: (id) => `admin/emp/assign-role/${id}`,
 

@@ -646,14 +646,6 @@ export const getSubAdminById = async (id) => {
   return res.data;
 };
 
-// ✅ UPDATE
-export const updateSubAdmin = async (id, payload) => {
-  const res = await axiosInstance.put(
-    endpoints.updateSubAdmin(id),
-    payload
-  );
-  return res.data;
-};
 
 // ✅ DELETE
 export const deleteSubAdmin = async (id) => {

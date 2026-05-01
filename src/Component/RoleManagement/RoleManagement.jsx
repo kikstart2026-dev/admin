@@ -3,7 +3,6 @@ import {
     createSubAdmin,
     getAllSubAdmins,
     assignDynamicRole,
-    updateSubAdmin,
     deleteSubAdmin,
     getSubAdminById
 } from "../../apis/api";
@@ -20,10 +19,6 @@ const RoleManagement = () => {
     const [selectedUser, setSelectedUser] = useState(null);
 
     const [viewModal, setViewModal] = useState(false);
-
-    const [editModal, setEditModal] = useState(false);
-    const [editData, setEditData] = useState({ email: "", password: "" });
-    const [updateLoading, setUpdateLoading] = useState(false);
 
     const [deleteModal, setDeleteModal] = useState(false);
     const [deleteId, setDeleteId] = useState(null);
@@ -113,22 +108,6 @@ const RoleManagement = () => {
         setViewModal(true);
     };
 
-    const handleEdit = (user) => {
-        setSelectedUser(user);
-        setEditData({ email: user.email, password: "" });
-        setEditModal(true);
-    };
-
-    const handleUpdate = async () => {
-        try {
-            setUpdateLoading(true);
-            await updateSubAdmin(selectedUser._id, editData);
-            setEditModal(false);
-            fetchUsers();
-        } finally {
-            setUpdateLoading(false);
-        }
-    };
 
     const handleDelete = (id) => {
         setDeleteId(id);
@@ -147,7 +126,7 @@ const RoleManagement = () => {
     };
 
     useEffect(() => {
-        if (openModal || viewModal || editModal) {
+        if (openModal || viewModal ) {
             document.body.style.overflow = "hidden";
         } else {
             document.body.style.overflow = "auto";
@@ -156,7 +135,7 @@ const RoleManagement = () => {
         return () => {
             document.body.style.overflow = "auto";
         };
-    }, [openModal, viewModal, editModal]);
+    }, [openModal, viewModal]);
 
     return (
         <div className={styles.wrap}>
@@ -238,7 +217,7 @@ const RoleManagement = () => {
 
                             <td className={styles.actions}>
                                 <i className={`bi bi-eye ${styles.view}`} onClick={() => handleView(user._id)}></i>
-                                <i className={`bi bi-pencil-square ${styles.edit}`} onClick={() => handleEdit(user)}></i>
+                                
                                 <i className={`bi bi-trash ${styles.delete}`} onClick={() => handleDelete(user._id)}></i>
                             </td>
                         </tr>
@@ -352,39 +331,7 @@ const RoleManagement = () => {
             )
             }
 
-            {/* EDIT MODAL */}
-            {editModal && (
-                <div className={styles.modalOverlay}>
-                    <div className={styles.modal}>
-                        <h3 className={styles.modalTitle}>Update Password</h3>
 
-                        <form
-                            onSubmit={(e) => {
-                                e.preventDefault();
-                                handleUpdate();
-                            }}
-                            className={styles.form}
-                        >
-
-                            <input className={styles.input}
-                                value={editData.email} disabled
-                            />
-
-                            <input className={styles.input}
-                                type="password"
-                                value={editData.password}
-                                placeholder="New Password"
-                                onChange={(e) => setEditData({ ...editData, password: e.target.value })}
-                            />
-
-                            <div className={styles.modalActions}>
-                                <button className={styles.cancelBtn} onClick={() => setEditModal(false)}>Cancel</button>
-                                <button className={styles.submitBtn} onClick={handleUpdate}>{updateLoading ? "Updating..." : "Update"}</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
 
 
             {/* DELETE MODAL */}
