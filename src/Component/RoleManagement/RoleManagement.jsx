@@ -14,7 +14,7 @@ const RoleManagement = () => {
     const [users, setUsers] = useState([]);
     const [openModal, setOpenModal] = useState(false);
 
-    const [assignLoadingId, setAssignLoadingId] = useState(null); // 👈 per user loading
+    const [assignLoadingId, setAssignLoadingId] = useState(null);
 
     const [selectedUser, setSelectedUser] = useState(null);
 
@@ -24,7 +24,9 @@ const RoleManagement = () => {
     const [deleteId, setDeleteId] = useState(null);
     const [deleteLoading, setDeleteLoading] = useState(false);
 
-    const [form, setForm] = useState({ fullname: "", email: "", password: "" });
+    // ✅ FIXED (password removed)
+    const [form, setForm] = useState({ fullname: "", email: "" });
+
     const [loading, setLoading] = useState(false);
 
     const [openDropdownId, setOpenDropdownId] = useState(null);
@@ -33,7 +35,6 @@ const RoleManagement = () => {
     const [totalPages, setTotalPages] = useState(1);
     const limit = 5;
 
-    // ✅ predefined roles
     const rolesList = [
         "Admin",
         "Sub Admin",
@@ -68,29 +69,29 @@ const RoleManagement = () => {
             await createSubAdmin(form);
             setOpenModal(false);
             fetchUsers();
-            setForm({ fullname: "", email: "", password: "" });
+
+            // ✅ FIXED (no password reset)
+            setForm({ fullname: "", email: "" });
+
         } finally {
             setLoading(false);
         }
     };
 
-    // ✅ NEW ROLE ASSIGN FUNCTION
- 
     const handleRoleSelect = async (userId, role) => {
-        // instant UI update
         setUsers((prev) =>
             prev.map((u) =>
                 u._id === userId ? { ...u, dynamicRole: role } : u
             )
         );
 
-        setOpenDropdownId(null); // close dropdown 
+        setOpenDropdownId(null);
 
         try {
             setAssignLoadingId(userId);
             await assignDynamicRole(userId, { dynamicRole: role });
         } catch (err) {
-            fetchUsers(); // rollback
+            fetchUsers();
         } finally {
             setAssignLoadingId(null);
         }
@@ -107,7 +108,6 @@ const RoleManagement = () => {
         setSelectedUser(res.data);
         setViewModal(true);
     };
-
 
     const handleDelete = (id) => {
         setDeleteId(id);
@@ -178,7 +178,6 @@ const RoleManagement = () => {
                                 </span>
                             </td>
 
-                            {/* ✅ DROPDOWN REPLACED */}
                             <td>
                                 <div className={`dropdown position-static`}>
                                     <button
@@ -217,7 +216,6 @@ const RoleManagement = () => {
 
                             <td className={styles.actions}>
                                 <i className={`bi bi-eye ${styles.view}`} onClick={() => handleView(user._id)}></i>
-                                
                                 <i className={`bi bi-trash ${styles.delete}`} onClick={() => handleDelete(user._id)}></i>
                             </td>
                         </tr>
@@ -225,12 +223,9 @@ const RoleManagement = () => {
                 </tbody>
             </table>
 
-
-
             <nav className="mt-4">
                 <ul className={`pagination justify-content-center ${styles.customPagination}`}>
 
-                    {/* LEFT ARROW */}
                     <li className={`page-item ${page === 1 ? "disabled" : ""}`}>
                         <button
                             className="page-link arrow"
@@ -241,7 +236,6 @@ const RoleManagement = () => {
                         </button>
                     </li>
 
-                    {/* PAGE NUMBERS */}
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
                         <li
                             key={num}
@@ -256,7 +250,6 @@ const RoleManagement = () => {
                         </li>
                     ))}
 
-                    {/* RIGHT ARROW */}
                     <li className={`page-item ${page === totalPages ? "disabled" : ""}`}>
                         <button
                             className="page-link arrow"
@@ -269,7 +262,6 @@ const RoleManagement = () => {
 
                 </ul>
             </nav>
-
 
             {/* CREATE MODAL */}
             {openModal && (
@@ -293,13 +285,6 @@ const RoleManagement = () => {
                                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                             />
 
-                            <input className={styles.input}
-                                type="password"
-                                placeholder="Password"
-                                value={form.password}
-                                onChange={(e) => setForm({ ...form, password: e.target.value })}
-                            />
-
                             <div className={styles.modalActions}>
                                 <button type="button"
                                     onClick={() => setOpenModal(false)} className={styles.cancelBtn} > Cancel </button>
@@ -310,8 +295,6 @@ const RoleManagement = () => {
                     </div>
                 </div>
             )}
-
-         
 
             {/* VIEW MODAL */}
             {viewModal && selectedUser && (
@@ -328,11 +311,7 @@ const RoleManagement = () => {
                         </div>
                     </div>
                 </div>
-            )
-            }
-
-
-
+            )}
 
             {/* DELETE MODAL */}
             {deleteModal && (
@@ -367,7 +346,6 @@ const RoleManagement = () => {
                     </div>
                 </div>
             )}
-
 
         </div >
     );
