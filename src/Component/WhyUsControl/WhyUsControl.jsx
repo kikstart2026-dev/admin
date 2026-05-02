@@ -474,10 +474,10 @@ export default function WhyChooseUsControl() {
             <div className={styles.ck}>
               <ReactQuill
                 theme="snow"
-                value={headingData.description}
+                value={formValues.description}
                 onChange={(value) =>
-                  setHeadingData({
-                    ...headingData,
+                  setFormValues({
+                    ...formValues,
                     description: value,
                   })
                 }

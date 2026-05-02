@@ -49,52 +49,51 @@ export default function WhyChooseUsControl() {
     color: ""
   });
 
+  const [page, setPage] = useState(1);
+
   const { data = {}, isLoading } = useQuery({
-    queryKey: ["whyChooseUs"],
-    queryFn: async () => {
-      const res = await getAllWhyChooseUs({ limit: 4 });
-      return res?.data || {};
-    }
+    queryKey: ["whyChooseUs", page],
+    queryFn: () =>
+      getAllWhyChooseUs({
+        page,
+        limit: 8,
+      }),
   });
-   const modules = {
-  toolbar: [
-    // FONT + SIZE
-    [{ font: [] }, { size: [] }],
 
-    // HEADINGS
-    [{ header: [1, 2, 3, false] }],
+  const modules = {
+    toolbar: [
+      // FONT + SIZE
+      [{ font: [] }, { size: [] }],
 
-    // TEXT STYLE
-    ["bold", "italic", "underline", "strike"],
+      // HEADINGS
+      [{ header: [1, 2, 3, false] }],
 
-    // COLOR
-    [{ color: [] }, { background: [] }],
+      // TEXT STYLE
+      ["bold", "italic", "underline", "strike"],
 
-    // LIST + ALIGN
-    [{ list: "ordered" }, { list: "bullet" }],
-    [{ align: [] }],
+      // COLOR
+      [{ color: [] }, { background: [] }],
 
-    // LINK
-    ["link"],
+      // LIST + ALIGN
+      [{ list: "ordered" }, { list: "bullet" }],
+      [{ align: [] }],
 
-    // CLEAN
-    ["clean"],
-  ],
-};
+      // LINK
+      ["link"],
 
-  const cards = data.cards || [];
+      // CLEAN
+      ["clean"],
+    ],
+  };
 
-  if (data.heading && headingId === null) {
-    setHeadingId(data.heading._id);
-    setHeadingData({
-      tagline: data.heading.tagline || "",
-      heading: data.heading.heading || "",
-      description: data.heading.description || ""
-    });
-  }
+  const cards = data?.data?.cards || [];
+  const totalPages = data.totalPages || 1;
+
+  const heading = data?.data?.heading || null;
+  const headingIdFromData = heading?._id || null;
 
   const fetchData = () => {
-    queryClient.invalidateQueries(["whyChooseUs"]);
+    queryClient.invalidateQueries(["whyChooseUs", page]);
   };
 
   const allSelected = selected.length === cards.length && cards.length > 0;
@@ -286,9 +285,19 @@ export default function WhyChooseUsControl() {
 
           <button
             className={styles.createBtn}
-            onClick={() => setShowHeadingModal(true)}
+            onClick={() => {
+              if (heading) {
+                setHeadingData({
+                  tagline: heading.tagline || "",
+                  heading: heading.heading || "",
+                  description: heading.description || ""
+                });
+                setHeadingId(heading._id);
+              }
+              setShowHeadingModal(true);
+            }}
           >
-            {data?.heading ? "Update Heading" : "Create Heading"}
+            {heading ? "Update Heading" : "Create Heading"}
           </button>
 
           <button
@@ -400,6 +409,49 @@ export default function WhyChooseUsControl() {
 
       </div>
 
+      <nav className="mt-4">
+        <ul className={`pagination justify-content-center ${styles.customPagination}`}>
+
+          {/* LEFT ARROW */}
+          <li className={`page-item ${page === 1 ? "disabled" : ""}`}>
+            <button
+              className="page-link arrow"
+              onClick={() => setPage(page - 1)}
+              disabled={page === 1}
+            >
+              &lt;
+            </button>
+          </li>
+
+          {/* PAGE NUMBERS */}
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
+            <li
+              key={num}
+              className={`page-item ${page === num ? "active" : ""}`}
+            >
+              <button
+                className={`page-link ${page === num ? "num" : ""}`}
+                onClick={() => setPage(num)}
+              >
+                {num}
+              </button>
+            </li>
+          ))}
+
+          {/* RIGHT ARROW */}
+          <li className={`page-item ${page === totalPages ? "disabled" : ""}`}>
+            <button
+              className="page-link arrow"
+              onClick={() => setPage(page + 1)}
+              disabled={page === totalPages}
+            >
+              &gt;
+            </button>
+          </li>
+
+        </ul>
+      </nav>
+
       {/* Create / Update Modal */}
 
       {showForm && (
@@ -493,10 +545,10 @@ export default function WhyChooseUsControl() {
             <div className={styles.ck}>
               <ReactQuill
                 theme="snow"
-                value={formValues.description}
+                value={headingData.description}
                 onChange={(value) =>
-                  setFormValues({
-                    ...formValues,
+                  setHeadingData({
+                    ...headingData,
                     description: value,
                   })
                 }
