@@ -298,6 +298,8 @@ export default function WhyChooseUsControl() {
             }}
           >
             {heading ? "Update Heading" : "Create Heading"}
+
+            
           </button>
 
           <button
@@ -552,6 +554,7 @@ export default function WhyChooseUsControl() {
                     description: value,
                   })
                 }
+                modules={modules}
               />
             </div>
 

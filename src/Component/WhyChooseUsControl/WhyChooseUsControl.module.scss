@@ -237,9 +237,18 @@ textarea {
 :global(.ck-editor__editable_inline) {
   min-height: 120px;
   max-height: 120px;
-  overflow-y: auto;
 }
 
+.ck {
+  margin-bottom: 15px;
+
+  :global(.ql-editor) {
+    min-height: 300px;
+    overflow-x: hidden;   // no horizontal scroll
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+}
 /* CKEditor focus border color */
 
 :global(.ck.ck-editor__main>.ck-editor__editable:focus) {
