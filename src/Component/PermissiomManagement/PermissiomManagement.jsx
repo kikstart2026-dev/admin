@@ -61,37 +61,37 @@ const PermissionManagement = () => {
 
     // ================= LOAD ROLE PERMISSIONS =================
     useEffect(() => {
-    if (!selectedRole) return;
+        if (!selectedRole) return;
 
-    const fetchPermissions = async () => {
-        try {
-            setLoading(true);
+        const fetchPermissions = async () => {
+            try {
+                setLoading(true);
 
-            const res = await getPermissionsByRole(selectedRole);
-            const existing = res?.data || [];
+                const res = await getPermissionsByRole(selectedRole);
+                const existing = res?.data || [];
 
-            const merged = modules.map((module) => {
-                const found = existing.find((p) => p.module === module);
+                const merged = modules.map((module) => {
+                    const found = existing.find((p) => p.module === module);
 
-                return {
-                    module,
-                    create: found?.create ?? false,
-                    read: found?.read ?? false,
-                    update: found?.update ?? false,
-                    delete: found?.delete ?? false,
-                };
-            });
+                    return {
+                        module,
+                        create: found?.create ?? false,
+                        read: found?.read ?? false,
+                        update: found?.update ?? false,
+                        delete: found?.delete ?? false,
+                    };
+                });
 
-            setPermissions(merged);
-        } catch (err) {
-            console.log(err);
-        } finally {
-            setLoading(false);
-        }
-    };
+                setPermissions(merged);
+            } catch (err) {
+                console.log(err);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    fetchPermissions();
-}, [selectedRole]); // ❗ modules remove করো
+        fetchPermissions();
+    }, [selectedRole]); // ❗ modules remove করো
 
     // ================= CHECKBOX CHANGE =================
     const handleChange = (index, field) => {
@@ -162,13 +162,17 @@ const PermissionManagement = () => {
         setOpen(false);
     };
 
+    const hasAnyPermissionSelected = permissions.some(
+        (p) => p.create || p.read || p.update || p.delete
+    ); //  .some() -> checks if at least one item in an array passes a condition (returns true or false)
+
     return (
         <div className={styles.container}>
 
             {/* HEADER */}
             <div className={styles.header}>
                 <h2 className={styles.title}>
-                    Role & Permission Management
+                    Add Permissions for Selected Role
                 </h2>
                 <div className={styles.dropdownWrapper}>
 
@@ -186,7 +190,7 @@ const PermissionManagement = () => {
                             {rolesList.map((role) => (
                                 <div
                                     key={role._id}
-                                    className={`${styles.option} ${selectedRole === role.name ? styles.active : ""
+                                    className={`${styles.option} ${selectedRole === role.name ? styles.active : " "
                                         }`}
                                     onClick={() => handleSelect(role.name)}
                                 >
@@ -289,7 +293,7 @@ const PermissionManagement = () => {
                 <button
                     className={styles.saveBtn}
                     onClick={handleSave}
-                    disabled={saving || !selectedRole}
+                    disabled={saving || !selectedRole || !hasAnyPermissionSelected}
                 >
                     {saving ? "Saving..." : "Save Permissions"}
                 </button>

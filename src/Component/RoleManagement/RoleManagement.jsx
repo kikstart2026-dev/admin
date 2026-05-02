@@ -85,7 +85,7 @@ const RoleManagement = () => {
             setRoleModal(false);
             setRoleName("");
 
-            fetchRoles(); // 🔥 dropdown refresh
+            fetchRoles(); //dropdown refresh
 
         } catch (err) {
             console.log(err);

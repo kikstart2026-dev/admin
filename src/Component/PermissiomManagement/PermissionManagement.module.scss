@@ -13,8 +13,9 @@
 }
 
 .title {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 600;
+  color: #000005;
 }
 
 .loading {
@@ -54,7 +55,7 @@
 
 /* option */
 .option {
-  padding: 8px 5px;
+  padding: 8px 12px;
   cursor: pointer;
   transition: 0.2s;
 }
@@ -88,8 +89,12 @@
 }
 
 .table td {
-  padding: 12px;
+  padding: 12px 0;
   border-top: 1px solid #eee;
+}
+
+.table th{
+  color: #0d187a;
 }
 
 .moduleCell {
