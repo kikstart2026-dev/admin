@@ -730,3 +730,16 @@ export const savePermissions = async (payload) => {
     throw err;
   }
 };
+
+// ================ ROLE ================================
+//CREATE
+export const createRole = async (data) => {
+    const res = await axiosInstance.post(endpoints.createRole, data);
+    return res.data;
+};
+
+//GET
+export const getAllRoles = async () => {
+    const res = await axiosInstance.get(endpoints.getAllRoles);
+    return res.data;
+};

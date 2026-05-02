@@ -4,7 +4,9 @@ import {
     getAllSubAdmins,
     assignDynamicRole,
     deleteSubAdmin,
-    getSubAdminById
+    getSubAdminById,
+    createRole,
+    getAllRoles
 } from "../../apis/api";
 
 import styles from "./RoleManagement.module.scss";
@@ -24,6 +26,10 @@ const RoleManagement = () => {
     const [deleteId, setDeleteId] = useState(null);
     const [deleteLoading, setDeleteLoading] = useState(false);
 
+    const [roleModal, setRoleModal] = useState(false);
+    const [roleName, setRoleName] = useState("");
+    const [roleLoading, setRoleLoading] = useState(false);
+
     // ✅ FIXED (password removed)
     const [form, setForm] = useState({ fullname: "", email: "" });
 
@@ -35,18 +41,21 @@ const RoleManagement = () => {
     const [totalPages, setTotalPages] = useState(1);
     const limit = 5;
 
-    const rolesList = [
-        "Admin",
-        "Sub Admin",
-        "Manager",
-        "Editor",
-        "Viewer",
-        "Support",
-        "Sales",
-        "HR",
-        "Finance",
-        "Moderator"
-    ];
+    const [rolesList, setRolesList] = useState([]);
+
+    const fetchRoles = async () => {
+        try {
+            const res = await getAllRoles();
+            console.log("ROLES API RESPONSE:", res);
+
+            const roleNames = res.map(role => role.name);
+
+            setRolesList(roleNames);
+
+        } catch (err) {
+            console.log("ROLE ERROR:", err)
+        }
+    };
 
     const fetchUsers = async () => {
         try {
@@ -60,7 +69,30 @@ const RoleManagement = () => {
 
     useEffect(() => {
         fetchUsers();
+        fetchRoles();
     }, [page]);
+
+    const handleCreateRole = async (e) => {
+        e.preventDefault();
+        try {
+            setRoleLoading(true);
+
+            await createRole({
+                name: roleName,
+                permissions: ["read"] // basic, later dynamic korte parba
+            });
+
+            setRoleModal(false);
+            setRoleName("");
+
+            fetchRoles(); // 🔥 dropdown refresh
+
+        } catch (err) {
+            console.log(err);
+        } finally {
+            setRoleLoading(false);
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -126,7 +158,7 @@ const RoleManagement = () => {
     };
 
     useEffect(() => {
-        if (openModal || viewModal ) {
+        if (openModal || viewModal) {
             document.body.style.overflow = "hidden";
         } else {
             document.body.style.overflow = "auto";
@@ -142,9 +174,22 @@ const RoleManagement = () => {
 
             <div className={styles.header}>
                 <h2>Sub Admins</h2>
-                <button onClick={() => setOpenModal(true)} className={styles.addBtn}>
-                    + Add New User
-                </button>
+                <div>
+                    <button
+                        onClick={() => setRoleModal(true)}
+                        className={styles.addBtn}
+                        style={{ marginRight: "10px" }}
+                    >
+                        + Create Role
+                    </button>
+
+                    <button
+                        onClick={() => setOpenModal(true)}
+                        className={styles.addBtn}
+                    >
+                        + Add New User
+                    </button>
+                </div>
             </div>
 
             <table className={styles.table}>
@@ -289,6 +334,40 @@ const RoleManagement = () => {
                                 <button type="button"
                                     onClick={() => setOpenModal(false)} className={styles.cancelBtn} > Cancel </button>
                                 <button type="submit" className={styles.submitBtn} > {loading ? "Creating..." : "Create"} </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* ROLE CREATE MODAL */}
+            {roleModal && (
+                <div className={styles.modalOverlay}>
+                    <div className={styles.modal}>
+                        <h3 className={styles.modalTitle}>Create Role</h3>
+
+                        <form onSubmit={handleCreateRole} className={styles.form}>
+
+                            <input
+                                className={styles.input}
+                                placeholder="Role Name"
+                                value={roleName}
+                                onChange={(e) => setRoleName(e.target.value)}
+                            />
+
+                            <div className={styles.modalActions}>
+                                <button
+                                    type="button"
+                                    onClick={() => setRoleModal(false)}
+                                    className={styles.cancelBtn}
+                                >
+                                    Cancel
+                                </button>
+
+                                <button type="submit" className={styles.submitBtn}>
+                                    {roleLoading ? "Creating..." : "Create"}
+                                </button>
                             </div>
 
                         </form>

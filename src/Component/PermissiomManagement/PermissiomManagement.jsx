@@ -3,22 +3,11 @@ import {
     getPermissionsByRole,
     savePermissions,
     getModules,
+    getAllRoles
 } from "../../apis/api";
 
 import styles from "./PermissionManagement.module.scss";
 
-const ROLES = [
-    "Admin",
-    "Sub Admin",
-    "Manager",
-    "Editor",
-    "Viewer",
-    "Support",
-    "Sales",
-    "HR",
-    "Finance",
-    "Moderator",
-];
 
 const defaultPermissions = (modules = []) =>
     modules.map((m) => ({
@@ -35,6 +24,23 @@ const PermissionManagement = () => {
     const [permissions, setPermissions] = useState([]);
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
+    const [rolesList, setRolesList] = useState([]);
+
+    const fetchRoles = async () => {
+        try {
+            const res = await getAllRoles();
+            console.log("ROLES:", res);
+
+            setRolesList(res); // full object 
+
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    useEffect(() => {
+        fetchRoles();
+    }, []);
 
     // ================= LOAD MODULES =================
     useEffect(() => {
@@ -55,37 +61,37 @@ const PermissionManagement = () => {
 
     // ================= LOAD ROLE PERMISSIONS =================
     useEffect(() => {
-        if (!selectedRole || !modules.length) return;
+    if (!selectedRole) return;
 
-        const fetchPermissions = async () => {
-            try {
-                setLoading(true);
+    const fetchPermissions = async () => {
+        try {
+            setLoading(true);
 
-                const res = await getPermissionsByRole(selectedRole);
-                const existing = res?.data || [];
+            const res = await getPermissionsByRole(selectedRole);
+            const existing = res?.data || [];
 
-                const merged = modules.map((module) => {
-                    const found = existing.find((p) => p.module === module);
+            const merged = modules.map((module) => {
+                const found = existing.find((p) => p.module === module);
 
-                    return {
-                        module,
-                        create: found?.create ?? false,
-                        read: found?.read ?? false,
-                        update: found?.update ?? false,
-                        delete: found?.delete ?? false,
-                    };
-                });
+                return {
+                    module,
+                    create: found?.create ?? false,
+                    read: found?.read ?? false,
+                    update: found?.update ?? false,
+                    delete: found?.delete ?? false,
+                };
+            });
 
-                setPermissions(merged);
-            } catch (err) {
-                console.log(err);
-            } finally {
-                setLoading(false);
-            }
-        };
+            setPermissions(merged);
+        } catch (err) {
+            console.log(err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-        fetchPermissions();
-    }, [selectedRole, modules]);
+    fetchPermissions();
+}, [selectedRole]); // ❗ modules remove করো
 
     // ================= CHECKBOX CHANGE =================
     const handleChange = (index, field) => {
@@ -177,14 +183,14 @@ const PermissionManagement = () => {
                     {/* OPTIONS */}
                     {open && (
                         <div className={styles.dropdownList}>
-                            {ROLES.map((role) => (
+                            {rolesList.map((role) => (
                                 <div
-                                    key={role}
-                                    className={`${styles.option} ${selectedRole === role ? styles.active : "Select Role"
+                                    key={role._id}
+                                    className={`${styles.option} ${selectedRole === role.name ? styles.active : ""
                                         }`}
-                                    onClick={() => handleSelect(role)}
+                                    onClick={() => handleSelect(role.name)}
                                 >
-                                    {role}
+                                    {role.name}
                                 </div>
                             ))}
                         </div>

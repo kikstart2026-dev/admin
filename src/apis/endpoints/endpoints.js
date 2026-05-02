@@ -166,7 +166,7 @@ export const endpoints = {
 
   createPermission: "/admin/permission",
   getAllPermissions: "/admin/permission",
-    getModules: "admin/permission/modules",
+  getModules: "admin/permission/modules",
   getPermissionsByRole: (dynamicRole) => `/admin/permission/role/${dynamicRole}`,
   updatePermission: (id) => `/admin/permission/${id}`,
   deletePermission: (id) => `/admin/permission/${id}`,
@@ -174,4 +174,12 @@ export const endpoints = {
   // 🔥 BULK SAVE (MAIN FEATURE)
   savePermissions: "/admin/permission/save",
 
+  // ROLE MANAGEMENT ---------------------->>
+
+  getAllRoles: "admin/roles",
+  createRole: "admin/roles",
+  updateRole: (id) => `admin/roles/${id}`,
+  deleteRole: (id) => `admin/roles/${id}`,
+
 };
+
