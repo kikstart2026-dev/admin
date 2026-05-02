@@ -663,3 +663,70 @@ export const assignDynamicRole = async (id, payload) => {
   );
   return res.data;
 };
+
+
+
+// ================= PERMISSIONS =================
+
+// 🔥 CREATE SINGLE PERMISSION
+export const createPermission = async (payload) => {
+  const res = await axiosInstance.post(
+    endpoints.createPermission,
+    payload
+  );
+  return res.data;
+};
+
+// 🔥 GET ALL PERMISSIONS
+export const getAllPermissions = async () => {
+  const res = await axiosInstance.get(
+    endpoints.getAllPermissions
+  );
+  return res.data;
+};
+
+// 🔥 GET BY ROLE
+export const getPermissionsByRole = async (dynamicRole) => {
+  const res = await axiosInstance.get(
+    endpoints.getPermissionsByRole(dynamicRole)
+  );
+  return res.data;
+};
+
+// 🔥 UPDATE PERMISSION
+export const updatePermission = async (id, payload) => {
+  const res = await axiosInstance.put(
+    endpoints.updatePermission(id),
+    payload
+  );
+  return res.data;
+};
+
+// 🔥 DELETE PERMISSION
+export const deletePermission = async (id) => {
+  const res = await axiosInstance.delete(
+    endpoints.deletePermission(id)
+  );
+  return res.data;
+};
+
+// get modules
+export const getModules = async () => {
+  const res = await axiosInstance.get(endpoints.getModules);
+  return res.data;
+};
+
+
+// 🔥 BULK SAVE PERMISSIONS (MAIN FEATURE)
+export const savePermissions = async (payload) => {
+  try {
+    const res = await axiosInstance.post(
+      endpoints.savePermissions,
+      payload
+    );
+    return res.data;
+  } catch (err) {
+    console.log("SAVE API ERROR:", err?.response?.data || err);
+    throw err;
+  }
+};

@@ -132,7 +132,7 @@ export const endpoints = {
 
 
 
-// Admin Auth -------------------------------------->>>
+  // Admin Auth -------------------------------------->>>
 
 
   adminLogin: "admin/login",
@@ -150,12 +150,28 @@ export const endpoints = {
 
 
 
-// USER MANAGEMENT ---------------------->>
+  // USER MANAGEMENT ---------------------->>
 
-createSubAdmin: "admin/emp",
-getAllSubAdmins: "admin/emp",
-getSubAdminById: (id) => `admin/emp/${id}`,
-deleteSubAdmin: (id) => `admin/emp/${id}`,
-assignDynamicRole: (id) => `admin/emp/assign-role/${id}`,
+  createSubAdmin: "admin/emp",
+  getAllSubAdmins: "admin/emp",
+  getSubAdminById: (id) => `admin/emp/${id}`,
+  deleteSubAdmin: (id) => `admin/emp/${id}`,
+  assignDynamicRole: (id) => `admin/emp/assign-role/${id}`,
+
+
+
+  // ================================
+  // PERMISSION MANAGEMENT
+  // ================================
+
+  createPermission: "/admin/permission",
+  getAllPermissions: "/admin/permission",
+    getModules: "admin/permission/modules",
+  getPermissionsByRole: (dynamicRole) => `/admin/permission/role/${dynamicRole}`,
+  updatePermission: (id) => `/admin/permission/${id}`,
+  deletePermission: (id) => `/admin/permission/${id}`,
+
+  // 🔥 BULK SAVE (MAIN FEATURE)
+  savePermissions: "/admin/permission/save",
 
 };

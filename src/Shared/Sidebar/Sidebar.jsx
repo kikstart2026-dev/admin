@@ -132,6 +132,15 @@ export default function Sidebar() {
             </NavLink>
           </li>
 
+          <li>
+            <NavLink to="/permission-management"
+              className={({ isActive }) => (isActive ? styles.active : "")}
+            >
+              <i className={`bi bi-pencil-square ${styles.icon}`}></i>
+              <span>Permissions Management</span>
+            </NavLink>
+          </li>
+
           {/* LOGOUT */}
           <li>
             <div
