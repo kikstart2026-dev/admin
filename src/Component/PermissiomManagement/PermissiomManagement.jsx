@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
     getPermissionsByRole,
     savePermissions,
@@ -8,7 +9,7 @@ import {
 
 import styles from "./PermissionManagement.module.scss";
 
-
+// ================= DEFAULT PERMISSIONS =================
 const defaultPermissions = (modules = []) =>
     modules.map((m) => ({
         module: m,
@@ -20,78 +21,56 @@ const defaultPermissions = (modules = []) =>
 
 const PermissionManagement = () => {
     const [selectedRole, setSelectedRole] = useState("");
-    const [modules, setModules] = useState([]);
     const [permissions, setPermissions] = useState([]);
-    const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
-    const [rolesList, setRolesList] = useState([]);
+    const [open, setOpen] = useState(false);
 
-    const fetchRoles = async () => {
-        try {
-            const res = await getAllRoles();
-            console.log("ROLES:", res);
+    // ================= ROLES =================
+    const { data: rolesList = [] } = useQuery({
+        queryKey: ["roles"],
+        queryFn: getAllRoles,
+    });
 
-            setRolesList(res); // full object 
+    // ================= MODULES =================
+    const { data: modules = [] } = useQuery({
+        queryKey: ["modules"],
+        queryFn: async () => {
+            const res = await getModules();
+            return res?.data || [];
+        },
+    });
 
-        } catch (err) {
-            console.log(err);
-        }
-    };
+    // ================= PERMISSIONS (DEPENDENT) =================
+    const {
+        data: permissionsData = [],
+        isLoading: loading,
+    } = useQuery({
+        queryKey: ["permissions", selectedRole],
+        queryFn: async () => {
+            const res = await getPermissionsByRole(selectedRole);
+            return res?.data || [];
+        },
+        enabled: !!selectedRole && modules.length > 0,
+    });
 
+    // ================= MERGE PERMISSIONS =================
     useEffect(() => {
-        fetchRoles();
-    }, []);
+        if (!modules.length) return;
 
-    // ================= LOAD MODULES =================
-    useEffect(() => {
-        const fetchModules = async () => {
-            try {
-                const res = await getModules();
-                const modList = res?.data || [];
+        const merged = modules.map((module) => {
+            const found = permissionsData.find((p) => p.module === module);
 
-                setModules(modList);
-                setPermissions(defaultPermissions(modList));
-            } catch (err) {
-                console.log(err);
-            }
-        };
+            return {
+                module,
+                create: found?.create ?? false,
+                read: found?.read ?? false,
+                update: found?.update ?? false,
+                delete: found?.delete ?? false,
+            };
+        });
 
-        fetchModules();
-    }, []);
-
-    // ================= LOAD ROLE PERMISSIONS =================
-    useEffect(() => {
-        if (!selectedRole) return;
-
-        const fetchPermissions = async () => {
-            try {
-                setLoading(true);
-
-                const res = await getPermissionsByRole(selectedRole);
-                const existing = res?.data || [];
-
-                const merged = modules.map((module) => {
-                    const found = existing.find((p) => p.module === module);
-
-                    return {
-                        module,
-                        create: found?.create ?? false,
-                        read: found?.read ?? false,
-                        update: found?.update ?? false,
-                        delete: found?.delete ?? false,
-                    };
-                });
-
-                setPermissions(merged);
-            } catch (err) {
-                console.log(err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchPermissions();
-    }, [selectedRole]); // ❗ modules remove করো
+        setPermissions(merged);
+    }, [modules, permissionsData]);
 
     // ================= CHECKBOX CHANGE =================
     const handleChange = (index, field) => {
@@ -153,10 +132,7 @@ const PermissionManagement = () => {
         }
     };
 
-
-
-    const [open, setOpen] = useState(false);
-
+    // ================= SELECT ROLE =================
     const handleSelect = (role) => {
         setSelectedRole(role);
         setOpen(false);
@@ -164,7 +140,7 @@ const PermissionManagement = () => {
 
     const hasAnyPermissionSelected = permissions.some(
         (p) => p.create || p.read || p.update || p.delete
-    ); //  .some() -> checks if at least one item in an array passes a condition (returns true or false)
+    );
 
     return (
         <div className={styles.container}>
@@ -174,9 +150,8 @@ const PermissionManagement = () => {
                 <h2 className={styles.title}>
                     Add Permissions for Selected Role
                 </h2>
-                <div className={styles.dropdownWrapper}>
 
-                    {/* SELECT BOX */}
+                <div className={styles.dropdownWrapper}>
                     <div
                         className={styles.selectBox}
                         onClick={() => setOpen(!open)}
@@ -184,14 +159,14 @@ const PermissionManagement = () => {
                         {selectedRole || "Select Role"}
                     </div>
 
-                    {/* OPTIONS */}
                     {open && (
                         <div className={styles.dropdownList}>
                             {rolesList.map((role) => (
                                 <div
                                     key={role._id}
-                                    className={`${styles.option} ${selectedRole === role.name ? styles.active : " "
-                                        }`}
+                                    className={`${styles.option} ${
+                                        selectedRole === role.name ? styles.active : ""
+                                    }`}
                                     onClick={() => handleSelect(role.name)}
                                 >
                                     {role.name}
@@ -199,17 +174,15 @@ const PermissionManagement = () => {
                             ))}
                         </div>
                     )}
-
                 </div>
             </div>
 
-            {/* LOADING */}
+            {/* TABLE */}
             {loading ? (
                 <p className={styles.loading}>Loading permissions...</p>
             ) : (
                 <div className={styles.tableWrapper}>
                     <table className={styles.table}>
-
                         <thead>
                             <tr>
                                 <th>Module</th>
@@ -224,16 +197,14 @@ const PermissionManagement = () => {
                         <tbody>
                             {permissions.map((item, index) => (
                                 <tr key={index}>
-
                                     <td className={styles.moduleCell}>
                                         {item.module}
                                     </td>
 
-                                    {/* SELECT ALL */}
                                     <td className={styles.center}>
                                         <input
-                                            className={styles.checkbox}
                                             type="checkbox"
+                                            className={styles.checkbox}
                                             checked={
                                                 item.create &&
                                                 item.read &&
@@ -244,46 +215,19 @@ const PermissionManagement = () => {
                                         />
                                     </td>
 
-                                    <td className={styles.center}>
-                                        <input
-                                            className={styles.checkbox}
-                                            type="checkbox"
-                                            checked={item.create}
-                                            onChange={() => handleChange(index, "create")}
-                                        />
-                                    </td>
-
-                                    <td className={styles.center}>
-                                        <input
-                                            className={styles.checkbox}
-                                            type="checkbox"
-                                            checked={item.read}
-                                            onChange={() => handleChange(index, "read")}
-                                        />
-                                    </td>
-
-                                    <td className={styles.center}>
-                                        <input
-                                            className={styles.checkbox}
-                                            type="checkbox"
-                                            checked={item.update}
-                                            onChange={() => handleChange(index, "update")}
-                                        />
-                                    </td>
-
-                                    <td className={styles.center}>
-                                        <input
-                                            className={styles.checkbox}
-                                            type="checkbox"
-                                            checked={item.delete}
-                                            onChange={() => handleChange(index, "delete")}
-                                        />
-                                    </td>
-
+                                    {["create", "read", "update", "delete"].map((field) => (
+                                        <td key={field} className={styles.center}>
+                                            <input
+                                                type="checkbox"
+                                                className={styles.checkbox}
+                                                checked={item[field]}
+                                                onChange={() => handleChange(index, field)}
+                                            />
+                                        </td>
+                                    ))}
                                 </tr>
                             ))}
                         </tbody>
-
                     </table>
                 </div>
             )}
@@ -298,7 +242,6 @@ const PermissionManagement = () => {
                     {saving ? "Saving..." : "Save Permissions"}
                 </button>
             </div>
-
         </div>
     );
 };
