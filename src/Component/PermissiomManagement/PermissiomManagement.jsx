@@ -40,7 +40,7 @@ const PermissionManagement = () => {
         },
     });
 
-    // ================= PERMISSIONS (DEPENDENT) =================
+    // =================PERMISSIONS (DEPENDENT)=================
     const {
         data: permissionsData = [],
         isLoading: loading,
