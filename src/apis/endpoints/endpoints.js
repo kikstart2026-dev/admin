@@ -166,7 +166,7 @@ export const endpoints = {
 
   createPermission: "/admin/permission",
   getAllPermissions: "/admin/permission",
-  getModules: "admin/permission/modules",
+  // getModules: "admin/permission/modules",
   getPermissionsByRole: (dynamicRole) => `/admin/permission/role/${dynamicRole}`,
   updatePermission: (id) => `/admin/permission/${id}`,
   deletePermission: (id) => `/admin/permission/${id}`,

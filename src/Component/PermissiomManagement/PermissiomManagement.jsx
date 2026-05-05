@@ -4,8 +4,8 @@ import {
   getPermissionsByRole,
   savePermissions,
   getAllRoles,
-  createPermission,     // 🔥 ADD THIS
-  updatePermission      // 🔥 ADD THIS
+  createPermission,     
+  updatePermission   
 } from "../../apis/api";
 
 import { menuData } from "../../DATA/data";

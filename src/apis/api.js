@@ -711,10 +711,10 @@ export const deletePermission = async (id) => {
 };
 
 // get modules
-export const getModules = async () => {
-  const res = await axiosInstance.get(endpoints.getModules);
-  return res.data;
-};
+// export const getModules = async () => {
+//   const res = await axiosInstance.get(endpoints.getModules);
+//   return res.data;
+// };
 
 
 // 🔥 BULK SAVE PERMISSIONS (MAIN FEATURE)
