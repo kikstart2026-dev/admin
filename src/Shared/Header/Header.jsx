@@ -88,6 +88,7 @@ export default function Header({ title = "Dashboard" }) {
             )}
 
             <div className={styles.modalInfo}>
+             
               <p><b>Name:</b> {admin?.fullname}</p>
               <p><b>Email:</b> {admin?.email}</p>
               <p><b>Phone:</b> {admin?.phone || "N/A"}</p>

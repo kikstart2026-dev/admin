@@ -50,7 +50,8 @@ export default function Sidebar() {
       "/faq-page",
       "/interested-schools",
       "/why-us",
-      "/role-management"
+      "/role-management",
+      "/permission-management"
     ];
 
     if (paths.includes(location.pathname)) {
@@ -58,24 +59,17 @@ export default function Sidebar() {
     }
   }, [location.pathname]);
 
-  // ================= BODY LOCK =================
+  // ================= SAFE BODY LOCK =================
   useEffect(() => {
     if (showLogoutModal) {
-      // Lock scroll
-      const scrollY = window.scrollY;
-      document.body.style.position = "fixed";
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = "100%";
       document.body.style.overflow = "hidden";
     } else {
-      // Unlock scroll
-      const scrollY = -parseInt(document.body.style.top || "0", 10);
-      document.body.style.position = "";
-      document.body.style.top = "";
-      document.body.style.width = "";
-      document.body.style.overflow = "";
-      window.scrollTo(0, scrollY);
+      document.body.style.overflow = "auto";
     }
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
   }, [showLogoutModal]);
 
   return (
@@ -87,54 +81,73 @@ export default function Sidebar() {
 
       {/* SIDEBAR */}
       <div
-        className={`${styles.sidebar} ${isOpen ? styles.open : styles.close}`}
+        className={`${styles.sidebar} ${
+          isOpen ? styles.open : styles.close
+        }`}
       >
         <ul className="list-unstyled">
           {/* DASHBOARD */}
           <li>
             <NavLink
               to="/"
-              className={({ isActive }) => (isActive ? styles.active : "")}
+              end
+              className={({ isActive }) =>
+                isActive ? styles.active : ""
+              }
             >
               <i className={`bi bi-speedometer2 ${styles.icon}`}></i>
               <span>Dashboard</span>
             </NavLink>
           </li>
 
-          {/* CONTENT */}
+          {/* CMS */}
           <li>
             <NavLink
               to="/home-page"
-              className={({ isActive }) => (isActive ? styles.active : "")}
+              className={({ isActive }) =>
+                isActive ? styles.active : ""
+              }
             >
-              <i className={`bi bi-layout-text-window-reverse ${styles.icon}`}></i>
+              <i
+                className={`bi bi-layout-text-window-reverse ${styles.icon}`}
+              ></i>
               <span>CMS</span>
             </NavLink>
           </li>
 
-
-          {/* USER */}
+          {/* USER CONTROL */}
           <li>
-            <NavLink to="/user-control"
-              className={({ isActive }) => (isActive ? styles.active : "")}
+            <NavLink
+              to="/user-control"
+              className={({ isActive }) =>
+                isActive ? styles.active : ""
+              }
             >
               <i className={`bi bi-people ${styles.icon}`}></i>
               <span>User Control</span>
             </NavLink>
           </li>
 
+          {/* ROLE MANAGEMENT */}
           <li>
-            <NavLink to="/role-management"
-              className={({ isActive }) => (isActive ? styles.active : "")}
+            <NavLink
+              to="/role-management"
+              className={({ isActive }) =>
+                isActive ? styles.active : ""
+              }
             >
               <i className={`bi bi-person-gear ${styles.icon}`}></i>
               <span>Role Management</span>
             </NavLink>
           </li>
 
+          {/* PERMISSION MANAGEMENT */}
           <li>
-            <NavLink to="/permission-management"
-              className={({ isActive }) => (isActive ? styles.active : "")}
+            <NavLink
+              to="/permission-management"
+              className={({ isActive }) =>
+                isActive ? styles.active : ""
+              }
             >
               <i className={`bi bi-pencil-square ${styles.icon}`}></i>
               <span>Permissions Management</span>
@@ -156,7 +169,10 @@ export default function Sidebar() {
 
       {/* ================= LOGOUT MODAL ================= */}
       {showLogoutModal && (
-        <div className={styles.modalOverlay}>
+        <div
+          className={styles.modalOverlay}
+          onClick={() => setShowLogoutModal(false)}
+        >
           <div
             className={styles.logoutToast}
             onClick={(e) => e.stopPropagation()}
@@ -181,6 +197,7 @@ export default function Sidebar() {
 
               <button
                 className={styles.btnConfirm}
+                disabled={isPending}
                 onClick={() => {
                   if (!email) {
                     alert("Email not found ❌");
