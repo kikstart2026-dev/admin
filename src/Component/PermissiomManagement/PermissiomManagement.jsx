@@ -46,28 +46,31 @@ const PermissionManagement = () => {
 
   // ✅ MERGE DEFAULT + API DATA
 useEffect(() => {
-  if (!selectedRole || !modules.length) return;
+  if (!modules.length || !selectedRole) return;
+
+  const merged = modules.map((module) => {
+    const found = permissionsData.find(
+      (p) => p.module === module
+    );
+
+    return {
+      _id: found?._id || null,
+      module,
+      create: found?.create ?? false,
+      read: found?.read ?? false,
+      update: found?.update ?? false,
+      delete: found?.delete ?? false,
+    };
+  });
 
   setPermissions((prev) => {
-    const merged = modules.map((module) => {
-      const found = permissionsData.find((p) => p.module === module);
+    const prevString = JSON.stringify(prev);
+    const newString = JSON.stringify(merged);
 
-      return {
-        _id: found?._id || null,
-        module,
-        create: found?.create ?? false,
-        read: found?.read ?? false,
-        update: found?.update ?? false,
-        delete: found?.delete ?? false,
-      };
-    });
-
-    // 🔥 avoid unnecessary update
-    if (JSON.stringify(prev) === JSON.stringify(merged)) return prev;
-
-    return merged;
+    return prevString === newString ? prev : merged;
   });
-}, [selectedRole, modules, permissionsData]);
+
+}, [selectedRole, permissionsData]);
 
   // ✅ TOGGLE SINGLE
   const handleChange = (moduleName, field) => {
