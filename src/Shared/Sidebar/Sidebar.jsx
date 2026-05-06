@@ -18,6 +18,8 @@ export default function Sidebar() {
 
   const email = JSON.parse(localStorage.getItem("adminUser"))?.email;
 
+  const role = JSON.parse(localStorage.getItem("adminUser"))?.role;
+
   // ================= TOGGLE =================
   const toggleSidebar = () => setIsOpen((prev) => !prev);
   const toggleContent = () => setContentOpen((prev) => !prev);
@@ -51,7 +53,6 @@ export default function Sidebar() {
       "/interested-schools",
       "/why-us",
       "/role-management",
-      "/permission-management"
     ];
 
     if (paths.includes(location.pathname)) {
@@ -115,44 +116,42 @@ export default function Sidebar() {
             </NavLink>
           </li>
 
-          {/* USER CONTROL */}
+          {/* USER */}
           <li>
             <NavLink
               to="/user-control"
-              className={({ isActive }) =>
-                isActive ? styles.active : ""
-              }
+              className={({ isActive }) => (isActive ? styles.active : "")}
             >
               <i className={`bi bi-people ${styles.icon}`}></i>
               <span>User Control</span>
             </NavLink>
           </li>
 
-          {/* ROLE MANAGEMENT */}
-          <li>
-            <NavLink
-              to="/role-management"
-              className={({ isActive }) =>
-                isActive ? styles.active : ""
-              }
-            >
-              <i className={`bi bi-person-gear ${styles.icon}`}></i>
-              <span>Role Management</span>
-            </NavLink>
-          </li>
+          {/* ROLE MANAGEMENT (ONLY ADMIN) */}
+          {role !== "subadmin" && (
+            <li>
+              <NavLink
+                to="/role-management"
+                className={({ isActive }) => (isActive ? styles.active : "")}
+              >
+                <i className={`bi bi-person-gear ${styles.icon}`}></i>
+                <span>Role Management</span>
+              </NavLink>
+            </li>
+          )}
 
-          {/* PERMISSION MANAGEMENT */}
-          <li>
-            <NavLink
-              to="/permission-management"
-              className={({ isActive }) =>
-                isActive ? styles.active : ""
-              }
-            >
-              <i className={`bi bi-pencil-square ${styles.icon}`}></i>
-              <span>Permissions Management</span>
-            </NavLink>
-          </li>
+          {/* PERMISSION MANAGEMENT (ONLY ADMIN) */}
+          {role !== "subadmin" && (
+            <li>
+              <NavLink
+                to="/permission-management"
+                className={({ isActive }) => (isActive ? styles.active : "")}
+              >
+                <i className={`bi bi-pencil-square ${styles.icon}`}></i>
+                <span>Permissions Management</span>
+              </NavLink>
+            </li>
+          )}
 
           {/* LOGOUT */}
           <li>
