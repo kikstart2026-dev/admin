@@ -13,7 +13,6 @@ import HomePage from "./Pages/Home/HomePage";
 import About from "./Pages/About/About";
 import Contact from "./Pages/Contact/Contact";
 
-
 import AdminLogin from "./Pages/Authentication/AdminLogin/AdminLogin";
 import AdminOtpVerify from "./Pages/Authentication/AdminOtpVerify/AdminOtpVerify";
 import AdminForgotPass from "./Pages/Authentication/AdminForgotPass/AdminForgotPass";
@@ -29,11 +28,19 @@ import RoleManagementPage from "./Pages/RoleManagementPage/RoleManagementPage";
 import PermissionManagementPage from "./Pages/PermissionManagementPage/PermissionManagementPage";
 
 // ================= 🔐 ADMIN PROTECTED ROUTE =================
-function AdminProtectedRoute({ children }) {
+function AdminProtectedRoute({ children, blockSubadmin = false }) {
   const token = Cookies.get("token");
 
   if (!token) {
     return <Navigate to="/login" replace />;
+  }
+
+  const user = JSON.parse(localStorage.getItem("adminUser"));
+  const role = user?.role;
+
+  // 🔥 subadmin block
+  if (blockSubadmin && role === "subadmin") {
+    return <Navigate to="/" replace />;
   }
 
   return children;
@@ -54,7 +61,6 @@ function AdminAuthRoute({ children }) {
 function Layout() {
   const location = useLocation();
 
-  // 🔥 সব auth page e header hide
   const hideHeaderRoutes = [
     "/login",
     "/admin-otp",
@@ -90,9 +96,7 @@ function Layout() {
         />
 
         <Route path="/admin-otp" element={<AdminOtpVerify />} />
-
         <Route path="/admin-forgot" element={<AdminForgotPass />} />
-
         <Route path="/admin-reset" element={<AdminResetPass />} />
 
         {/* ================= PROTECTED ADMIN ROUTES ================= */}
@@ -133,22 +137,21 @@ function Layout() {
           }
         />
 
+        {/* 🔥 ONLY ADMIN ACCESS */}
 
-
-         <Route
+        <Route
           path="/role-management"
           element={
-            <AdminProtectedRoute>
+            <AdminProtectedRoute blockSubadmin={true}>
               <RoleManagementPage />
             </AdminProtectedRoute>
           }
         />
 
-
         <Route
           path="/permission-management"
           element={
-            <AdminProtectedRoute>
+            <AdminProtectedRoute blockSubadmin={true}>
               <PermissionManagementPage />
             </AdminProtectedRoute>
           }

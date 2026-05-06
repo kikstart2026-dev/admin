@@ -40,6 +40,7 @@ export default function AdminOtpVerify() {
       // ✅ SAFE LOCALSTORAGE SAVE (ONLY REQUIRED FIELDS)
       if (user) {
         const adminData = {
+          role: user?.role || "",
           image: user?.image || null,
           fullname: user?.fullname || "",
           email: user?.email || "",
