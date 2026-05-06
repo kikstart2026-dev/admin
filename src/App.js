@@ -1,4 +1,6 @@
 import "./App.css";
+import "./Main.scss";
+
 import {
   BrowserRouter as Router,
   Route,
@@ -23,8 +25,6 @@ import About from "./Pages/About/About";
 import Contact from "./Pages/Contact/Contact";
 import RoleManagementPage from "./Pages/RoleManagementPage/RoleManagementPage";
 import PermissionManagementPage from "./Pages/PermissionManagementPage/PermissionManagementPage";
-// ⚠️ যদি থাকে
-// import UserControlPage from "./Pages/UserControl/UserControlPage";
 
 // 🔹 Auth Pages
 import AdminLogin from "./Pages/Authentication/AdminLogin/AdminLogin";
@@ -50,6 +50,7 @@ function AdminProtectedRoute({ children, blockSubadmin = false }) {
 
   return children;
 }
+
 
 // ================= 🔁 AUTH ROUTE =================
 function AdminAuthRoute({ children }) {
@@ -89,105 +90,89 @@ function Layout() {
       {/* HEADER */}
       {!isAuthPage && <Header title={title} />}
 
-      {/* SIDEBAR */}
-      {!isAuthPage && <Sidebar />}
-      
+      <div className="layoutWrapper">
 
-      {/* MAIN CONTENT */}
-      <div
-        style={{
-          marginLeft: !isAuthPage ? "20%" : "0",
-          marginTop: !isAuthPage ? "100px" : "0",
-          padding: "20px",
-        }}
-      >
-        <Routes>
+        {/* SIDEBAR */}
+        {!isAuthPage && <Sidebar />}
 
-          {/* ================= AUTH ================= */}
-          <Route
-            path="/login"
-            element={
-              <AdminAuthRoute>
-                <AdminLogin />
-              </AdminAuthRoute>
-            }
-          />
+        {/* MAIN CONTENT */}
+        <div className="mainContent">
+          <Routes>
 
-          <Route path="/admin-otp" element={<AdminOtpVerify />} />
-          <Route path="/admin-forgot" element={<AdminForgotPass />} />
-          <Route path="/admin-reset" element={<AdminResetPass />} />
+            {/* ================= AUTH ================= */}
+            <Route
+              path="/login"
+              element={
+                <AdminAuthRoute>
+                  <AdminLogin />
+                </AdminAuthRoute>
+              }
+            />
 
-          {/* ================= PROTECTED ================= */}
+            <Route path="/admin-otp" element={<AdminOtpVerify />} />
+            <Route path="/admin-forgot" element={<AdminForgotPass />} />
+            <Route path="/admin-reset" element={<AdminResetPass />} />
 
-          <Route
-            path="/"
-            element={
-              <AdminProtectedRoute>
-                <Dashboard />
-              </AdminProtectedRoute>
-            }
-          />
+            {/* ================= PROTECTED ================= */}
 
-          <Route
-            path="/home-page"
-            element={
-              <AdminProtectedRoute>
-                <HomePage />
-              </AdminProtectedRoute>
-            }
-          />
+            <Route
+              path="/"
+              element={
+                <AdminProtectedRoute>
+                  <Dashboard />
+                </AdminProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/about-control"
-            element={
-              <AdminProtectedRoute>
-                <About />
-              </AdminProtectedRoute>
-            }
-          />
+            <Route
+              path="/home-page"
+              element={
+                <AdminProtectedRoute>
+                  <HomePage />
+                </AdminProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/contact-control"
-            element={
-              <AdminProtectedRoute>
-                <Contact />
-              </AdminProtectedRoute>
-            }
-          />
+            <Route
+              path="/about-control"
+              element={
+                <AdminProtectedRoute>
+                  <About />
+                </AdminProtectedRoute>
+              }
+            />
 
-          {/* 🔥 ADMIN ONLY */}
+            <Route
+              path="/contact-control"
+              element={
+                <AdminProtectedRoute>
+                  <Contact />
+                </AdminProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/role-management"
-            element={
-              <AdminProtectedRoute blockSubadmin>
-                <RoleManagementPage />
-              </AdminProtectedRoute>
-            }
-          />
+            {/* 🔥 ADMIN ONLY */}
 
-          <Route
-            path="/permission-management"
-            element={
-              <AdminProtectedRoute blockSubadmin>
-                <PermissionManagementPage />
-              </AdminProtectedRoute>
-            }
-          />
+            <Route
+              path="/role-management"
+              element={
+                <AdminProtectedRoute blockSubadmin>
+                  <RoleManagementPage />
+                </AdminProtectedRoute>
+              }
+            />
 
-          {/* ⚠️ যদি User Control থাকে */}
-          {/*
-          <Route
-            path="/user-control"
-            element={
-              <AdminProtectedRoute>
-                <UserControlPage />
-              </AdminProtectedRoute>
-            }
-          />
-          */}
+            <Route
+              path="/permission-management"
+              element={
+                <AdminProtectedRoute blockSubadmin>
+                  <PermissionManagementPage />
+                </AdminProtectedRoute>
+              }
+            />
 
-        </Routes>
+          </Routes>
+        </div>
       </div>
     </>
   );
@@ -205,6 +190,7 @@ function App() {
             closeOnClick={false}
             draggable={false}
           />
+
           <Layout />
         </Router>
       </GoogleOAuthProvider>
