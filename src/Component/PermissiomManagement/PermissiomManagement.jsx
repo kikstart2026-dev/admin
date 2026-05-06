@@ -46,13 +46,15 @@ const PermissionManagement = () => {
 
   // ✅ MERGE DEFAULT + API DATA
 useEffect(() => {
-  if (!modules.length) return;
+  if (!modules.length || !selectedRole) return;
 
   const merged = modules.map((module) => {
-    const found = permissionsData.find((p) => p.module === module);
+    const found = permissionsData.find(
+      (p) => p.module === module
+    );
 
     return {
-      _id: found?._id || null,   // 🔥 THIS LINE IS CRITICAL
+      _id: found?._id || null,
       module,
       create: found?.create ?? false,
       read: found?.read ?? false,
@@ -61,8 +63,14 @@ useEffect(() => {
     };
   });
 
-  setPermissions(merged);
-}, [modules, permissionsData]);
+  setPermissions((prev) => {
+    const prevString = JSON.stringify(prev);
+    const newString = JSON.stringify(merged);
+
+    return prevString === newString ? prev : merged;
+  });
+
+}, [selectedRole, permissionsData]);
 
   // ✅ TOGGLE SINGLE
   const handleChange = (moduleName, field) => {
