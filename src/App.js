@@ -1,6 +1,4 @@
 import "./App.css";
-import "./Main.scss";
-
 import {
   BrowserRouter as Router,
   Route,
@@ -9,29 +7,28 @@ import {
   Navigate,
 } from "react-router-dom";
 
-import Cookies from "js-cookie";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { GoogleOAuthProvider } from "@react-oauth/google";
-
-// 🔹 Shared
 import Header from "./Shared/Header/Header";
-import Sidebar from "./Shared/Sidebar/Sidebar";
+import Sidebar from "./Shared/Sidebar/Sidebar"; // ✅ ADD THIS
 
-// 🔹 Pages
 import Dashboard from "./Pages/Dashboard/Dashboard";
 import HomePage from "./Pages/Home/HomePage";
 import About from "./Pages/About/About";
 import Contact from "./Pages/Contact/Contact";
-import RoleManagementPage from "./Pages/RoleManagementPage/RoleManagementPage";
-import PermissionManagementPage from "./Pages/PermissionManagementPage/PermissionManagementPage";
 
-// 🔹 Auth Pages
 import AdminLogin from "./Pages/Authentication/AdminLogin/AdminLogin";
 import AdminOtpVerify from "./Pages/Authentication/AdminOtpVerify/AdminOtpVerify";
 import AdminForgotPass from "./Pages/Authentication/AdminForgotPass/AdminForgotPass";
 import AdminResetPass from "./Pages/Authentication/AdminResetPass/AdminResetPass";
 
+import Cookies from "js-cookie";
+
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+import { GoogleOAuthProvider } from "@react-oauth/google";
+
+import RoleManagementPage from "./Pages/RoleManagementPage/RoleManagementPage";
+import PermissionManagementPage from "./Pages/PermissionManagementPage/PermissionManagementPage";
 
 // ================= 🔐 ADMIN PROTECTED ROUTE =================
 function AdminProtectedRoute({ children, blockSubadmin = false }) {
@@ -51,7 +48,6 @@ function AdminProtectedRoute({ children, blockSubadmin = false }) {
   return children;
 }
 
-
 // ================= 🔁 AUTH ROUTE =================
 function AdminAuthRoute({ children }) {
   const token = Cookies.get("token");
@@ -63,19 +59,18 @@ function AdminAuthRoute({ children }) {
   return children;
 }
 
-
-// ================= 🧱 LAYOUT =================
+// ================= LAYOUT =================
 function Layout() {
   const location = useLocation();
 
-  const hideLayoutRoutes = [
+  const hideRoutes = [
     "/login",
     "/admin-otp",
     "/admin-forgot",
     "/admin-reset",
   ];
 
-  const isAuthPage = hideLayoutRoutes.includes(location.pathname);
+  const isAuthPage = hideRoutes.includes(location.pathname);
 
   const title =
     location.pathname === "/"
@@ -87,109 +82,102 @@ function Layout() {
 
   return (
     <>
-      {/* HEADER */}
-      {!isAuthPage && <Header title={title} />}
+      {/* HEADER + SIDEBAR */}
+      {!isAuthPage && (
+        <>
+          <Header title={title} />
+          <Sidebar />
+        </>
+      )}
 
-      <div className="layoutWrapper">
+      {/* MAIN CONTENT */}
+      <div className={!isAuthPage ? "mainContent" : ""}>
+        <Routes>
+          {/* ================= AUTH ================= */}
 
-        {/* SIDEBAR */}
-        {!isAuthPage && <Sidebar />}
+          <Route
+            path="/login"
+            element={
+              <AdminAuthRoute>
+                <AdminLogin />
+              </AdminAuthRoute>
+            }
+          />
 
-        {/* MAIN CONTENT */}
-        <div className="mainContent">
-          <Routes>
+          <Route path="/admin-otp" element={<AdminOtpVerify />} />
+          <Route path="/admin-forgot" element={<AdminForgotPass />} />
+          <Route path="/admin-reset" element={<AdminResetPass />} />
 
-            {/* ================= AUTH ================= */}
-            <Route
-              path="/login"
-              element={
-                <AdminAuthRoute>
-                  <AdminLogin />
-                </AdminAuthRoute>
-              }
-            />
+          {/* ================= PROTECTED ================= */}
 
-            <Route path="/admin-otp" element={<AdminOtpVerify />} />
-            <Route path="/admin-forgot" element={<AdminForgotPass />} />
-            <Route path="/admin-reset" element={<AdminResetPass />} />
+          <Route
+            path="/"
+            element={
+              <AdminProtectedRoute>
+                <Dashboard />
+              </AdminProtectedRoute>
+            }
+          />
 
-            {/* ================= PROTECTED ================= */}
+          <Route
+            path="/home-page"
+            element={
+              <AdminProtectedRoute>
+                <HomePage />
+              </AdminProtectedRoute>
+            }
+          />
 
-            <Route
-              path="/"
-              element={
-                <AdminProtectedRoute>
-                  <Dashboard />
-                </AdminProtectedRoute>
-              }
-            />
+          <Route
+            path="/about-control"
+            element={
+              <AdminProtectedRoute>
+                <About />
+              </AdminProtectedRoute>
+            }
+          />
 
-            <Route
-              path="/home-page"
-              element={
-                <AdminProtectedRoute>
-                  <HomePage />
-                </AdminProtectedRoute>
-              }
-            />
+          <Route
+            path="/contact-control"
+            element={
+              <AdminProtectedRoute>
+                <Contact />
+              </AdminProtectedRoute>
+            }
+          />
 
-            <Route
-              path="/about-control"
-              element={
-                <AdminProtectedRoute>
-                  <About />
-                </AdminProtectedRoute>
-              }
-            />
+          {/* 🔥 ONLY ADMIN */}
 
-            <Route
-              path="/contact-control"
-              element={
-                <AdminProtectedRoute>
-                  <Contact />
-                </AdminProtectedRoute>
-              }
-            />
+          <Route
+            path="/role-management"
+            element={
+              <AdminProtectedRoute blockSubadmin={true}>
+                <RoleManagementPage />
+              </AdminProtectedRoute>
+            }
+          />
 
-            {/* 🔥 ADMIN ONLY */}
-
-            <Route
-              path="/role-management"
-              element={
-                <AdminProtectedRoute blockSubadmin>
-                  <RoleManagementPage />
-                </AdminProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/permission-management"
-              element={
-                <AdminProtectedRoute blockSubadmin>
-                  <PermissionManagementPage />
-                </AdminProtectedRoute>
-              }
-            />
-
-          </Routes>
-        </div>
+          <Route
+            path="/permission-management"
+            element={
+              <AdminProtectedRoute blockSubadmin={true}>
+                <PermissionManagementPage />
+              </AdminProtectedRoute>
+            }
+          />
+        </Routes>
       </div>
     </>
   );
 }
 
-
-// ================= 🚀 APP =================
+// ================= APP =================
 function App() {
   return (
     <div className="App">
       <GoogleOAuthProvider clientId="YOUR_GOOGLE_CLIENT_ID">
         <Router>
-          <ToastContainer
-            position="top-center"
-            closeOnClick={false}
-            draggable={false}
-          />
+          <ToastContainer position="top-center" />
 
           <Layout />
         </Router>
