@@ -77,7 +77,11 @@ img {
 .layoutWrapper {
   display: flex;
   width: 100%;
+    height: 100vh;
+  overflow: hidden;
 }
+
+
 
 /* Sidebar */
 .sidebar {
@@ -100,6 +104,8 @@ img {
   width: 80%;
   margin-top: 100px;
   transition: all 0.3s ease;
+    height: 100%;
+  overflow-y: auto;
 }
 
 /* Responsive */
