@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { adminLogin } from "../../../apis/api";
 import { handleError, handleSuccess } from "../../../utils";
-import "../../../Main.scss"
+// import "../../../Main.scss"
 
 export default function AdminLogin() {
   const navigate = useNavigate();
