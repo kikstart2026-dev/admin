@@ -85,19 +85,19 @@ img {
   min-width: 250px;
   height: 100vh;
   position: fixed;
-  top: 0;
+  top: -135px;
   left: 0;
   background: #fff;
   overflow-y: auto;
   z-index: 1000;
   border-right: 1px solid #e5e5e5;
+  
 }
 
 /* Main content */
 .mainContent {
   margin-left: 20%;
   width: 80%;
-  padding: 20px;
   margin-top: 100px;
   transition: all 0.3s ease;
 }

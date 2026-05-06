@@ -1,11 +1,12 @@
 .sidebar {
   background: #ffffff;
   height: 100vh;
-  border-right: 1px solid #ddd;
+ 
   position: fixed;
   width: 20%;
   transition: 0.3s;
   z-index: 10000;
+  top: 105px;
 
   ul {
     padding-left: 0;
