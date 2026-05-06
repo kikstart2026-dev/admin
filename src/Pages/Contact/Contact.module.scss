@@ -1,14 +1,14 @@
-.wrap {
-    display: flex;
-    align-items: flex-start;
-    margin-top: 100.80px;
+.container {
+  width: 100%;
+  padding: 20px;
+  background: #fff8f8;
+  min-height: calc(100vh - 100px);
+  box-sizing: border-box;
 }
 
-.left {
-    width: 20%;
-}
-
-.right {
-    width: 80%;
-    margin: 0 20PX;
+.content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
 }

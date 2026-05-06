@@ -1,58 +1,48 @@
 import React, { useState } from "react";
 import styles from "./PermissionManagementPage.module.scss";
 import "../../Main.scss";
+
 import PermissionManagement from "../../Component/PermissiomManagement/PermissiomManagement";
-import Sidebar from "../../Shared/Sidebar/Sidebar";
 
 export default function PermissionManagementPage() {
-  // ✅ section toggle
   const [activeSection, setActiveSection] = useState("users");
 
   const toggleSection = (section) => {
-    if (activeSection === section) {
-      setActiveSection(null);
-    } else {
-      setActiveSection(section);
-    }
+    setActiveSection((prev) => (prev === section ? null : section));
   };
 
+
   return (
-    <div className={styles.wrap}>
-      {/* LEFT SIDEBAR */}
-      <div className={styles.left}>
-        <Sidebar />
-      </div>
+    <div className={styles.container}>
 
-      {/* RIGHT CONTENT */}
-      <div className={styles.right}>
-        <div className={styles.section}>
-          
-          {/* HEADER */}
-          <div
-            className={`${styles.sectionHeader} ${
-              activeSection === "users" ? styles.active : ""
+      <div className={styles.section}>
+
+        {/* HEADER */}
+        <div
+          className={`${styles.sectionHeader} ${activeSection === "users" ? styles.active : ""
             }`}
-            onClick={() => toggleSection("users")}
-          >
-            <span>Permission Management</span>
+          onClick={() => toggleSection("users")}
+        >
+          <span>Permission Management</span>
 
-            <i
-              className={`bi ${
-                activeSection === "users"
-                  ? "bi-chevron-up"
-                  : "bi-chevron-down"
+          <i
+            className={`bi ${activeSection === "users"
+                ? "bi-chevron-up"
+                : "bi-chevron-down"
               }`}
-            ></i>
+          ></i>
+        </div>
+
+        {/* BODY */}
+        {activeSection === "users" && (
+          <div className={styles.sectionBody}>
+            <PermissionManagement />
           </div>
 
-          {/* BODY */}
-          {activeSection === "users" && (
-            <div className={styles.sectionBody}>
-              <PermissionManagement />
-            </div>
-          )}
-        </div>
+
+        )}
       </div>
+
     </div>
   );
 }

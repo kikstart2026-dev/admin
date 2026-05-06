@@ -5,11 +5,13 @@ import Sidebar from "../../Shared/Sidebar/Sidebar";
 export default function About() {
 
     return (
-        <div className={styles.wrap}>
-            <div className={styles.left}>
-                <Sidebar />
+
+        <div className={styles.container}>
+            <div className={styles.content}>
+                <h2>Contact Page</h2>
+
+                {/* এখানে তোমার Contact form / data থাকবে */}
             </div>
-            <div className={styles.right}>
-            </div>
-        </div>);
+        </div>
+    );
 }

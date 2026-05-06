@@ -1,57 +1,45 @@
 import React, { useState } from "react";
 import styles from "./RoleManagementPage.module.scss";
 import "../../Main.scss";
-import Sidebar from "../../Shared/Sidebar/Sidebar";
+
 import RoleManagement from "../../Component/RoleManagement/RoleManagement";
 
 export default function RoleManagementPage() {
-  // ✅ section toggle
   const [activeSection, setActiveSection] = useState("users");
 
   const toggleSection = (section) => {
-    if (activeSection === section) {
-      setActiveSection(null);
-    } else {
-      setActiveSection(section);
-    }
+    setActiveSection((prev) => (prev === section ? null : section));
   };
 
   return (
-    <div className={styles.wrap}>
-      {/* LEFT SIDEBAR */}
-      <div className={styles.left}>
-        <Sidebar />
-      </div>
+    <div className={styles.container}>
+      <div className={styles.section}>
 
-      {/* RIGHT CONTENT */}
-      <div className={styles.right}>
-        <div className={styles.section}>
-          
-          {/* HEADER */}
-          <div
-            className={`${styles.sectionHeader} ${
-              activeSection === "users" ? styles.active : ""
+        {/* HEADER */}
+        <div
+          className={`${styles.sectionHeader} ${
+            activeSection === "users" ? styles.active : ""
+          }`}
+          onClick={() => toggleSection("users")}
+        >
+          <span>User Management</span>
+
+          <i
+            className={`bi ${
+              activeSection === "users"
+                ? "bi-chevron-up"
+                : "bi-chevron-down"
             }`}
-            onClick={() => toggleSection("users")}
-          >
-            <span>User Management</span>
-
-            <i
-              className={`bi ${
-                activeSection === "users"
-                  ? "bi-chevron-up"
-                  : "bi-chevron-down"
-              }`}
-            ></i>
-          </div>
-
-          {/* BODY */}
-          {activeSection === "users" && (
-            <div className={styles.sectionBody}>
-              <RoleManagement />
-            </div>
-          )}
+          ></i>
         </div>
+
+        {/* BODY */}
+        {activeSection === "users" && (
+          <div className={styles.sectionBody}>
+            <RoleManagement />
+          </div>
+        )}
+
       </div>
     </div>
   );

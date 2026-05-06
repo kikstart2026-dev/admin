@@ -5,6 +5,7 @@
   position: fixed;
   width: 20%;
   transition: 0.3s;
+  z-index: 10000;
 
   ul {
     padding-left: 0;
@@ -109,6 +110,7 @@
   justify-content: center;
   align-items: center;
   z-index: 9999;
+  
 }
 
 .logoutToast {

@@ -1,15 +1,14 @@
 import React from "react";
 import styles from "./Contact.module.scss";
-import Sidebar from "../../Shared/Sidebar/Sidebar";
 
 export default function Contact() {
+  return (
+    <div className={styles.container}>
+      <div className={styles.content}>
+        <h2>Contact Page</h2>
 
-    return (
-        <div className={styles.wrap}>
-            <div className={styles.left}>
-                <Sidebar />
-            </div>
-            <div className={styles.right}>
-            </div>
-        </div>);
+        {/* এখানে তোমার Contact form / data থাকবে */}
+      </div>
+    </div>
+  );
 }
