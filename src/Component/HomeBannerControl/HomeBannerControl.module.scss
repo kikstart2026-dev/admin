@@ -313,3 +313,18 @@ textarea {
 :global(.ql-font-sans-serif) {
   font-family: Arial, sans-serif;
 }
+
+.disabledBtn {
+  opacity: 0.5 !important;
+  // cursor: not-allowed !important;
+
+  &:hover {
+    transform: none !important;
+  }
+}
+
+// button:disabled,
+// input:disabled {
+//   opacity: 0.5;
+//   cursor: not-allowed;
+// }
