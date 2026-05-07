@@ -41,6 +41,7 @@ export default function AdminOtpVerify() {
       if (user) {
         const adminData = {
           role: user?.role || "",
+          dynamicRole: user?.dynamicRole || "",
           image: user?.image || null,
           fullname: user?.fullname || "",
           email: user?.email || "",

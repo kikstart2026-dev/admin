@@ -693,6 +693,15 @@ export const getPermissionsByRole = async (dynamicRole) => {
   return res.data;
 };
 
+// 🔥 GET BY SINGLE
+export const getSingle = async (payload ) => {
+  const res = await axiosInstance.post(
+    endpoints.getSingle, 
+    payload
+  );
+  return res.data;
+};
+
 // 🔥 UPDATE PERMISSION
 export const updatePermission = async (id, payload) => {
   const res = await axiosInstance.put(
