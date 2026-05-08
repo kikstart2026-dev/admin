@@ -28,7 +28,6 @@ import {
 } from "../../utils";
 
 export default function HomeBannerControl() {
-
   const queryClient = useQueryClient();
 
   const [selected, setSelected] = useState([]);
@@ -51,47 +50,53 @@ export default function HomeBannerControl() {
     description: "",
   });
 
+
+  const modules = {
+  toolbar: [
+    [{ font: [] }, { size: [] }],
+    [{ header: [1, 2, 3, false] }],
+    ["bold", "italic", "underline", "strike"],
+    [{ color: [] }, { background: [] }],
+    [{ list: "ordered" }, { list: "bullet" }],
+    [{ align: [] }],
+    ["link"],
+    ["clean"],
+  ],
+};
+
   // ================= USER =================
   const userData = JSON.parse(
     localStorage.getItem("adminUser") || "{}"
   );
 
-  // ================= PERMISSION STORAGE KEY =================
   const permissionKey = "HomeBannerPermission";
 
-  // ================= GET ALL =================
+  // ================= GET ALL + PERMISSION =================
   const { data = [], isLoading } = useQuery({
     queryKey: ["homeBanners"],
 
     queryFn: async () => {
-
-      // ================= GET ALL BANNER =================
       const bannerRes = await getAllHomeBanner();
 
-      // ================= GET SINGLE PERMISSION =================
-      if (userData?.dynamicRole) {
+      // 🔥 SINGLE API ONLY
+      try {
+        const res = await getSingle({
+          role: userData?.role,
+          dynamicRole: userData?.dynamicRole,
+          moduleName: "Home Banner Control",
+        });
 
-        try {
+        localStorage.setItem(
+          permissionKey,
+          JSON.stringify(res?.data || {})
+        );
+      } catch (err) {
+        console.error(err);
 
-          const permissionRes = await getSingle({
-            dynamicRole: userData?.dynamicRole,
-            moduleName: "Home Banner Control",
-          });
-
-          localStorage.setItem(
-            permissionKey,
-            JSON.stringify(permissionRes?.data || {})
-          );
-
-        } catch (error) {
-
-          console.error("Permission Error:", error);
-
-          localStorage.setItem(
-            permissionKey,
-            JSON.stringify({})
-          );
-        }
+        localStorage.setItem(
+          permissionKey,
+          JSON.stringify({})
+        );
       }
 
       return bannerRes?.data?.data || bannerRes?.data || [];
@@ -100,83 +105,48 @@ export default function HomeBannerControl() {
     enabled: !!userData,
   });
 
-  // ================= GET PERMISSION =================
+  // ================= PERMISSION =================
   const permissions = JSON.parse(
     localStorage.getItem(permissionKey) || "{}"
   );
 
-  // ================= NO PERMISSION =================
-  const handleNoPermission = () => {
-    handleError("Permission not granted");
-  };
-
-  // ================= CHECK PERMISSION =================
   const hasPermission = (type) => {
     return permissions?.[type] === true;
   };
 
-  // ================= QUILL =================
-  const modules = {
-    toolbar: [
-      [{ font: [] }, { size: [] }],
-      [{ header: [1, 2, 3, false] }],
-      ["bold", "italic", "underline", "strike"],
-      [{ color: [] }, { background: [] }],
-      [{ list: "ordered" }, { list: "bullet" }],
-      [{ align: [] }],
-      ["link"],
-      ["clean"],
-    ],
+  const handleNoPermission = () => {
+    handleError("Permission not granted");
   };
 
-  // ================= REFRESH =================
   const fetchBanner = () => {
     queryClient.invalidateQueries(["homeBanners"]);
   };
 
   const allSelected =
-    selected.length === data.length &&
-    data.length > 0;
+    selected.length === data.length && data.length > 0;
 
   // ================= SELECT =================
   const handleSelect = (id) => {
-
     if (selected.includes(id)) {
-
-      setSelected(
-        selected.filter((x) => x !== id)
-      );
-
+      setSelected(selected.filter((x) => x !== id));
     } else {
-
       setSelected([...selected, id]);
-
     }
   };
 
   const handleSelectAll = () => {
-
-    if (!hasPermission("delete")) {
-      return handleNoPermission();
-    }
+    if (!hasPermission("delete")) return handleNoPermission();
 
     if (allSelected) {
-
       setSelected([]);
-
     } else {
-
       setSelected(data.map((x) => x._id));
-
     }
   };
 
   // ================= DELETE SELECTED =================
   const handleDeleteSelected = async () => {
-
-    if (!hasPermission("delete")) {
-      return handleNoPermission();
-    }
+    if (!hasPermission("delete")) return handleNoPermission();
 
     if (selected.length === 0) {
       handleError("Select banners first");
@@ -186,286 +156,161 @@ export default function HomeBannerControl() {
     if (!window.confirm("Delete Selected Banners?")) return;
 
     try {
-
       await selectiveDeleteHomeBanner({
         ids: selected,
       });
 
       setSelected([]);
-
       fetchBanner();
-
-      handleSuccess("Selected banners deleted successfully");
-
+      handleSuccess("Deleted successfully");
     } catch (err) {
-
-      console.error(err);
-
-      handleError("Failed to delete selected banners");
-
+      handleError("Failed to delete");
     }
   };
 
-  // ================= INPUT CHANGE =================
+  // ================= INPUT =================
   const handleChange = (e) => {
-
     setFormValues({
       ...formValues,
       [e.target.name]: e.target.value,
     });
   };
 
-  // ================= IMAGE CHANGE =================
   const handleImageChange = (e) => {
-
     const file = e.target.files[0];
-
     if (!file) return;
 
     setImageFile(file);
-
-    setPreview(
-      URL.createObjectURL(file)
-    );
+    setPreview(URL.createObjectURL(file));
   };
 
   // ================= CREATE =================
   const handleCreate = async () => {
-
-    if (!hasPermission("create")) {
-      return handleNoPermission();
-    }
-
-    if (
-      !formValues.tagline ||
-      !formValues.heading ||
-      !imageFile
-    ) {
-      handleError(
-        "Tagline, Heading and Image are required"
-      );
-
-      return;
-    }
+    if (!hasPermission("create")) return handleNoPermission();
 
     try {
-
-      const headingRes =
-        await createHeading(formValues);
-
-      const newHeadingId =
-        headingRes?.data?._id;
+      const headingRes = await createHeading(formValues);
+      const newHeadingId = headingRes?.data?._id;
 
       let imageUrl = "";
 
       if (imageFile) {
-
         const fd = new FormData();
-
         fd.append("file", imageFile);
 
-        const uploadRes =
-          await createFile(fd);
-
-        imageUrl =
-          uploadRes.data[0].path;
+        const uploadRes = await createFile(fd);
+        imageUrl = uploadRes.data[0].path;
       }
 
-      const bannerRes =
-        await createHomeBanner({
-          headingId: newHeadingId,
-          image:
-            "http://localhost:8008" +
-            imageUrl,
-        });
+      const bannerRes = await createHomeBanner({
+        headingId: newHeadingId,
+        image: "http://localhost:8008" + imageUrl,
+      });
 
-      const newBannerId =
-        bannerRes?.data?._id;
+      const newBannerId = bannerRes?.data?._id;
 
       if (newBannerId) {
-
-        await toggleActiveBanner(
-          newBannerId
-        );
+        await toggleActiveBanner(newBannerId);
       }
 
-      handleSuccess(
-        "Banner Created Successfully"
-      );
-
+      handleSuccess("Created Successfully");
       setShowForm(false);
-
       setImageFile(null);
-
       fetchBanner();
-
     } catch (err) {
-
-      console.error(err);
-
-      handleError("Failed to create banner");
-
+      handleError("Create failed");
     }
   };
 
   // ================= UPDATE =================
   const handleUpdate = async () => {
-
-    if (!hasPermission("update")) {
-      return handleNoPermission();
-    }
+    if (!hasPermission("update")) return handleNoPermission();
 
     try {
-
-      await updateHeading(
-        headingId,
-        formValues
-      );
+      await updateHeading(headingId, formValues);
 
       let imageUrl = preview;
 
       if (imageFile) {
-
         const fd = new FormData();
-
         fd.append("file", imageFile);
 
-        const uploadRes =
-          await createFile(fd);
-
+        const uploadRes = await createFile(fd);
         imageUrl =
-          "http://localhost:8008" +
-          uploadRes.data[0].path;
+          "http://localhost:8008" + uploadRes.data[0].path;
       }
 
-      await updateHomeBanner(
-        bannerId,
-        {
-          headingId,
-          image: imageUrl,
-        }
-      );
+      await updateHomeBanner(bannerId, {
+        headingId,
+        image: imageUrl,
+      });
 
-      handleSuccess(
-        "Banner Updated Successfully"
-      );
-
+      handleSuccess("Updated Successfully");
       setShowForm(false);
-
       setImageFile(null);
-
       fetchBanner();
-
     } catch (err) {
-
-      console.error(err);
-
-      handleError("Failed to update banner");
-
+      handleError("Update failed");
     }
   };
 
   // ================= DELETE =================
   const handleDelete = (id) => {
+    if (!hasPermission("delete")) return handleNoPermission();
 
-    if (!hasPermission("delete")) {
-      return handleNoPermission();
-    }
-
-    handleConfirm(
-      "Delete Banner?",
-      async () => {
-
-        try {
-
-          await singleDeleteHomeBanner(id);
-
-          handleSuccess(
-            "Banner deleted successfully ✅"
-          );
-
-          fetchBanner();
-
-        } catch (err) {
-
-          console.error(err);
-
-          handleError(
-            "Failed to delete banner ❌"
-          );
-
-        }
+    handleConfirm("Delete Banner?", async () => {
+      try {
+        await singleDeleteHomeBanner(id);
+        fetchBanner();
+        handleSuccess("Deleted");
+      } catch {
+        handleError("Failed delete");
       }
-    );
+    });
   };
 
   // ================= EDIT =================
   const handleEdit = (item) => {
-
-    if (!hasPermission("update")) {
-      return handleNoPermission();
-    }
+    if (!hasPermission("update")) return handleNoPermission();
 
     setMode("update");
-
     setShowForm(true);
 
     setBannerId(item._id);
-
     setHeadingId(item.headingData._id);
 
     setFormValues({
-      tagline:
-        item.headingData?.tagline || "",
-      heading:
-        item.headingData?.heading || "",
-      description:
-        item.headingData?.description || "",
+      tagline: item.headingData?.tagline || "",
+      heading: item.headingData?.heading || "",
+      description: item.headingData?.description || "",
     });
 
     setPreview(item.image);
-
     setImageFile(null);
   };
 
   // ================= GET =================
   const handleGet = (item) => {
-
-    if (!hasPermission("read")) {
-      return handleNoPermission();
-    }
+    if (!hasPermission("read")) return handleNoPermission();
 
     setGetData(item);
-
     setShowGet(true);
   };
 
   // ================= TOGGLE =================
   const toggleActive = async (id) => {
-
-    if (!hasPermission("update")) {
-      return handleNoPermission();
-    }
+    if (!hasPermission("update")) return handleNoPermission();
 
     try {
-
       await toggleActiveBanner(id);
-
       fetchBanner();
-
-    } catch (err) {
-
-      console.error(err);
-
-      handleError("Failed to update banner status");
-
+    } catch {
+      handleError("Failed toggle");
     }
   };
 
-  // ================= LOADING =================
-  if (isLoading) {
-    return <p>Loading...</p>;
-  }
+  if (isLoading) return <p>Loading...</p>;
+
 
 
 const cleanHtml = getData?.headingData?.description
