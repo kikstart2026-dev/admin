@@ -387,6 +387,10 @@ const heading = data?.data?.heading || null;
 
   if (isLoading) return <p>Loading...</p>;
 
+
+
+
+
   return (
     <div className={styles.banner}>
 
@@ -457,6 +461,8 @@ const heading = data?.data?.heading || null;
             }}
           >
             {heading ? "Update Heading" : "Create Heading"}
+
+
           </button>
 
           <button
@@ -902,10 +908,12 @@ const heading = data?.data?.heading || null;
 
                   <td
                     dangerouslySetInnerHTML={{
-                      __html: getData.description
+                      __html:
+                        getData?.description
+                          ?.replace(/&nbsp;/g, " ")
+                        || "",
                     }}
                   ></td>
-
                 </tr>
 
                 <tr>

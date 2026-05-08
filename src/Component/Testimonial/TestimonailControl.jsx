@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+
 import styles from "./TestimonailControl.module.scss";
+
 import {
   getAllTest,
   createTest,
@@ -10,13 +12,21 @@ import {
   createHeading,
   updateHeading,
   createFile,
+  getSingle,
 } from "../../apis/api";
 
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
-import { handleSuccess, handleError } from "../../utils";
+
+import "../../Main.scss";
+
+import {
+  handleSuccess,
+  handleError,
+} from "../../utils";
 
 export default function TestimonialControl() {
+
   const queryClient = useQueryClient();
 
   const [cards, setCards] = useState([]);
@@ -48,43 +58,90 @@ export default function TestimonialControl() {
     description: "",
   });
 
+  // ================= USER =================
+  const userData = JSON.parse(
+    localStorage.getItem("adminUser") || "{}"
+  );
+
+  // ================= PERMISSION STORAGE KEY =================
+  const permissionKey = "TestimonialPermission";
+
+  // ================= GET ALL =================
   const { data = {}, isLoading } = useQuery({
     queryKey: ["testimonials"],
+
     queryFn: async () => {
+
+      // ================= GET ALL TESTIMONIAL =================
       const res = await getAllTest();
+
+      // ================= GET SINGLE PERMISSION =================
+      if (userData?.dynamicRole) {
+
+        try {
+
+          const permissionRes = await getSingle({
+            dynamicRole: userData?.dynamicRole,
+            moduleName: "Testimonial Control",
+          });
+
+          localStorage.setItem(
+            permissionKey,
+            JSON.stringify(permissionRes?.data || {})
+          );
+
+        } catch (error) {
+
+          console.error("Permission Error:", error);
+
+          localStorage.setItem(
+            permissionKey,
+            JSON.stringify({})
+          );
+        }
+      }
+
       return res?.data || {};
     },
+
+    enabled: !!userData,
   });
-   const modules = {
-  toolbar: [
-    // FONT + SIZE
-    [{ font: [] }, { size: [] }],
 
-    // HEADINGS
-    [{ header: [1, 2, 3, false] }],
+  // ================= GET PERMISSION =================
+  const permissions = JSON.parse(
+    localStorage.getItem(permissionKey) || "{}"
+  );
 
-    // TEXT STYLE
-    ["bold", "italic", "underline", "strike"],
+  // ================= NO PERMISSION =================
+  const handleNoPermission = () => {
+    handleError("Permission not granted");
+  };
 
-    // COLOR
-    [{ color: [] }, { background: [] }],
+  // ================= CHECK PERMISSION =================
+  const hasPermission = (type) => {
+    return permissions?.[type] === true;
+  };
 
-    // LIST + ALIGN
-    [{ list: "ordered" }, { list: "bullet" }],
-    [{ align: [] }],
-
-    // LINK
-    ["link"],
-
-    // CLEAN
-    ["clean"],
-  ],
-};
+  // ================= QUILL =================
+  const modules = {
+    toolbar: [
+      [{ font: [] }, { size: [] }],
+      [{ header: [1, 2, 3, false] }],
+      ["bold", "italic", "underline", "strike"],
+      [{ color: [] }, { background: [] }],
+      [{ list: "ordered" }, { list: "bullet" }],
+      [{ align: [] }],
+      ["link"],
+      ["clean"],
+    ],
+  };
 
   useEffect(() => {
+
     setCards(data.cards || []);
 
     if (data.heading) {
+
       setHeadingId(data.heading._id);
 
       setHeadingData({
@@ -93,90 +150,169 @@ export default function TestimonialControl() {
         description: data.heading.description || "",
       });
     }
+
   }, [data]);
 
+  // ================= REFRESH =================
   const fetchData = () => {
     queryClient.invalidateQueries(["testimonials"]);
   };
 
-  const allSelected = selected.length === cards.length && cards.length > 0;
+  const allSelected =
+    selected.length === cards.length &&
+    cards.length > 0;
 
+  // ================= SELECT =================
   const handleSelect = (id) => {
+
     if (selected.includes(id)) {
-      setSelected(selected.filter((x) => x !== id));
+
+      setSelected(
+        selected.filter((x) => x !== id)
+      );
+
     } else {
+
       setSelected([...selected, id]);
+
     }
   };
 
+  // ================= SELECT ALL =================
   const handleSelectAll = () => {
-    if (allSelected) setSelected([]);
-    else setSelected(cards.map((x) => x._id));
+
+    if (!hasPermission("delete")) {
+      return handleNoPermission();
+    }
+
+    if (allSelected) {
+
+      setSelected([]);
+
+    } else {
+
+      setSelected(cards.map((x) => x._id));
+
+    }
   };
 
+  // ================= DELETE SELECTED =================
   const handleDeleteSelected = async () => {
+
+    if (!hasPermission("delete")) {
+      return handleNoPermission();
+    }
+
     if (selected.length === 0) {
+
       handleError("Select cards first");
+
       return;
     }
 
     if (!window.confirm("Delete Selected Cards?")) return;
 
-    await delSelectiveTest({ ids: selected });
+    await delSelectiveTest({
+      ids: selected,
+    });
 
     setSelected([]);
 
     fetchData();
   };
 
+  // ================= HEADING SAVE =================
   const handleHeadingSave = async () => {
+
+    if (!hasPermission("update")) {
+      return handleNoPermission();
+    }
+
     try {
+
       if (headingId) {
-        await updateHeading(headingId, headingData);
+
+        await updateHeading(
+          headingId,
+          headingData
+        );
+
         handleSuccess("Heading Updated");
+
       } else {
-        const res = await createHeading(headingData);
+
+        const res =
+          await createHeading(headingData);
+
         setHeadingId(res?.data?._id);
 
         handleSuccess("Heading Created");
       }
 
       fetchData();
+
     } catch (err) {
+
       console.log(err);
+
     }
   };
 
+  // ================= IMAGE CHANGE =================
   const handleImageChange = (e) => {
+
     const file = e.target.files[0];
 
     if (!file) return;
 
     setImageFile(file);
 
-    setPreview(URL.createObjectURL(file));
+    setPreview(
+      URL.createObjectURL(file)
+    );
   };
 
+  // ================= CREATE =================
   const handleCreate = async () => {
+
+    if (!hasPermission("create")) {
+      return handleNoPermission();
+    }
+
     if (!headingId) {
+
       handleError("Create heading first");
+
       return;
     }
 
-    if (!formValues.name || !formValues.designation || !imageFile) {
-      handleError("Name, Designation and Image are required");
+    if (
+      !formValues.name ||
+      !formValues.designation ||
+      !imageFile
+    ) {
+
+      handleError(
+        "Name, Designation and Image are required"
+      );
+
       return;
     }
 
     let imageUrl = "";
 
     if (imageFile) {
+
       const fd = new FormData();
+
       fd.append("file", imageFile);
 
-      const uploadRes = await createFile(fd);
+      const uploadRes =
+        await createFile(fd);
 
-      imageUrl = "http://localhost:8008" + uploadRes.data[0].path;
+      imageUrl =
+        "http://localhost:8008" +
+        uploadRes.data[0].path;
     }
 
     await createTest({
@@ -194,17 +330,27 @@ export default function TestimonialControl() {
     fetchData();
   };
 
+  // ================= UPDATE =================
   const handleUpdate = async () => {
+
+    if (!hasPermission("update")) {
+      return handleNoPermission();
+    }
 
     let imageUrl = preview;
 
     if (imageFile) {
+
       const fd = new FormData();
+
       fd.append("file", imageFile);
 
-      const uploadRes = await createFile(fd);
+      const uploadRes =
+        await createFile(fd);
 
-      imageUrl = "http://localhost:8008" + uploadRes.data[0].path;
+      imageUrl =
+        "http://localhost:8008" +
+        uploadRes.data[0].path;
     }
 
     await updateTest(cardId, {
@@ -222,7 +368,13 @@ export default function TestimonialControl() {
     fetchData();
   };
 
+  // ================= DELETE =================
   const handleDelete = async (id) => {
+
+    if (!hasPermission("delete")) {
+      return handleNoPermission();
+    }
+
     if (!window.confirm("Delete Card?")) return;
 
     await delSingleTest(id);
@@ -230,8 +382,15 @@ export default function TestimonialControl() {
     fetchData();
   };
 
+  // ================= EDIT =================
   const handleEdit = (item) => {
+
+    if (!hasPermission("update")) {
+      return handleNoPermission();
+    }
+
     setMode("update");
+
     setShowForm(true);
 
     setCardId(item._id);
@@ -243,25 +402,57 @@ export default function TestimonialControl() {
     });
 
     setPreview(item.image);
+
+    setImageFile(null);
   };
 
+  // ================= GET =================
   const handleGet = (item) => {
+
+    if (!hasPermission("read")) {
+      return handleNoPermission();
+    }
+
     setGetData(item);
+
     setShowGet(true);
   };
 
-  if (isLoading) return <p>Loading...</p>;
+  // ================= LOADING =================
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
+  const cleanHtml = getData?.description
+    ?.replace(/&nbsp;/g, " ");
+
+
 
   return (
     <div className={styles.banner}>
+
       <div className={styles.bannerWrap}>
-        <h3 className={styles.title}>Control As You Want</h3>
+
+        <h3 className={styles.title}>
+          Control As You Want
+        </h3>
 
         <div className={styles.topActions}>
+
+          {/* CREATE CARD */}
           <button
-            className={styles.createBtn}
+            className={`${styles.createBtn} ${!hasPermission("create")
+                ? styles.disabledBtn
+                : ""
+              }`}
             onClick={() => {
+
+              if (!hasPermission("create")) {
+                return handleNoPermission();
+              }
+
               setMode("create");
+
               setShowForm(true);
 
               setFormValues({
@@ -271,77 +462,140 @@ export default function TestimonialControl() {
               });
 
               setPreview("");
+
+              setImageFile(null);
             }}
           >
             Create Card
           </button>
 
+          {/* UPDATE HEADING */}
           <button
-            className={styles.createBtn}
-            onClick={() => setShowHeadingModal(true)}
+            className={`${styles.createBtn} ${!hasPermission("update")
+                ? styles.disabledBtn
+                : ""
+              }`}
+            onClick={() => {
+
+              if (!hasPermission("update")) {
+                return handleNoPermission();
+              }
+
+              setShowHeadingModal(true);
+            }}
           >
             Update Heading
           </button>
 
+          {/* DELETE SELECTED */}
           <button
-            className={styles.deleteSelected} // About style delete
+            className={`${styles.deleteSelected} ${!hasPermission("delete")
+                ? styles.disabledBtn
+                : ""
+              }`}
             onClick={handleDeleteSelected}
           >
             <i className="bi bi-trash"></i>
+
             {selected.length === 0
               ? ""
               : allSelected
                 ? " ALL"
                 : ` (${selected.length}/${cards.length})`}
           </button>
+
         </div>
       </div>
 
       <div className={styles.tableWrap}>
+
         <table className={styles.table}>
+
           <thead>
+
             <tr>
+
               <th>
+
                 <input
-                  className={styles.checkbox}
+                  className={`${styles.checkbox} ${!hasPermission("delete")
+                      ? styles.disabledBtn
+                      : ""
+                    }`}
                   type="checkbox"
                   checked={allSelected}
                   onChange={handleSelectAll}
-                />{" "}
-                Select All
+                />
+
+                {" "}Select All
+
               </th>
 
               <th>Image</th>
+
               <th>Name</th>
+
               <th>Designation</th>
+
               <th>Action</th>
+
             </tr>
+
           </thead>
 
           <tbody>
+
             {cards.length === 0 ? (
+
               <tr>
+
                 <td
                   colSpan={5}
-                  style={{ textAlign: "center", padding: "20px" }}
+                  style={{
+                    textAlign: "center",
+                    padding: "20px",
+                  }}
                 >
                   No Testimonials Found
                 </td>
+
               </tr>
+
             ) : (
+
               cards.map((item) => (
+
                 <tr key={item._id}>
+
                   <td>
+
                     <input
                       type="checkbox"
-                      className={styles.checkbox}
+                      className={`${styles.checkbox} ${!hasPermission("delete")
+                          ? styles.disabledBtn
+                          : ""
+                        }`}
                       checked={selected.includes(item._id)}
-                      onChange={() => handleSelect(item._id)}
+                      onChange={() => {
+
+                        if (!hasPermission("delete")) {
+                          return handleNoPermission();
+                        }
+
+                        handleSelect(item._id);
+                      }}
                     />
+
                   </td>
 
                   <td>
-                    <img src={item.image} alt="" width="80" />
+
+                    <img
+                      src={item.image}
+                      alt=""
+                      width="80"
+                    />
+
                   </td>
 
                   <td>{item.name}</td>
@@ -349,34 +603,84 @@ export default function TestimonialControl() {
                   <td>{item.designation}</td>
 
                   <td className={styles.actions}>
-                    <button onClick={() => handleEdit(item)}>
+
+                    {/* EDIT */}
+                    <button
+                      className={
+                        !hasPermission("update")
+                          ? styles.disabledBtn
+                          : ""
+                      }
+                      onClick={() =>
+                        handleEdit(item)
+                      }
+                    >
                       <i className="bi bi-pencil-square"></i>
                     </button>
-                    <button onClick={() => handleGet(item)}>
+
+                    {/* VIEW */}
+                    <button
+                      className={
+                        !hasPermission("read")
+                          ? styles.disabledBtn
+                          : ""
+                      }
+                      onClick={() =>
+                        handleGet(item)
+                      }
+                    >
                       <i className="bi bi-eye"></i>
                     </button>
-                    <button onClick={() => handleDelete(item._id)}>
+
+                    {/* DELETE */}
+                    <button
+                      className={
+                        !hasPermission("delete")
+                          ? styles.disabledBtn
+                          : ""
+                      }
+                      onClick={() =>
+                        handleDelete(item._id)
+                      }
+                    >
                       <i className="bi bi-trash"></i>
                     </button>
+
                   </td>
+
                 </tr>
+
               ))
             )}
+
           </tbody>
+
         </table>
+
       </div>
 
+      {/* FORM MODAL */}
       {showForm && (
+
         <div className={styles.modal}>
+
           <div className={styles.modalContent}>
-            <h4>{mode === "create" ? "Create Card" : "Edit Card"}</h4>
+
+            <h4>
+              {mode === "create"
+                ? "Create Card"
+                : "Edit Card"}
+            </h4>
 
             <input
               type="text"
               placeholder="Name"
               value={formValues.name}
               onChange={(e) =>
-                setFormValues({ ...formValues, name: e.target.value })
+                setFormValues({
+                  ...formValues,
+                  name: e.target.value,
+                })
               }
             />
 
@@ -385,11 +689,15 @@ export default function TestimonialControl() {
               placeholder="Designation"
               value={formValues.designation}
               onChange={(e) =>
-                setFormValues({ ...formValues, designation: e.target.value })
+                setFormValues({
+                  ...formValues,
+                  designation: e.target.value,
+                })
               }
             />
 
             <div className={styles.ck}>
+
               <ReactQuill
                 theme="snow"
                 value={formValues.description}
@@ -401,26 +709,84 @@ export default function TestimonialControl() {
                 }
                 modules={modules}
               />
+
             </div>
 
-            <input type="file" onChange={handleImageChange} />
+            <input
+              type="file"
+              onChange={handleImageChange}
+            />
 
-            {preview && <img src={preview} alt="" width="120" />}
+            {preview && (
+              <img
+                src={preview}
+                alt=""
+                width="120"
+              />
+            )}
 
             <div className={styles.modalActions}>
-              <button onClick={() => setShowForm(false)}>Cancel</button>
 
-              <button onClick={mode === "create" ? handleCreate : handleUpdate}>
-                {mode === "create" ? "Create" : "Update"}
+              <button
+                onClick={() =>
+                  setShowForm(false)
+                }
+              >
+                Cancel
               </button>
+
+              <button
+                className={`${(
+                    mode === "create" &&
+                    !hasPermission("create")
+                  ) ||
+                    (
+                      mode === "update" &&
+                      !hasPermission("update")
+                    )
+                    ? styles.disabledBtn
+                    : ""
+                  }`}
+                onClick={() => {
+
+                  if (
+                    mode === "create" &&
+                    !hasPermission("create")
+                  ) {
+                    return handleNoPermission();
+                  }
+
+                  if (
+                    mode === "update" &&
+                    !hasPermission("update")
+                  ) {
+                    return handleNoPermission();
+                  }
+
+                  mode === "create"
+                    ? handleCreate()
+                    : handleUpdate();
+                }}
+              >
+                {mode === "create"
+                  ? "Create"
+                  : "Update"}
+              </button>
+
             </div>
+
           </div>
+
         </div>
       )}
 
+      {/* HEADING MODAL */}
       {showHeadingModal && (
+
         <div className={styles.modal}>
+
           <div className={styles.modalContent}>
+
             <h4>Update Heading</h4>
 
             <input
@@ -428,7 +794,10 @@ export default function TestimonialControl() {
               placeholder="Tagline"
               value={headingData.tagline}
               onChange={(e) =>
-                setHeadingData({ ...headingData, tagline: e.target.value })
+                setHeadingData({
+                  ...headingData,
+                  tagline: e.target.value,
+                })
               }
             />
 
@@ -437,7 +806,10 @@ export default function TestimonialControl() {
               placeholder="Heading"
               value={headingData.heading}
               onChange={(e) =>
-                setHeadingData({ ...headingData, heading: e.target.value })
+                setHeadingData({
+                  ...headingData,
+                  heading: e.target.value,
+                })
               }
             />
 
@@ -445,60 +817,121 @@ export default function TestimonialControl() {
               placeholder="Description"
               value={headingData.description}
               onChange={(e) =>
-                setHeadingData({ ...headingData, description: e.target.value })
+                setHeadingData({
+                  ...headingData,
+                  description: e.target.value,
+                })
               }
             />
 
             <div className={styles.modalActions}>
-              <button onClick={() => setShowHeadingModal(false)}>Cancel</button>
 
               <button
+                onClick={() =>
+                  setShowHeadingModal(false)
+                }
+              >
+                Cancel
+              </button>
+
+              <button
+                className={`${!hasPermission("update")
+                    ? styles.disabledBtn
+                    : ""
+                  }`}
                 onClick={async () => {
+
+                  if (!hasPermission("update")) {
+                    return handleNoPermission();
+                  }
+
                   await handleHeadingSave();
+
                   setShowHeadingModal(false);
                 }}
               >
                 Save Heading
               </button>
+
             </div>
+
           </div>
+
         </div>
       )}
 
+      {/* GET MODAL */}
       {showGet && getData && (
+
         <div className={styles.modal}>
+
           <div className={styles.modalContent}>
+
             <h4>View Card</h4>
 
             <table>
+
               <tbody>
+
                 <tr>
+
                   <th>Image</th>
+
                   <td>
-                    <img src={getData.image} alt="" />
+                    <img
+                      src={getData.image}
+                      alt=""
+                    />
                   </td>
+
                 </tr>
 
                 <tr>
+
                   <th>Name</th>
+
                   <td>{getData.name}</td>
+
                 </tr>
 
                 <tr>
+
                   <th>Designation</th>
+
                   <td>{getData.designation}</td>
+
                 </tr>
 
                 <tr>
+
                   <th>Description</th>
-                  <td dangerouslySetInnerHTML={{ __html: getData.description }}></td>
+
+                  <td
+                    dangerouslySetInnerHTML={{
+                      __html: cleanHtml || "",
+                    }}
+                  ></td>
+
                 </tr>
+
               </tbody>
+
             </table>
-            <button className={styles.closeBtn} onClick={() => setShowGet(false)}>Close</button>
+
+            <button
+              className={styles.closeBtn}
+              onClick={() =>
+                setShowGet(false)
+              }
+            >
+              Close
+            </button>
+
           </div>
+
         </div>
       )}
+
     </div>
   );
 }

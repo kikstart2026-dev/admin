@@ -476,6 +476,12 @@ export default function AboutSectionControl() {
 
   if (isLoading) return <p>Loading...</p>;
 
+
+
+  const cleanHtml = getData?.headingData?.description
+    ?.replace(/&nbsp;/g, " ");
+
+
   return (
 
     <div className={styles.banner}>
@@ -877,17 +883,11 @@ export default function AboutSectionControl() {
             </div>
 
             <div className={styles.descriptionBlock}>
-
-              <span className={styles.label}>
-                Description
-              </span>
-
+              <span className={styles.label}>Description</span>
               <div
                 className={styles.descriptionText}
                 dangerouslySetInnerHTML={{
-                  __html:
-                    getData.headingData
-                      ?.description,
+                  __html: cleanHtml || "",
                 }}
               ></div>
 

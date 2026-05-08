@@ -111,9 +111,9 @@ export default function HomeBannerControl() {
   };
 
   // ================= CHECK PERMISSION =================
-const hasPermission = (type) => {
-  return permissions?.[type] === true;
-};
+  const hasPermission = (type) => {
+    return permissions?.[type] === true;
+  };
 
   // ================= QUILL =================
   const modules = {
@@ -467,6 +467,10 @@ const hasPermission = (type) => {
     return <p>Loading...</p>;
   }
 
+
+const cleanHtml = getData?.headingData?.description
+  ?.replace(/&nbsp;/g, " ");
+
   return (
     <div className={styles.banner}>
 
@@ -480,11 +484,10 @@ const hasPermission = (type) => {
 
           {/* CREATE */}
           <button
-            className={`${styles.createBtn} ${
-              !hasPermission("create")
-                ? styles.disabledBtn
-                : ""
-            }`}
+            className={`${styles.createBtn} ${!hasPermission("create")
+              ? styles.disabledBtn
+              : ""
+              }`}
             onClick={() => {
 
               if (!hasPermission("create")) {
@@ -511,11 +514,10 @@ const hasPermission = (type) => {
 
           {/* DELETE SELECTED */}
           <button
-            className={`${styles.deleteSelected} ${
-              !hasPermission("delete")
-                ? styles.disabledBtn
-                : ""
-            }`}
+            className={`${styles.deleteSelected} ${!hasPermission("delete")
+              ? styles.disabledBtn
+              : ""
+              }`}
             onClick={handleDeleteSelected}
           >
             <i className="bi bi-trash"></i>
@@ -523,8 +525,8 @@ const hasPermission = (type) => {
             {selected.length === 0
               ? ""
               : allSelected
-              ? " ALL"
-              : ` (${selected.length}/${data.length})`}
+                ? " ALL"
+                : ` (${selected.length}/${data.length})`}
           </button>
 
         </div>
@@ -541,11 +543,10 @@ const hasPermission = (type) => {
               <th>
 
                 <input
-                  className={`${styles.checkbox} ${
-                    !hasPermission("delete")
-                      ? styles.disabledBtn
-                      : ""
-                  }`}
+                  className={`${styles.checkbox} ${!hasPermission("delete")
+                    ? styles.disabledBtn
+                    : ""
+                    }`}
                   type="checkbox"
                   checked={allSelected}
                   onChange={handleSelectAll}
@@ -596,11 +597,10 @@ const hasPermission = (type) => {
                   <td>
 
                     <input
-                      className={`${styles.checkbox} ${
-                        !hasPermission("delete")
-                          ? styles.disabledBtn
-                          : ""
-                      }`}
+                      className={`${styles.checkbox} ${!hasPermission("delete")
+                        ? styles.disabledBtn
+                        : ""
+                        }`}
                       type="checkbox"
                       checked={selected.includes(item._id)}
                       onChange={() => {
@@ -641,15 +641,13 @@ const hasPermission = (type) => {
                   <td>
 
                     <i
-                      className={`${
-                        item.isActive
-                          ? "bi bi-toggle-on"
-                          : "bi bi-toggle-off"
-                      } ${
-                        !hasPermission("update")
+                      className={`${item.isActive
+                        ? "bi bi-toggle-on"
+                        : "bi bi-toggle-off"
+                        } ${!hasPermission("update")
                           ? styles.disabledBtn
                           : ""
-                      }`}
+                        }`}
                       style={{
                         fontSize: "26px",
                         cursor: "pointer",
@@ -795,18 +793,17 @@ const hasPermission = (type) => {
               </button>
 
               <button
-                className={`${
-                  (
-                    mode === "create" &&
-                    !hasPermission("create")
-                  ) ||
+                className={`${(
+                  mode === "create" &&
+                  !hasPermission("create")
+                ) ||
                   (
                     mode === "update" &&
                     !hasPermission("update")
                   )
-                    ? styles.disabledBtn
-                    : ""
-                }`}
+                  ? styles.disabledBtn
+                  : ""
+                  }`}
                 onClick={() => {
 
                   if (
@@ -873,8 +870,9 @@ const hasPermission = (type) => {
                   <td
                     dangerouslySetInnerHTML={{
                       __html:
-                        getData.headingData
-                          .description,
+                        cleanHtml ||
+                        getData?.headingData?.description ||
+                        "",
                     }}
                   ></td>
                 </tr>

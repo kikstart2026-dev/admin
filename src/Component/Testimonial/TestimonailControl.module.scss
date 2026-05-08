@@ -11,7 +11,7 @@ textarea {
   font-weight: 500;
 }
 
-.check{
+.check {
   accent-color: red;
 }
 
@@ -28,7 +28,7 @@ textarea {
   transition: 0.3s ease;
 }
 
-.topActions button:nth-child(1){
+.topActions button:nth-child(1) {
   margin-right: 20px;
 }
 
@@ -67,18 +67,18 @@ textarea {
   td {
     padding: 12px;
     text-align: center;
+   
 
-
-    .checkbox {
-      accent-color: #ED1C24;
-    }
-
+  .checkbox {
+    accent-color: #ED1C24;
   }
 
-  img {
-    width: 80px;
-    border-radius: 6px;
-  }
+}
+
+img {
+  width: 80px;
+  border-radius: 6px;
+}
 }
 
 /* Action Buttons */
@@ -191,7 +191,7 @@ textarea {
   }
 
   input,
-textarea {
+  textarea {
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;
@@ -200,10 +200,10 @@ textarea {
     outline: none;
 
     &:focus {
-        border-color: #ED1C24;
-        outline: none;
+      border-color: #ED1C24;
+      outline: none;
     }
-}
+  }
 
   .preview {
     text-align: center;
@@ -281,13 +281,15 @@ textarea {
     }
   }
 }
-.ck{
-margin-bottom: 15px;
-// border-radius: 15px;
+
+.ck {
+  margin-bottom: 15px;
+  // border-radius: 15px;
 }
+
 :global(.ck-content ul) {
   list-style: disc;
-  padding-left: 20px ;
+  padding-left: 20px;
 }
 
 :global(.ck-content ol) {
@@ -298,6 +300,7 @@ margin-bottom: 15px;
 :global(.ck-content li) {
   margin-bottom: 5px;
 }
+
 :global(.ql-editor) {
   white-space: nowrap;
   // word-break: break-word;
@@ -306,7 +309,7 @@ margin-bottom: 15px;
 }
 
 
-.ck{
+.ck {
   :global(.ql-editor) {
     box-sizing: border-box;
     counter-reset: list-0 list-1 list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9;
@@ -320,5 +323,15 @@ margin-bottom: 15px;
     text-align: left;
     white-space: pre-wrap;
     word-wrap: break-word;
+  }
 }
+
+
+.disabledBtn {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+
+  &:hover {
+    transform: none !important;
+  }
 }

@@ -392,6 +392,10 @@ export default function ServiceControl() {
 
   if (isLoading) return <p>Loading...</p>;
 
+  const cleanHtml = getData?.details
+    ?.replace(/&nbsp;/g, " ");
+
+
   return (
     <div className={styles.banner}>
 
@@ -404,11 +408,10 @@ export default function ServiceControl() {
         <div className={styles.topActions}>
 
           <button
-            className={`${styles.createBtn} ${
-              !hasPermission("create")
+            className={`${styles.createBtn} ${!hasPermission("create")
                 ? styles.disabledBtn
                 : ""
-            }`}
+              }`}
             onClick={() => {
 
               if (!hasPermission("create")) {
@@ -435,14 +438,13 @@ export default function ServiceControl() {
           </button>
 
           <button
-            className={`${styles.createBtn} ${
-              (
+            className={`${styles.createBtn} ${(
                 !hasPermission("create") &&
                 !hasPermission("update")
               )
                 ? styles.disabledBtn
                 : ""
-            }`}
+              }`}
             onClick={() => {
 
               if (
@@ -459,11 +461,10 @@ export default function ServiceControl() {
           </button>
 
           <button
-            className={`${styles.deleteSelected} ${
-              !hasPermission("delete")
+            className={`${styles.deleteSelected} ${!hasPermission("delete")
                 ? styles.disabledBtn
                 : ""
-            }`}
+              }`}
             onClick={handleDeleteSelected}
           >
             <i className="bi bi-trash"></i>
@@ -493,11 +494,10 @@ export default function ServiceControl() {
                     selected.length === services.length
                   }
                   onChange={handleSelectAll}
-                  className={`${
-                    !hasPermission("delete")
+                  className={`${!hasPermission("delete")
                       ? styles.disabledBtn
                       : ""
-                  }`}
+                    }`}
                 />
 
                 {" "}Select All
@@ -525,11 +525,10 @@ export default function ServiceControl() {
                   <input
                     type="checkbox"
                     checked={selected.includes(item._id)}
-                    className={`${
-                      !hasPermission("delete")
+                    className={`${!hasPermission("delete")
                         ? styles.disabledBtn
                         : ""
-                    }`}
+                      }`}
                     onChange={() => {
 
                       if (!hasPermission("delete")) {
@@ -648,11 +647,10 @@ export default function ServiceControl() {
           <button
             key={index + 1}
             onClick={() => setPage(index + 1)}
-            className={`${styles.numberBtn} ${
-              page === index + 1
+            className={`${styles.numberBtn} ${page === index + 1
                 ? styles.activePage
                 : ""
-            }`}
+              }`}
           >
             {index + 1}
           </button>
@@ -734,18 +732,17 @@ export default function ServiceControl() {
               </button>
 
               <button
-                className={`${
-                  (
+                className={`${(
                     mode === "create" &&
                     !hasPermission("create")
                   ) ||
-                  (
-                    mode === "update" &&
-                    !hasPermission("update")
-                  )
+                    (
+                      mode === "update" &&
+                      !hasPermission("update")
+                    )
                     ? styles.disabledBtn
                     : ""
-                }`}
+                  }`}
                 onClick={() => {
 
                   if (
@@ -823,14 +820,13 @@ export default function ServiceControl() {
               </button>
 
               <button
-                className={`${
-                  (
+                className={`${(
                     !hasPermission("create") &&
                     !hasPermission("update")
                   )
                     ? styles.disabledBtn
                     : ""
-                }`}
+                  }`}
                 onClick={handleHeadingSave}
               >
                 Save Heading
@@ -855,35 +851,17 @@ export default function ServiceControl() {
             <table className={styles.viewTable}>
 
               <tbody>
-
-                <tr>
-                  <th>Image</th>
-
-                  <td>
-                    <img
-                      src={getData.image}
-                      alt=""
-                      width="100"
-                    />
-                  </td>
-                </tr>
-
-                <tr>
-                  <th>Title</th>
-
-                  <td>{getData.title}</td>
-                </tr>
-
-                <tr>
-                  <th>Details</th>
+                <tr><th>Image</th><td><img src={getData.image} alt="" width="100" /></td></tr>
+                <tr><th>Title</th><td>{getData.title}</td></tr>
+                <tr><th>Details</th>
 
                   <td
                     dangerouslySetInnerHTML={{
-                      __html: getData.details
+                      __html: cleanHtml || "",
                     }}
-                  />
-                </tr>
+                  ></td>
 
+                </tr>
               </tbody>
 
             </table>
