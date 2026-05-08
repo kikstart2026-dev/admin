@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
+import {handleError, handleSuccess, handleWarning, handleConfirm, } from "../../utils"
 import {
   getPermissionsByRole,
   createPermission,
@@ -102,10 +103,10 @@ const PermissionManagement = () => {
 
   // ✅ SAVE
   const handleSave = async () => {
-    if (!selectedRole) {
-      alert("Role is required");
-      return;
-    }
+  if (!selectedRole) {
+    handleWarning("Role is required");
+    return;
+  }
 
     try {
       setSaving(true);
@@ -131,10 +132,10 @@ const PermissionManagement = () => {
         }
       }
 
-      alert("Permissions saved successfully");
+      handleSuccess("Permissions saved successfully");
     } catch (err) {
       console.log(err);
-      alert("Save failed");
+      handleError("Save failed");
     } finally {
       setSaving(false);
     }
