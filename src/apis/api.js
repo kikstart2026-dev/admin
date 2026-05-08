@@ -752,3 +752,67 @@ export const getAllRoles = async () => {
     const res = await axiosInstance.get(endpoints.getAllRoles);
     return res.data;
 };
+
+
+// ================ CHILDREN PROFILE ================================
+
+// CREATE
+export const createChild = async (data) => {
+    const res = await axiosInstance.post(
+        endpoints.createChild,
+        data
+    );
+
+    return res.data;
+};
+
+
+// GET ALL
+export const getAllChild = async () => {
+    const res = await axiosInstance.get(
+        endpoints.getAllChild
+    );
+
+    return res.data;
+};
+
+
+// GET BY ID
+export const getChildById = async (id) => {
+    const res = await axiosInstance.get(
+        `${endpoints.getChildById}/${id}`
+    );
+
+    return res.data;
+};
+
+
+// UPDATE
+export const updateChild = async (id, data) => {
+    const res = await axiosInstance.put(
+        `${endpoints.updateChild}/${id}`,
+        data
+    );
+
+    return res.data;
+};
+
+
+// DELETE
+export const deleteChild = async (id) => {
+    const res = await axiosInstance.delete(
+        `${endpoints.deleteChild}/${id}`
+    );
+
+    return res.data;
+};
+
+
+// DELETE ALL
+export const deleteAllChild = async () => {
+    const res = await axiosInstance.delete(
+        endpoints.deleteAllChild
+    );
+
+    return res.data;
+};
