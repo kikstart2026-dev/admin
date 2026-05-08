@@ -70,17 +70,41 @@ export default function WhyChooseUsControl() {
  const { data = {}, isLoading } = useQuery({
   queryKey: ["whyChooseUs", page],
 
-  queryFn: async () => {
+queryFn: async () => {
 
-    const res = await getAllWhyChooseUs({
-      page,
-      limit: 8,
-    });
+  const res = await getAllWhyChooseUs({
+    page,
+    limit: 8,
+  });
 
-    // permission code...
+  // ================= GET SINGLE PERMISSION =================
+  if (userData?.dynamicRole) {
 
-    return res;
-  },
+    try {
+
+      const permissionRes = await getSingle({
+        dynamicRole: userData?.dynamicRole,
+        moduleName: "Why Choose Us Control",
+      });
+
+      localStorage.setItem(
+        permissionKey,
+        JSON.stringify(permissionRes?.data || {})
+      );
+
+    } catch (error) {
+
+      console.error("Permission Error:", error);
+
+      localStorage.setItem(
+        permissionKey,
+        JSON.stringify({})
+      );
+    }
+  }
+
+  return res;
+},
 
   enabled: !!userData,
 });
