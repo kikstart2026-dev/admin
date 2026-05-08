@@ -63,42 +63,38 @@ export default function TestimonialControl() {
     localStorage.getItem("adminUser") || "{}"
   );
 
-  // ================= PERMISSION STORAGE KEY =================
+  // ================= PERMISSION KEY =================
   const permissionKey = "TestimonialPermission";
 
-  // ================= GET ALL =================
+  // ================= FETCH DATA =================
   const { data = {}, isLoading } = useQuery({
     queryKey: ["testimonials"],
 
     queryFn: async () => {
 
-      // ================= GET ALL TESTIMONIAL =================
       const res = await getAllTest();
 
-      // ================= GET SINGLE PERMISSION =================
-      if (userData?.dynamicRole) {
+      // ================= PERMISSION (ABOUT STYLE FIX) =================
+      try {
+        const permissionRes = await getSingle({
+          role: userData?.role,
+          dynamicRole: userData?.dynamicRole,
+          moduleName: "Testimonial Control",
+        });
 
-        try {
+        localStorage.setItem(
+          permissionKey,
+          JSON.stringify(permissionRes?.data || {})
+        );
 
-          const permissionRes = await getSingle({
-            dynamicRole: userData?.dynamicRole,
-            moduleName: "Testimonial Control",
-          });
+      } catch (error) {
 
-          localStorage.setItem(
-            permissionKey,
-            JSON.stringify(permissionRes?.data || {})
-          );
+        console.error("Permission Error:", error);
 
-        } catch (error) {
-
-          console.error("Permission Error:", error);
-
-          localStorage.setItem(
-            permissionKey,
-            JSON.stringify({})
-          );
-        }
+        localStorage.setItem(
+          permissionKey,
+          JSON.stringify({})
+        );
       }
 
       return res?.data || {};
@@ -107,19 +103,16 @@ export default function TestimonialControl() {
     enabled: !!userData,
   });
 
-  // ================= GET PERMISSION =================
+  // ================= PERMISSION =================
   const permissions = JSON.parse(
     localStorage.getItem(permissionKey) || "{}"
   );
 
-  // ================= NO PERMISSION =================
+  const hasPermission = (type) =>
+    permissions?.[type] === true;
+
   const handleNoPermission = () => {
     handleError("Permission not granted");
-  };
-
-  // ================= CHECK PERMISSION =================
-  const hasPermission = (type) => {
-    return permissions?.[type] === true;
   };
 
   // ================= QUILL =================
@@ -136,6 +129,7 @@ export default function TestimonialControl() {
     ],
   };
 
+  // ================= DATA SET =================
   useEffect(() => {
 
     setCards(data.cards || []);
@@ -165,35 +159,20 @@ export default function TestimonialControl() {
   // ================= SELECT =================
   const handleSelect = (id) => {
 
-    if (selected.includes(id)) {
-
-      setSelected(
-        selected.filter((x) => x !== id)
-      );
-
-    } else {
-
-      setSelected([...selected, id]);
-
-    }
+    setSelected((prev) =>
+      prev.includes(id)
+        ? prev.filter((x) => x !== id)
+        : [...prev, id]
+    );
   };
 
-  // ================= SELECT ALL =================
   const handleSelectAll = () => {
 
     if (!hasPermission("delete")) {
       return handleNoPermission();
     }
 
-    if (allSelected) {
-
-      setSelected([]);
-
-    } else {
-
-      setSelected(cards.map((x) => x._id));
-
-    }
+    setSelected(allSelected ? [] : cards.map((x) => x._id));
   };
 
   // ================= DELETE SELECTED =================
@@ -203,11 +182,8 @@ export default function TestimonialControl() {
       return handleNoPermission();
     }
 
-    if (selected.length === 0) {
-
-      handleError("Select cards first");
-
-      return;
+    if (!selected.length) {
+      return handleError("Select cards first");
     }
 
     if (!window.confirm("Delete Selected Cards?")) return;
@@ -224,7 +200,7 @@ export default function TestimonialControl() {
   // ================= HEADING SAVE =================
   const handleHeadingSave = async () => {
 
-    if (!hasPermission("update")) {
+    if (!hasPermission("create") && !hasPermission("update")) {
       return handleNoPermission();
     }
 
@@ -232,17 +208,13 @@ export default function TestimonialControl() {
 
       if (headingId) {
 
-        await updateHeading(
-          headingId,
-          headingData
-        );
+        await updateHeading(headingId, headingData);
 
         handleSuccess("Heading Updated");
 
       } else {
 
-        const res =
-          await createHeading(headingData);
+        const res = await createHeading(headingData);
 
         setHeadingId(res?.data?._id);
 
@@ -252,13 +224,11 @@ export default function TestimonialControl() {
       fetchData();
 
     } catch (err) {
-
       console.log(err);
-
     }
   };
 
-  // ================= IMAGE CHANGE =================
+  // ================= IMAGE =================
   const handleImageChange = (e) => {
 
     const file = e.target.files[0];
@@ -267,9 +237,7 @@ export default function TestimonialControl() {
 
     setImageFile(file);
 
-    setPreview(
-      URL.createObjectURL(file)
-    );
+    setPreview(URL.createObjectURL(file));
   };
 
   // ================= CREATE =================
@@ -280,10 +248,7 @@ export default function TestimonialControl() {
     }
 
     if (!headingId) {
-
-      handleError("Create heading first");
-
-      return;
+      return handleError("Create heading first");
     }
 
     if (
@@ -291,29 +256,21 @@ export default function TestimonialControl() {
       !formValues.designation ||
       !imageFile
     ) {
-
-      handleError(
+      return handleError(
         "Name, Designation and Image are required"
       );
-
-      return;
     }
 
     let imageUrl = "";
 
-    if (imageFile) {
+    const fd = new FormData();
+    fd.append("file", imageFile);
 
-      const fd = new FormData();
+    const uploadRes = await createFile(fd);
 
-      fd.append("file", imageFile);
-
-      const uploadRes =
-        await createFile(fd);
-
-      imageUrl =
-        "http://localhost:8008" +
-        uploadRes.data[0].path;
-    }
+    imageUrl =
+      "http://localhost:8008" +
+      uploadRes.data[0].path;
 
     await createTest({
       headingId,
@@ -342,11 +299,9 @@ export default function TestimonialControl() {
     if (imageFile) {
 
       const fd = new FormData();
-
       fd.append("file", imageFile);
 
-      const uploadRes =
-        await createFile(fd);
+      const uploadRes = await createFile(fd);
 
       imageUrl =
         "http://localhost:8008" +
@@ -390,7 +345,6 @@ export default function TestimonialControl() {
     }
 
     setMode("update");
-
     setShowForm(true);
 
     setCardId(item._id);
@@ -402,7 +356,6 @@ export default function TestimonialControl() {
     });
 
     setPreview(item.image);
-
     setImageFile(null);
   };
 
@@ -414,19 +367,12 @@ export default function TestimonialControl() {
     }
 
     setGetData(item);
-
     setShowGet(true);
   };
 
-  // ================= LOADING =================
-  if (isLoading) {
-    return <p>Loading...</p>;
-  }
+  if (isLoading) return <p>Loading...</p>;
 
-  const cleanHtml = getData?.description
-    ?.replace(/&nbsp;/g, " ");
-
-
+  const cleanHtml = getData?.description?.replace(/&nbsp;/g, " ");
 
   return (
     <div className={styles.banner}>
@@ -442,8 +388,8 @@ export default function TestimonialControl() {
           {/* CREATE CARD */}
           <button
             className={`${styles.createBtn} ${!hasPermission("create")
-                ? styles.disabledBtn
-                : ""
+              ? styles.disabledBtn
+              : ""
               }`}
             onClick={() => {
 
@@ -472,8 +418,8 @@ export default function TestimonialControl() {
           {/* UPDATE HEADING */}
           <button
             className={`${styles.createBtn} ${!hasPermission("update")
-                ? styles.disabledBtn
-                : ""
+              ? styles.disabledBtn
+              : ""
               }`}
             onClick={() => {
 
@@ -490,8 +436,8 @@ export default function TestimonialControl() {
           {/* DELETE SELECTED */}
           <button
             className={`${styles.deleteSelected} ${!hasPermission("delete")
-                ? styles.disabledBtn
-                : ""
+              ? styles.disabledBtn
+              : ""
               }`}
             onClick={handleDeleteSelected}
           >
@@ -519,8 +465,8 @@ export default function TestimonialControl() {
 
                 <input
                   className={`${styles.checkbox} ${!hasPermission("delete")
-                      ? styles.disabledBtn
-                      : ""
+                    ? styles.disabledBtn
+                    : ""
                     }`}
                   type="checkbox"
                   checked={allSelected}
@@ -572,8 +518,8 @@ export default function TestimonialControl() {
                     <input
                       type="checkbox"
                       className={`${styles.checkbox} ${!hasPermission("delete")
-                          ? styles.disabledBtn
-                          : ""
+                        ? styles.disabledBtn
+                        : ""
                         }`}
                       checked={selected.includes(item._id)}
                       onChange={() => {
@@ -737,15 +683,15 @@ export default function TestimonialControl() {
 
               <button
                 className={`${(
-                    mode === "create" &&
-                    !hasPermission("create")
-                  ) ||
-                    (
-                      mode === "update" &&
-                      !hasPermission("update")
-                    )
-                    ? styles.disabledBtn
-                    : ""
+                  mode === "create" &&
+                  !hasPermission("create")
+                ) ||
+                  (
+                    mode === "update" &&
+                    !hasPermission("update")
+                  )
+                  ? styles.disabledBtn
+                  : ""
                   }`}
                 onClick={() => {
 
@@ -836,8 +782,8 @@ export default function TestimonialControl() {
 
               <button
                 className={`${!hasPermission("update")
-                    ? styles.disabledBtn
-                    : ""
+                  ? styles.disabledBtn
+                  : ""
                   }`}
                 onClick={async () => {
 

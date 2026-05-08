@@ -27,7 +27,6 @@ import {
 } from "../../utils";
 
 export default function AboutSectionControl() {
-
   const queryClient = useQueryClient();
 
   const [selected, setSelected] = useState([]);
@@ -50,133 +49,89 @@ export default function AboutSectionControl() {
     description: "",
   });
 
-  // ================= USER =================
-  const userData = JSON.parse(
-    localStorage.getItem("adminUser") || "{}"
-  );
+  const userData = JSON.parse(localStorage.getItem("adminUser") || "{}");
 
-  // ================= PERMISSION STORAGE KEY =================
   const permissionKey = "AboutSectionPermission";
 
-  /* ================= FETCH ================= */
-
+  // ================= GET ALL + PERMISSION =================
   const { data = [], isLoading } = useQuery({
     queryKey: ["aboutSection"],
 
     queryFn: async () => {
+      const aboutRes = await getAllAboutSection();
 
-      // ================= GET ALL ABOUT =================
-      const res = await getAllAboutSection();
+      // 🔥 SAME AS HOMEBANNER STYLE
+      try {
+        const res = await getSingle({
+          role: userData?.role,
+          dynamicRole: userData?.dynamicRole,
+          moduleName: "About Us Control",
+        });
 
-      // ================= GET SINGLE PERMISSION =================
-      if (userData?.dynamicRole) {
-
-        try {
-
-          const permissionRes = await getSingle({
-            dynamicRole: userData?.dynamicRole,
-            moduleName: "About Us Control",
-          });
-
-          localStorage.setItem(
-            permissionKey,
-            JSON.stringify(permissionRes?.data || {})
-          );
-
-        } catch (error) {
-
-          console.error("Permission Error:", error);
-
-          localStorage.setItem(
-            permissionKey,
-            JSON.stringify({})
-          );
-        }
+        localStorage.setItem(permissionKey, JSON.stringify(res?.data || {}));
+      } catch (err) {
+        console.error(err);
+        localStorage.setItem(permissionKey, JSON.stringify({}));
       }
 
-      return res?.data?.data || res?.data || [];
+      return aboutRes?.data?.data || aboutRes?.data || [];
     },
 
     enabled: !!userData,
   });
 
-  // ================= GET PERMISSION =================
-  const permissions = JSON.parse(
-    localStorage.getItem(permissionKey) || "{}"
-  );
 
-  // ================= NO PERMISSION =================
+  
+  const modules = {
+  toolbar: [
+    [{ font: [] }, { size: [] }],
+    [{ header: [1, 2, 3, false] }],
+    ["bold", "italic", "underline", "strike"],
+    [{ color: [] }, { background: [] }],
+    [{ list: "ordered" }, { list: "bullet" }],
+    [{ align: [] }],
+    ["link"],
+    ["clean"],
+  ],
+};
+
+  // ================= PERMISSION =================
+  const permissions = JSON.parse(localStorage.getItem(permissionKey) || "{}");
+
+  const hasPermission = (type) => permissions?.[type] === true;
+
   const handleNoPermission = () => {
     handleError("Permission not granted");
   };
 
-  // ================= CHECK PERMISSION =================
-  const hasPermission = (type) => {
-    return permissions?.[type] === true;
-  };
-
-  const modules = {
-    toolbar: [
-      [{ font: [] }, { size: [] }],
-      [{ header: [1, 2, 3, false] }],
-      ["bold", "italic", "underline", "strike"],
-      [{ color: [] }, { background: [] }],
-      [{ list: "ordered" }, { list: "bullet" }],
-      [{ align: [] }],
-      ["link"],
-      ["clean"],
-    ],
-  };
-
-  const refresh = () => {
+  const fetchAbout = () => {
     queryClient.invalidateQueries(["aboutSection"]);
   };
 
-  /* ================= SELECT ================= */
-
   const allSelected =
-    selected.length === data.length &&
-    data.length > 0;
+    selected.length === data.length && data.length > 0;
 
+  // ================= SELECT =================
   const handleSelect = (id) => {
-
     if (selected.includes(id)) {
-
-      setSelected(
-        selected.filter((x) => x !== id)
-      );
-
+      setSelected(selected.filter((x) => x !== id));
     } else {
-
       setSelected([...selected, id]);
-
     }
   };
 
   const handleSelectAll = () => {
+    if (!hasPermission("delete")) return handleNoPermission();
 
-    if (!hasPermission("delete")) {
-      return handleNoPermission();
-    }
-
-    if (allSelected) {
-
-      setSelected([]);
-
-    } else {
-
-      setSelected(data.map((x) => x._id));
-
-    }
+    if (allSelected) setSelected([]);
+    else setSelected(data.map((x) => x._id));
   };
 
+  // ================= DELETE SELECTED =================
   const handleDeleteSelected = async () => {
+    if (!hasPermission("delete")) return handleNoPermission();
 
-    if (!hasPermission("delete")) {
-      return handleNoPermission();
-    }
-
-    if (selected.length === 0) {
+    if (!selected.length) {
       handleWarning("Select About first");
       return;
     }
@@ -184,303 +139,158 @@ export default function AboutSectionControl() {
     if (!window.confirm("Delete Selected About?")) return;
 
     try {
-
-      await selectiveDeleteAboutSection({
-        ids: selected,
-      });
-
+      await selectiveDeleteAboutSection({ ids: selected });
       setSelected([]);
-
-      refresh();
-
-      handleSuccess("Selected About deleted successfully");
-
+      fetchAbout();
+      handleSuccess("Deleted Successfully");
     } catch (err) {
-
-      console.log(err);
-
-      handleError("Failed to delete selected About");
-
+      handleError("Delete Failed");
     }
   };
 
-  /* ================= INPUT ================= */
-
+  // ================= INPUT =================
   const handleChange = (e) => {
-
     setFormValues({
       ...formValues,
       [e.target.name]: e.target.value,
     });
-
   };
 
   const handleImageChange = (e) => {
-
     const file = e.target.files[0];
-
     if (!file) return;
 
     setImageFile(file);
-
-    setPreview(
-      URL.createObjectURL(file)
-    );
-
+    setPreview(URL.createObjectURL(file));
   };
 
-  /* ================= CREATE ================= */
-
+  // ================= CREATE =================
   const handleCreate = async () => {
-
-    if (!hasPermission("create")) {
-      return handleNoPermission();
-    }
-
-    if (
-      !formValues.tagline ||
-      !formValues.heading ||
-      !imageFile
-    ) {
-      handleError(
-        "Tagline, Heading and Image are required"
-      );
-
-      return;
-    }
+    if (!hasPermission("create")) return handleNoPermission();
 
     try {
-
-      const headingRes =
-        await createHeading(formValues);
-
-      const newHeadingId =
-        headingRes?.data?._id;
+      const headingRes = await createHeading(formValues);
+      const newHeadingId = headingRes?.data?._id;
 
       let imageUrl = "";
 
       if (imageFile) {
-
         const fd = new FormData();
-
         fd.append("file", imageFile);
 
-        const uploadRes =
-          await createFile(fd);
-
-        imageUrl =
-          uploadRes.data[0].path;
-
+        const uploadRes = await createFile(fd);
+        imageUrl = uploadRes.data[0].path;
       }
 
-      const aboutRes =
-        await createAboutSection({
-          headingId: newHeadingId,
-          image:
-            "http://localhost:8008" +
-            imageUrl,
-        });
+      const aboutRes = await createAboutSection({
+        headingId: newHeadingId,
+        image: "http://localhost:8008" + imageUrl,
+      });
 
-      const newAboutId =
-        aboutRes?.data?._id;
+      const newAboutId = aboutRes?.data?._id;
 
       if (newAboutId) {
-
-        await toggleActiveAboutSection(
-          newAboutId
-        );
+        await toggleActiveAboutSection(newAboutId);
       }
 
-      handleSuccess(
-        "About Created Successfully"
-      );
-
+      handleSuccess("Created Successfully");
       setShowForm(false);
-
       setImageFile(null);
-
-      refresh();
-
+      fetchAbout();
     } catch (err) {
-
-      console.log(err);
-
-      handleError("Failed to create About");
-
+      handleError("Create Failed");
     }
   };
 
-  /* ================= UPDATE ================= */
-
+  // ================= UPDATE =================
   const handleUpdate = async () => {
-
-    if (!hasPermission("update")) {
-      return handleNoPermission();
-    }
+    if (!hasPermission("update")) return handleNoPermission();
 
     try {
-
-      await updateHeading(
-        headingId,
-        formValues
-      );
+      await updateHeading(headingId, formValues);
 
       let imageUrl = preview;
 
       if (imageFile) {
-
         const fd = new FormData();
-
         fd.append("file", imageFile);
 
-        const uploadRes =
-          await createFile(fd);
-
+        const uploadRes = await createFile(fd);
         imageUrl =
-          "http://localhost:8008" +
-          uploadRes.data[0].path;
-
+          "http://localhost:8008" + uploadRes.data[0].path;
       }
 
-      await updateAboutSection(
-        aboutId,
-        {
-          headingId,
-          image: imageUrl,
-        }
-      );
+      await updateAboutSection(aboutId, {
+        headingId,
+        image: imageUrl,
+      });
 
-      handleSuccess(
-        "About Updated Successfully"
-      );
-
+      handleSuccess("Updated Successfully");
       setShowForm(false);
-
-      setAboutId(null);
-
-      setHeadingId(null);
-
-      refresh();
-
+      fetchAbout();
     } catch (err) {
-
-      console.log(err);
-
-      handleError("Failed to update About");
-
+      handleError("Update Failed");
     }
   };
 
-  /* ================= DELETE ================= */
-
+  // ================= DELETE =================
   const handleDelete = (id) => {
+    if (!hasPermission("delete")) return handleNoPermission();
 
-    if (!hasPermission("delete")) {
-      return handleNoPermission();
-    }
-
-    handleConfirm(
-      "Delete About?",
-      async () => {
-
-        try {
-
-          await singleDeleteAboutSection(id);
-
-          handleSuccess(
-            "About deleted successfully ✅"
-          );
-
-          refresh();
-
-        } catch (err) {
-
-          console.log(err);
-
-          handleError(
-            "Failed to delete About ❌"
-          );
-
-        }
+    handleConfirm("Delete About?", async () => {
+      try {
+        await singleDeleteAboutSection(id);
+        fetchAbout();
+        handleSuccess("Deleted");
+      } catch {
+        handleError("Delete Failed");
       }
-    );
+    });
   };
 
-  /* ================= EDIT ================= */
-
+  // ================= EDIT =================
   const handleEdit = (item) => {
-
-    if (!hasPermission("update")) {
-      return handleNoPermission();
-    }
+    if (!hasPermission("update")) return handleNoPermission();
 
     setMode("update");
-
     setShowForm(true);
 
     setAboutId(item._id);
-
-    setHeadingId(item.headingData?._id);
+    setHeadingId(item.headingData._id);
 
     setFormValues({
-      tagline:
-        item.headingData?.tagline || "",
-      heading:
-        item.headingData?.heading || "",
-      description:
-        item.headingData?.description || "",
+      tagline: item.headingData?.tagline || "",
+      heading: item.headingData?.heading || "",
+      description: item.headingData?.description || "",
     });
 
     setPreview(item.image);
-
     setImageFile(null);
-
   };
 
-  /* ================= GET ================= */
-
+  // ================= GET =================
   const handleGet = (item) => {
-
-    if (!hasPermission("read")) {
-      return handleNoPermission();
-    }
+    if (!hasPermission("read")) return handleNoPermission();
 
     setGetData(item);
-
     setShowGet(true);
-
   };
 
-  /* ================= ACTIVE ================= */
-
+  // ================= ACTIVE =================
   const toggleActive = async (id) => {
-
-    if (!hasPermission("update")) {
-      return handleNoPermission();
-    }
+    if (!hasPermission("update")) return handleNoPermission();
 
     try {
-
       await toggleActiveAboutSection(id);
-
-      refresh();
-
-    } catch (err) {
-
-      console.error(err);
-
-      handleError("Failed to update About status");
-
+      fetchAbout();
+    } catch {
+      handleError("Toggle Failed");
     }
   };
 
   if (isLoading) return <p>Loading...</p>;
 
-
-
-  const cleanHtml = getData?.headingData?.description
-    ?.replace(/&nbsp;/g, " ");
-
+  const cleanHtml = getData?.headingData?.description?.replace(/&nbsp;/g, " ");
 
   return (
 

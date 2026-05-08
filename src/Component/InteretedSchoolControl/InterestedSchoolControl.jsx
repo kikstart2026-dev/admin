@@ -1,537 +1,336 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import {
-    useQuery,
-    useMutation,
-    useQueryClient,
+  useQuery,
+  useMutation,
+  useQueryClient,
 } from "@tanstack/react-query";
 
 import ReactQuill from "react-quill-new";
-
 import "react-quill-new/dist/quill.snow.css";
 
 import {
-    getSchools,
-    createSchool,
-    updateSchool,
-    deleteSchool,
-    selectiveDeleteSchool,
-    createFile,
-    getSingle,
+  getSchools,
+  createSchool,
+  updateSchool,
+  deleteSchool,
+  selectiveDeleteSchool,
+  createFile,
+  getSingle,
 } from "../../apis/api";
 
 import {
-    handleSuccess,
-    handleError,
+  handleSuccess,
+  handleError,
 } from "../../utils";
 
-// import styles from "../ServiceControl/ServiceControl.module.scss";
-
 import styles from "./InterestedSchoolControl.module.scss";
-
 import "../../Main.scss";
 
 export default function InterestedSchoolsControl() {
 
-    const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
-    const [selected, setSelected] = useState([]);
+  const [selected, setSelected] = useState([]);
+  const [showForm, setShowForm] = useState(false);
+  const [showView, setShowView] = useState(false);
 
-    const [showForm, setShowForm] = useState(false);
+  const [mode, setMode] = useState("create");
+  const [schoolId, setSchoolId] = useState(null);
 
-    const [showView, setShowView] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
+  const [authorImageFile, setAuthorImageFile] = useState(null);
 
-    const [mode, setMode] = useState("create");
+  const [preview, setPreview] = useState("");
+  const [authorPreview, setAuthorPreview] = useState("");
 
-    const [schoolId, setSchoolId] = useState(null);
+  const [oldImage, setOldImage] = useState("");
+  const [oldAuthorImg, setOldAuthorImg] = useState("");
 
-    const [imageFile, setImageFile] = useState(null);
+  const [getData, setGetData] = useState(null);
 
-    const [authorImageFile, setAuthorImageFile] = useState(null);
+  const [page, setPage] = useState(1);
 
-    const [preview, setPreview] = useState("");
+  const [formValues, setFormValues] = useState({
+    title: "",
+    description: "",
+    coach: "",
+    author: "",
+  });
 
-    const [authorPreview, setAuthorPreview] = useState("");
+  const [viewData, setViewData] = useState(null);
 
-    const [oldImage, setOldImage] = useState("");
 
-    const [oldAuthorImg, setOldAuthorImg] = useState("");
 
-    const [formValues, setFormValues] = useState({
-        title: "",
-        description: "",
-        coach: "",
-        author: "",
-    });
+      // ================= QUILL MODULES =================
+  const modules = {
+    toolbar: [
+      [{ font: [] }, { size: [] }],
+      [{ header: [1, 2, 3, false] }],
+      ["bold", "italic", "underline", "strike"],
+      [{ color: [] }, { background: [] }],
+      [{ list: "ordered" }, { list: "bullet" }],
+      [{ align: [] }],
+      ["link"],
+      ["clean"],
+    ],
+  };
 
-    const [viewData, setViewData] = useState(null);
+  // ================= USER =================
+  const userData = JSON.parse(
+    localStorage.getItem("adminUser") || "{}"
+  );
 
-    // ================= USER =================
-    const userData = JSON.parse(
-        localStorage.getItem("adminUser") || "{}"
-    );
+  // ================= PERMISSION KEY =================
+  const permissionKey = "InterestedSchoolPermission";
 
-    // ================= PERMISSION STORAGE KEY =================
-    const permissionKey =
-        "InterestedSchoolPermission";
+  // ================= FETCH =================
+  const { data = {}, isLoading } = useQuery({
+    queryKey: ["schools", page],
 
-    const modules = {
-        toolbar: [
-            [{ font: [] }, { size: [] }],
-            [{ header: [1, 2, 3, false] }],
-            [
-                "bold",
-                "italic",
-                "underline",
-                "strike",
-            ],
-            [{ color: [] }, { background: [] }],
-            [
-                { list: "ordered" },
-                { list: "bullet" },
-            ],
-            [{ align: [] }],
-            ["link"],
-            ["clean"],
-        ],
-    };
+    queryFn: async () => {
 
-    // ---------------- FETCH ALL SCHOOLS ----------------
-    const [page, setPage] = useState(1);
+      const res = await getSchools(page, 6);
 
-    const { data = {}, isLoading } = useQuery({
-        queryKey: ["schools", page],
-
-        queryFn: async () => {
-
-            const res = await getSchools(
-                page,
-                6
-            );
-
-            // ================= GET SINGLE PERMISSION =================
-            if (userData?.dynamicRole) {
-
-                try {
-
-                    const permissionRes =
-                        await getSingle({
-                            dynamicRole:
-                                userData?.dynamicRole,
-                            moduleName:
-                                "Interested Schools",
-                        });
-
-                    localStorage.setItem(
-                        permissionKey,
-                        JSON.stringify(
-                            permissionRes?.data || {}
-                        )
-                    );
-
-                } catch (error) {
-
-                    console.error(
-                        "Permission Error:",
-                        error
-                    );
-
-                    localStorage.setItem(
-                        permissionKey,
-                        JSON.stringify({})
-                    );
-                }
-            }
-
-            return res;
-        },
-
-        enabled: !!userData,
-    });
-
-    // ================= GET PERMISSION =================
-    const permissions = JSON.parse(
-        localStorage.getItem(permissionKey) || "{}"
-    );
-
-    // ================= NO PERMISSION =================
-    const handleNoPermission = () => {
-        handleError("Permission not granted");
-    };
-
-    // ================= CHECK PERMISSION =================
-    const hasPermission = (type) => {
-        return permissions?.[type] === true;
-    };
-
-    const schools = data?.data || [];
-
-    const totalPages =
-        data?.totalPages || 1;
-
-    const allSelected =
-        schools.length > 0 &&
-        selected.length === schools.length;
-
-    // ---------------- MUTATIONS ----------------
-    const createMutation = useMutation({
-        mutationFn: (payload) =>
-            createSchool(payload),
-
-        onSuccess: () => {
-
-            queryClient.invalidateQueries([
-                "schools",
-                page,
-            ]);
-
-            handleSuccess(
-                "School created successfully"
-            );
-        },
-
-        onError: (err) =>
-            handleError(err.message),
-    });
-
-    const updateMutation = useMutation({
-        mutationFn: ({ id, payload }) =>
-            updateSchool(id, payload),
-
-        onSuccess: () => {
-
-            queryClient.invalidateQueries([
-                "schools",
-                page,
-            ]);
-
-            handleSuccess(
-                "School updated successfully"
-            );
-        },
-
-        onError: (err) =>
-            handleError(err.message),
-    });
-
-    const deleteMutation = useMutation({
-        mutationFn: (id) =>
-            deleteSchool(id),
-
-        onSuccess: () => {
-
-            queryClient.invalidateQueries([
-                "schools",
-                page,
-            ]);
-
-            handleSuccess(
-                "School deleted successfully"
-            );
-        },
-
-        onError: (err) =>
-            handleError(err.message),
-    });
-
-    const deleteSelectedMutation =
-        useMutation({
-            mutationFn: (ids) =>
-                selectiveDeleteSchool({
-                    ids,
-                }),
-
-            onSuccess: () => {
-
-                queryClient.invalidateQueries([
-                    "schools",
-                    page,
-                ]);
-
-                handleSuccess(
-                    "Selected schools deleted successfully"
-                );
-            },
-
-            onError: (err) =>
-                handleError(err.message),
+      // ================= PERMISSION (ABOUT STYLE FIX) =================
+      try {
+        const permissionRes = await getSingle({
+          role: userData?.role,
+          dynamicRole: userData?.dynamicRole,
+          moduleName: "Interested Schools",
         });
 
-    // ---------------- HANDLERS ----------------
-    const handleSelect = (id) => {
-
-        setSelected((prev) =>
-            prev.includes(id)
-                ? prev.filter((x) => x !== id)
-                : [...prev, id]
-        );
-    };
-
-    // ---------------- SELECT ALL ----------------
-    const handleSelectAll = () => {
-
-        if (!hasPermission("delete")) {
-            return handleNoPermission();
-        }
-
-        if (
-            !schools ||
-            schools.length === 0
-        ) return;
-
-        if (allSelected) {
-
-            setSelected([]);
-
-        } else {
-
-            setSelected(
-                schools.map((x) => x._id)
-            );
-
-        }
-    };
-
-    // ---------------- DELETE SELECTED ----------------
-    const handleDeleteSelected = () => {
-
-        if (!hasPermission("delete")) {
-            return handleNoPermission();
-        }
-
-        if (selected.length === 0) {
-            return handleError(
-                "Select schools first"
-            );
-        }
-
-        if (
-            !window.confirm(
-                "Delete selected schools?"
-            )
-        ) return;
-
-        deleteSelectedMutation.mutate(
-            selected
+        localStorage.setItem(
+          permissionKey,
+          JSON.stringify(permissionRes?.data || {})
         );
 
-        setSelected([]);
-    };
+      } catch (error) {
 
-    // ---------------- IMAGE CHANGE ----------------
-    const handleImageChange = (e) => {
+        console.error("Permission Error:", error);
 
-        const file = e.target.files[0];
-
-        if (!file) return;
-
-        setImageFile(file);
-
-        setPreview(
-            URL.createObjectURL(file)
+        localStorage.setItem(
+          permissionKey,
+          JSON.stringify({})
         );
-    };
+      }
 
-    // ---------------- AUTHOR IMAGE CHANGE ----------------
-    const handleAuthorImageChange = (e) => {
+      return res;
+    },
 
-        const file = e.target.files[0];
+    enabled: !!userData,
+  });
 
-        if (!file) return;
+  // ================= PERMISSION =================
+  const permissions = JSON.parse(
+    localStorage.getItem(permissionKey) || "{}"
+  );
 
-        setAuthorImageFile(file);
+  const hasPermission = (type) =>
+    permissions?.[type] === true;
 
-        setAuthorPreview(
-            URL.createObjectURL(file)
-        );
-    };
+  const handleNoPermission = () => {
+    handleError("Permission not granted");
+  };
 
-    // ---------------- CREATE OR UPDATE ----------------
-    const handleCreateOrUpdate =
-        async () => {
+  // ================= DATA =================
+  const schools = data?.data || [];
+  const totalPages = data?.totalPages || 1;
 
-            if (
-                mode === "create" &&
-                !hasPermission("create")
-            ) {
-                return handleNoPermission();
-            }
+  const allSelected =
+    schools.length > 0 &&
+    selected.length === schools.length;
 
-            if (
-                mode === "update" &&
-                !hasPermission("update")
-            ) {
-                return handleNoPermission();
-            }
+  // ================= SELECT =================
+  const handleSelect = (id) => {
+    setSelected((prev) =>
+      prev.includes(id)
+        ? prev.filter((x) => x !== id)
+        : [...prev, id]
+    );
+  };
 
-            if (!formValues.title) {
-                return handleError(
-                    "Title is required"
-                );
-            }
+  const handleSelectAll = () => {
 
-            let imageUrl = oldImage;
-
-            let authorImgUrl =
-                oldAuthorImg;
-
-            try {
-
-                if (imageFile) {
-
-                    const fd =
-                        new FormData();
-
-                    fd.append(
-                        "file",
-                        imageFile
-                    );
-
-                    const res =
-                        await createFile(fd);
-
-                    imageUrl =
-                        "http://localhost:8008" +
-                        res.data[0].path;
-                }
-
-                if (authorImageFile) {
-
-                    const fd =
-                        new FormData();
-
-                    fd.append(
-                        "file",
-                        authorImageFile
-                    );
-
-                    const res =
-                        await createFile(fd);
-
-                    authorImgUrl =
-                        "http://localhost:8008" +
-                        res.data[0].path;
-                }
-
-                const payload = {
-                    ...formValues,
-                    image: imageUrl,
-                    authorImg: authorImgUrl,
-                };
-
-                if (mode === "create") {
-
-                    createMutation.mutate(
-                        payload
-                    );
-
-                } else {
-
-                    updateMutation.mutate({
-                        id: schoolId,
-                        payload,
-                    });
-                }
-
-                // reset form
-                setFormValues({
-                    title: "",
-                    description: "",
-                    coach: "",
-                    author: "",
-                });
-
-                setPreview("");
-
-                setAuthorPreview("");
-
-                setOldImage("");
-
-                setOldAuthorImg("");
-
-                setImageFile(null);
-
-                setAuthorImageFile(null);
-
-                setShowForm(false);
-
-                setSchoolId(null);
-
-            } catch (err) {
-
-                handleError(err.message);
-
-            }
-        };
-
-    // ---------------- DELETE ----------------
-    const handleDelete = (id) => {
-
-        if (!hasPermission("delete")) {
-            return handleNoPermission();
-        }
-
-        if (
-            !window.confirm(
-                "Delete this school?"
-            )
-        ) return;
-
-        deleteMutation.mutate(id);
-    };
-
-    // ---------------- EDIT ----------------
-    const handleEdit = (item) => {
-
-        if (!hasPermission("update")) {
-            return handleNoPermission();
-        }
-
-        setMode("update");
-
-        setShowForm(true);
-
-        setSchoolId(item._id);
-
-        setFormValues({
-            title: item.title,
-            description: item.description,
-            coach: item.coach,
-            author: item.author,
-        });
-
-        setPreview(item.image);
-
-        setAuthorPreview(
-            item.authorImg
-        );
-
-        setOldImage(item.image);
-
-        setOldAuthorImg(
-            item.authorImg
-        );
-    };
-
-    // ---------------- VIEW ----------------
-    const handleView = (item) => {
-
-        if (!hasPermission("read")) {
-            return handleNoPermission();
-        }
-
-        setViewData(item);
-
-        setShowView(true);
-    };
-
-    if (isLoading) {
-        return <p>Loading...</p>;
+    if (!hasPermission("delete")) {
+      return handleNoPermission();
     }
 
+    if (allSelected) {
+      setSelected([]);
+    } else {
+      setSelected(schools.map((x) => x._id));
+    }
+  };
 
-    const cleanHtml = viewData?.headingData?.description
-        ?.replace(/&nbsp;/g, " ");
+  // ================= DELETE SELECTED =================
+  const handleDeleteSelected = async () => {
+
+    if (!hasPermission("delete")) {
+      return handleNoPermission();
+    }
+
+    if (!selected.length) {
+      return handleError("Select schools first");
+    }
+
+    if (!window.confirm("Delete selected schools?")) return;
+
+    await selectiveDeleteSchool({
+      ids: selected,
+    });
+
+    setSelected([]);
+
+    queryClient.invalidateQueries(["schools", page]);
+
+    handleSuccess("Deleted successfully");
+  };
+
+  // ================= IMAGE =================
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setImageFile(file);
+    setPreview(URL.createObjectURL(file));
+  };
+
+  const handleAuthorImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setAuthorImageFile(file);
+    setAuthorPreview(URL.createObjectURL(file));
+  };
+
+  // ================= CREATE / UPDATE =================
+  const handleCreateOrUpdate = async () => {
+
+    if (
+      mode === "create" &&
+      !hasPermission("create")
+    ) {
+      return handleNoPermission();
+    }
+
+    if (
+      mode === "update" &&
+      !hasPermission("update")
+    ) {
+      return handleNoPermission();
+    }
+
+    if (!formValues.title) {
+      return handleError("Title is required");
+    }
+
+    let imageUrl = oldImage;
+    let authorImgUrl = oldAuthorImg;
+
+    try {
+
+      if (imageFile) {
+        const fd = new FormData();
+        fd.append("file", imageFile);
+
+        const res = await createFile(fd);
+
+        imageUrl =
+          "http://localhost:8008" +
+          res.data[0].path;
+      }
+
+      if (authorImageFile) {
+        const fd = new FormData();
+        fd.append("file", authorImageFile);
+
+        const res = await createFile(fd);
+
+        authorImgUrl =
+          "http://localhost:8008" +
+          res.data[0].path;
+      }
+
+      const payload = {
+        ...formValues,
+        image: imageUrl,
+        authorImg: authorImgUrl,
+      };
+
+      if (mode === "create") {
+        await createSchool(payload);
+        handleSuccess("Created successfully");
+      } else {
+        await updateSchool(schoolId, payload);
+        handleSuccess("Updated successfully");
+      }
+
+      setShowForm(false);
+      queryClient.invalidateQueries(["schools", page]);
+
+    } catch (err) {
+      handleError(err.message);
+    }
+  };
+
+  // ================= DELETE =================
+  const handleDelete = async (id) => {
+
+    if (!hasPermission("delete")) {
+      return handleNoPermission();
+    }
+
+    if (!window.confirm("Delete this school?")) return;
+
+    await deleteSchool(id);
+
+    queryClient.invalidateQueries(["schools", page]);
+
+    handleSuccess("Deleted successfully");
+  };
+
+  // ================= EDIT =================
+  const handleEdit = (item) => {
+
+    if (!hasPermission("update")) {
+      return handleNoPermission();
+    }
+
+    setMode("update");
+    setShowForm(true);
+
+    setSchoolId(item._id);
+
+    setFormValues({
+      title: item.title,
+      description: item.description,
+      coach: item.coach,
+      author: item.author,
+    });
+
+    setPreview(item.image);
+    setAuthorPreview(item.authorImg);
+
+    setOldImage(item.image);
+    setOldAuthorImg(item.authorImg);
+  };
+
+  // ================= VIEW =================
+  const handleView = (item) => {
+
+    if (!hasPermission("read")) {
+      return handleNoPermission();
+    }
+
+    setViewData(item);
+    setShowView(true);
+  };
+
+  if (isLoading) return <p>Loading...</p>;
+
+  const cleanHtml =
+    viewData?.headingData?.description?.replace(/&nbsp;/g, " ");
 
     return (
         <div className={styles.banner}>
@@ -547,8 +346,8 @@ export default function InterestedSchoolsControl() {
                     {/* CREATE */}
                     <button
                         className={`${styles.createBtn} ${!hasPermission("create")
-                                ? styles.disabledBtn
-                                : ""
+                            ? styles.disabledBtn
+                            : ""
                             }`}
                         onClick={() => {
 
@@ -592,8 +391,8 @@ export default function InterestedSchoolsControl() {
                     {/* DELETE SELECTED */}
                     <button
                         className={`${styles.deleteSelected} ${!hasPermission("delete")
-                                ? styles.disabledBtn
-                                : ""
+                            ? styles.disabledBtn
+                            : ""
                             }`}
                         onClick={
                             handleDeleteSelected
@@ -626,8 +425,8 @@ export default function InterestedSchoolsControl() {
                                     className={`${styles.checkbox} ${!hasPermission(
                                         "delete"
                                     )
-                                            ? styles.disabledBtn
-                                            : ""
+                                        ? styles.disabledBtn
+                                        : ""
                                         }`}
                                     checked={
                                         allSelected
@@ -685,8 +484,8 @@ export default function InterestedSchoolsControl() {
                                             className={`${styles.checkbox} ${!hasPermission(
                                                 "delete"
                                             )
-                                                    ? styles.disabledBtn
-                                                    : ""
+                                                ? styles.disabledBtn
+                                                : ""
                                                 }`}
                                             checked={selected.includes(
                                                 item._id
@@ -806,8 +605,8 @@ export default function InterestedSchoolsControl() {
                     {/* LEFT */}
                     <li
                         className={`page-item ${page === 1
-                                ? "disabled"
-                                : ""
+                            ? "disabled"
+                            : ""
                             }`}
                     >
                         <button
@@ -832,14 +631,14 @@ export default function InterestedSchoolsControl() {
                         <li
                             key={num}
                             className={`page-item ${page === num
-                                    ? "active"
-                                    : ""
+                                ? "active"
+                                : ""
                                 }`}
                         >
                             <button
                                 className={`page-link ${page === num
-                                        ? "num"
-                                        : ""
+                                    ? "num"
+                                    : ""
                                     }`}
                                 onClick={() =>
                                     setPage(num)
@@ -854,8 +653,8 @@ export default function InterestedSchoolsControl() {
                     {/* RIGHT */}
                     <li
                         className={`page-item ${page === totalPages
-                                ? "disabled"
-                                : ""
+                            ? "disabled"
+                            : ""
                             }`}
                     >
                         <button
@@ -1016,21 +815,21 @@ export default function InterestedSchoolsControl() {
 
                             <button
                                 className={`${(
+                                    mode ===
+                                    "create" &&
+                                    !hasPermission(
+                                        "create"
+                                    )
+                                ) ||
+                                    (
                                         mode ===
-                                        "create" &&
+                                        "update" &&
                                         !hasPermission(
-                                            "create"
+                                            "update"
                                         )
-                                    ) ||
-                                        (
-                                            mode ===
-                                            "update" &&
-                                            !hasPermission(
-                                                "update"
-                                            )
-                                        )
-                                        ? styles.disabledBtn
-                                        : ""
+                                    )
+                                    ? styles.disabledBtn
+                                    : ""
                                     }`}
                                 onClick={
                                     handleCreateOrUpdate

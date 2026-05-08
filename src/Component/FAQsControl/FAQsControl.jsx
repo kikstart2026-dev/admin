@@ -24,7 +24,6 @@ import {
   handleError,
 } from "../../utils";
 
-// Ekhane visibleCount default 1000 kora hoyeche jate sob data show hoy
 export default function FAQsControl({
   isFullPage = false,
   visibleCount = 1000,
@@ -33,14 +32,11 @@ export default function FAQsControl({
   const queryClient = useQueryClient();
 
   const [selected, setSelected] = useState([]);
-
   const [showForm, setShowForm] = useState(false);
   const [showGet, setShowGet] = useState(false);
 
   const [mode, setMode] = useState("create");
-
   const [faqId, setFaqId] = useState(null);
-
   const [getData, setGetData] = useState(null);
 
   const [formValues, setFormValues] = useState({
@@ -48,7 +44,7 @@ export default function FAQsControl({
     answer: "",
   });
 
-  /* ================= HEADING STATES ================= */
+  // ================= HEADING =================
   const [headingId, setHeadingId] = useState(null);
 
   const [headingData, setHeadingData] = useState({
@@ -58,13 +54,10 @@ export default function FAQsControl({
 
   const [showHeadingModal, setShowHeadingModal] = useState(false);
 
-  /* ================= PAGINATION ================= */
+  // ================= PAGINATION =================
   const [page, setPage] = useState(1);
 
-  const currentPage = isFullPage
-    ? page
-    : 1;
-
+  const currentPage = isFullPage ? page : 1;
   const limit = visibleCount;
 
   // ================= USER =================
@@ -72,51 +65,38 @@ export default function FAQsControl({
     localStorage.getItem("adminUser") || "{}"
   );
 
-  // ================= PERMISSION STORAGE KEY =================
+  // ================= PERMISSION KEY =================
   const permissionKey = "FAQsPermission";
 
-  /* ================= FETCH FAQ ================= */
-  const { data: response = {} } = useQuery({
+  // ================= FETCH =================
+const { data: response = {}, isLoading } = useQuery({
     queryKey: ["faqs", currentPage, limit],
 
     queryFn: async () => {
 
-      const res = await getFaqs(
-        currentPage,
-        limit
-      );
+      const res = await getFaqs(currentPage, limit);
 
-      // ================= GET SINGLE PERMISSION =================
-      if (userData?.dynamicRole) {
+      // ================= PERMISSION (ABOUT STYLE FIX) =================
+      try {
+        const permissionRes = await getSingle({
+          role: userData?.role,
+          dynamicRole: userData?.dynamicRole,
+          moduleName: "FAQ Control",
+        });
 
-        try {
+        localStorage.setItem(
+          permissionKey,
+          JSON.stringify(permissionRes?.data || {})
+        );
 
-          const permissionRes =
-            await getSingle({
-              dynamicRole:
-                userData?.dynamicRole,
-              moduleName: "FAQ Control",
-            });
+      } catch (error) {
 
-          localStorage.setItem(
-            permissionKey,
-            JSON.stringify(
-              permissionRes?.data || {}
-            )
-          );
+        console.error("Permission Error:", error);
 
-        } catch (error) {
-
-          console.error(
-            "Permission Error:",
-            error
-          );
-
-          localStorage.setItem(
-            permissionKey,
-            JSON.stringify({})
-          );
-        }
+        localStorage.setItem(
+          permissionKey,
+          JSON.stringify({})
+        );
       }
 
       return res || {};
@@ -125,27 +105,22 @@ export default function FAQsControl({
     enabled: !!userData,
   });
 
-  // ================= GET PERMISSION =================
+  // ================= PERMISSION =================
   const permissions = JSON.parse(
     localStorage.getItem(permissionKey) || "{}"
   );
 
-  // ================= NO PERMISSION =================
+  const hasPermission = (type) =>
+    permissions?.[type] === true;
+
   const handleNoPermission = () => {
     handleError("Permission not granted");
   };
 
-  // ================= CHECK PERMISSION =================
-  const hasPermission = (type) => {
-    return permissions?.[type] === true;
-  };
-
   const data = response.data || [];
+  const totalPages = response.totalPages || 1;
 
-  const totalPages =
-    response.totalPages || 1;
-
-  /* ================= 🔥 FIXED HEADING LOGIC ================= */
+  // ================= HEADING INIT =================
   useEffect(() => {
 
     if (data.length > 0) {
@@ -162,18 +137,16 @@ export default function FAQsControl({
 
         setHeadingData({
           tagline:
-            validHeading.headingData
-              .tagline || "",
+            validHeading.headingData.tagline || "",
           heading:
-            validHeading.headingData
-              .heading || "",
+            validHeading.headingData.heading || "",
         });
       }
     }
 
   }, [data]);
 
-  /* ================= QUILL ================= */
+  // ================= QUILL =================
   const modules = {
     toolbar: [
       [{ font: [] }, { size: [] }],
@@ -185,18 +158,15 @@ export default function FAQsControl({
     ],
   };
 
-  /* ================= REFRESH ================= */
   const refresh = () => {
-    queryClient.invalidateQueries({
-      queryKey: ["faqs"],
-    });
+    queryClient.invalidateQueries(["faqs"]);
   };
 
   const allSelected =
     selected.length === data.length &&
     data.length > 0;
 
-  /* ================= TOGGLE ================= */
+  // ================= TOGGLE =================
   const handleToggle = async (id) => {
 
     if (!hasPermission("update")) {
@@ -208,7 +178,7 @@ export default function FAQsControl({
     refresh();
   };
 
-  /* ================= SUBMIT ================= */
+  // ================= SUBMIT =================
   const handleSubmit = async () => {
 
     try {
@@ -244,10 +214,7 @@ export default function FAQsControl({
 
       } else {
 
-        await updateFaq(
-          faqId,
-          formValues
-        );
+        await updateFaq(faqId, formValues);
 
         handleSuccess("FAQ Updated");
       }
@@ -257,13 +224,11 @@ export default function FAQsControl({
       refresh();
 
     } catch (err) {
-
       console.error(err);
-
     }
   };
 
-  /* ================= DELETE ================= */
+  // ================= DELETE =================
   const handleDelete = async (id) => {
 
     if (!hasPermission("delete")) {
@@ -277,7 +242,7 @@ export default function FAQsControl({
     refresh();
   };
 
-  /* ================= BULK DELETE ================= */
+  // ================= BULK DELETE =================
   const handleBulkDelete = async () => {
 
     if (!hasPermission("delete")) {
@@ -285,21 +250,13 @@ export default function FAQsControl({
     }
 
     if (!selected.length) {
-      return handleError(
-        "Select FAQs first"
-      );
+      return handleError("Select FAQs first");
     }
 
-    if (
-      !window.confirm(
-        "Delete selected FAQs?"
-      )
-    ) return;
+    if (!window.confirm("Delete selected FAQs?")) return;
 
     for (let id of selected) {
-
       await deleteFaq(id);
-
     }
 
     setSelected([]);
@@ -307,9 +264,8 @@ export default function FAQsControl({
     refresh();
   };
 
-  /* ================= SELECT ================= */
+  // ================= SELECT =================
   const handleSelect = (id) => {
-
     setSelected((prev) =>
       prev.includes(id)
         ? prev.filter((i) => i !== id)
@@ -317,7 +273,6 @@ export default function FAQsControl({
     );
   };
 
-  /* ================= SELECT ALL ================= */
   const handleSelectAll = (e) => {
 
     if (!hasPermission("delete")) {
@@ -331,7 +286,7 @@ export default function FAQsControl({
     );
   };
 
-  /* ================= EDIT ================= */
+  // ================= EDIT =================
   const handleEdit = (item) => {
 
     if (!hasPermission("update")) {
@@ -339,7 +294,6 @@ export default function FAQsControl({
     }
 
     setMode("update");
-
     setFaqId(item._id);
 
     setFormValues({
@@ -350,7 +304,7 @@ export default function FAQsControl({
     setShowForm(true);
   };
 
-  /* ================= GET ================= */
+  // ================= GET =================
   const handleGet = (item) => {
 
     if (!hasPermission("read")) {
@@ -358,15 +312,12 @@ export default function FAQsControl({
     }
 
     setGetData(item);
-
     setShowGet(true);
   };
 
-  /* ================= CLOSE ================= */
   const closeModal = () => {
 
     setShowForm(false);
-
     setShowGet(false);
 
     setFormValues({
@@ -377,7 +328,7 @@ export default function FAQsControl({
     setFaqId(null);
   };
 
-  /* ================= HEADING SAVE ================= */
+  // ================= HEADING SAVE =================
   const handleHeadingSave = async () => {
 
     if (!hasPermission("update")) {
@@ -386,31 +337,15 @@ export default function FAQsControl({
 
     try {
 
-      if (
-        !headingData.tagline ||
-        !headingData.heading
-      ) {
-
-        return handleError(
-          "All fields required"
-        );
+      if (!headingData.tagline || !headingData.heading) {
+        return handleError("All fields required");
       }
 
       if (headingId) {
-
-        await updateHeading(
-          headingId,
-          headingData
-        );
-
+        await updateHeading(headingId, headingData);
       } else {
-
-        const res =
-          await createHeading(
-            headingData
-          );
-
-        setHeadingId(res?._id);
+        const res = await createHeading(headingData);
+        setHeadingId(res?.data?._id);
       }
 
       handleSuccess("Done");
@@ -420,44 +355,22 @@ export default function FAQsControl({
       refresh();
 
     } catch (err) {
-
-      console.error("ERROR:", err);
-
-      handleError(
-        "Failed to save heading"
-      );
+      console.error(err);
+      handleError("Failed to save heading");
     }
   };
 
-  /* ================= OPEN HEADING MODAL ================= */
   const openHeadingModal = () => {
 
     if (!hasPermission("update")) {
       return handleNoPermission();
     }
 
-    const validHeading = data.find(
-      (item) => item.headingData
-    );
-
-    if (validHeading?.headingData) {
-
-      setHeadingId(
-        validHeading.headingData._id
-      );
-
-      setHeadingData({
-        tagline:
-          validHeading.headingData
-            .tagline || "",
-        heading:
-          validHeading.headingData
-            .heading || "",
-      });
-    }
-
     setShowHeadingModal(true);
   };
+
+  if (isLoading) return <p>Loading...</p>;
+
 
 
 
@@ -829,12 +742,12 @@ export default function FAQsControl({
 
                   <th>Answer</th>
 
-                <td
-  dangerouslySetInnerHTML={{
-    __html:
-      getData?.answer?.replace(/&nbsp;/g, " ") || "",
-  }}
-></td>
+                  <td
+                    dangerouslySetInnerHTML={{
+                      __html:
+                        getData?.answer?.replace(/&nbsp;/g, " ") || "",
+                    }}
+                  ></td>
 
                 </tr>
 

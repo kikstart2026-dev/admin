@@ -258,6 +258,7 @@ const PermissionManagement = () => {
       {/* FOOTER */}
       <div className={styles.footer}>
         <button
+        className={styles.saveBtn}
           onClick={handleSave}
           disabled={saving || !selectedRole || !hasAnyPermissionSelected}
         >

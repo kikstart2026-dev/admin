@@ -36,7 +36,6 @@ export default function WhyChooseUsControl() {
 
   const [mode, setMode] = useState("create");
   const [cardId, setCardId] = useState(null);
-
   const [headingId, setHeadingId] = useState(null);
 
   const [imageFile, setImageFile] = useState(null);
@@ -64,66 +63,10 @@ export default function WhyChooseUsControl() {
     localStorage.getItem("adminUser") || "{}"
   );
 
-  // ================= PERMISSION STORAGE KEY =================
+  // ================= PERMISSION KEY =================
   const permissionKey = "WhyChooseUsPermission";
 
- const { data = {}, isLoading } = useQuery({
-  queryKey: ["whyChooseUs", page],
-
-queryFn: async () => {
-
-  const res = await getAllWhyChooseUs({
-    page,
-    limit: 8,
-  });
-
-  // ================= GET SINGLE PERMISSION =================
-  if (userData?.dynamicRole) {
-
-    try {
-
-      const permissionRes = await getSingle({
-        dynamicRole: userData?.dynamicRole,
-        moduleName: "Why Choose Us Control",
-      });
-
-      localStorage.setItem(
-        permissionKey,
-        JSON.stringify(permissionRes?.data || {})
-      );
-
-    } catch (error) {
-
-      console.error("Permission Error:", error);
-
-      localStorage.setItem(
-        permissionKey,
-        JSON.stringify({})
-      );
-    }
-  }
-
-  return res;
-},
-
-  enabled: !!userData,
-});
-
-  // ================= GET PERMISSION =================
-  const permissions = JSON.parse(
-    localStorage.getItem(permissionKey) || "{}"
-  );
-
-  // ================= NO PERMISSION =================
-  const handleNoPermission = () => {
-    handleError("Permission not granted");
-  };
-
-  // ================= CHECK PERMISSION =================
-  const hasPermission = (type) => {
-    return permissions?.[type] === true;
-  };
-
+  // ================= QUILL MODULES =================
   const modules = {
     toolbar: [
       [{ font: [] }, { size: [] }],
@@ -137,47 +80,89 @@ queryFn: async () => {
     ],
   };
 
-const cards = data?.data?.cards || [];
-const totalPages = data?.totalPages || 1;
+  // ================= FETCH + PERMISSION =================
+  const { data = {}, isLoading } = useQuery({
+    queryKey: ["whyChooseUs", page],
 
-const heading = data?.data?.heading || null;
+    queryFn: async () => {
+      const res = await getAllWhyChooseUs({
+        page,
+        limit: 8,
+      });
+
+      // ================= PERMISSION (ABOUT STYLE FIX) =================
+      try {
+        const permissionRes = await getSingle({
+          role: userData?.role,
+          dynamicRole: userData?.dynamicRole,
+          moduleName: "Why Choose Us Control",
+        });
+
+        localStorage.setItem(
+          permissionKey,
+          JSON.stringify(permissionRes?.data || {})
+        );
+      } catch (err) {
+        console.error("Permission Error:", err);
+
+        localStorage.setItem(
+          permissionKey,
+          JSON.stringify({})
+        );
+      }
+
+      return res;
+    },
+
+    enabled: !!userData,
+  });
+
+  // ================= PERMISSION =================
+  const permissions = JSON.parse(
+    localStorage.getItem(permissionKey) || "{}"
+  );
+
+  const hasPermission = (type) => permissions?.[type] === true;
+
+  const handleNoPermission = () => {
+    handleError("Permission not granted");
+  };
+
+  // ================= DATA =================
+  const cards = data?.data?.cards || [];
+  const totalPages = data?.totalPages || 1;
+
+  const heading = data?.data?.heading || null;
   const headingIdFromData = heading?._id || null;
 
   const fetchData = () => {
     queryClient.invalidateQueries(["whyChooseUs", page]);
   };
 
-  const allSelected = selected.length === cards.length && cards.length > 0;
+  const allSelected =
+    selected.length === cards.length && cards.length > 0;
 
+  // ================= SELECT =================
   const handleSelect = (id) => {
-
-    if (selected.includes(id)) {
-      setSelected(selected.filter((x) => x !== id));
-    } else {
-      setSelected([...selected, id]);
-    }
+    setSelected(
+      selected.includes(id)
+        ? selected.filter((x) => x !== id)
+        : [...selected, id]
+    );
   };
 
   const handleSelectAll = () => {
+    if (!hasPermission("delete")) return handleNoPermission();
 
-    if (!hasPermission("delete")) {
-      return handleNoPermission();
-    }
-
-    if (allSelected) {
-      setSelected([]);
-    } else {
-      setSelected(cards.map((x) => x._id));
-    }
+    setSelected(allSelected ? [] : cards.map((x) => x._id));
   };
 
+  // ================= DELETE SELECTED =================
   const handleDeleteSelected = async () => {
 
-    if (!hasPermission("delete")) {
-      return handleNoPermission();
-    }
+    if (!hasPermission("delete")) return handleNoPermission();
 
-    if (selected.length === 0) {
+    if (!selected.length) {
       handleError("Select cards first");
       return;
     }
@@ -185,128 +170,94 @@ const heading = data?.data?.heading || null;
     if (!window.confirm("Delete Selected Cards?")) return;
 
     try {
-
       await selectiveDeleteWhyChooseUs({ ids: selected });
 
       setSelected([]);
-
       fetchData();
-
-      handleSuccess("Selected cards deleted successfully");
+      handleSuccess("Deleted Successfully");
 
     } catch (err) {
-
-      console.error(err);
-
-      handleError("Failed to delete selected cards");
+      handleError("Delete Failed");
     }
   };
 
+  // ================= HEADING =================
   const handleHeadingSave = async () => {
 
-    if (
-      !hasPermission("create") &&
-      !hasPermission("update")
-    ) {
+    if (!hasPermission("create") && !hasPermission("update")) {
       return handleNoPermission();
     }
 
     try {
 
       if (headingId) {
-
         await updateHeading(headingId, headingData);
-
         handleSuccess("Heading Updated");
-
       } else {
-
         const res = await createHeading(headingData);
-
         setHeadingId(res?.data?._id);
-
         handleSuccess("Heading Created");
       }
 
       fetchData();
 
-    } catch (err) {
-
-      console.error(err);
-
-      handleError("Failed to save heading");
+    } catch {
+      handleError("Heading Save Failed");
     }
   };
 
+  // ================= IMAGE =================
   const handleImageChange = (e) => {
-
     const file = e.target.files[0];
-
     if (!file) return;
 
     setImageFile(file);
-
     setPreview(URL.createObjectURL(file));
   };
 
+  // ================= CREATE =================
   const handleCreate = async () => {
 
-    if (!hasPermission("create")) {
-      return handleNoPermission();
-    }
+    if (!hasPermission("create")) return handleNoPermission();
 
     if (!headingId && !headingIdFromData) {
-      handleError("Create heading first");
-      return;
+      return handleError("Create heading first");
     }
 
     if (!formValues.title || !formValues.color || !imageFile) {
-      handleError("Title, Color and Icon are required");
-      return;
+      return handleError("Title, Color & Icon required");
     }
 
     try {
 
-      let imageUrl = "";
+      const fd = new FormData();
+      fd.append("file", imageFile);
 
-      if (imageFile) {
+      const uploadRes = await createFile(fd);
 
-        const fd = new FormData();
-
-        fd.append("file", imageFile);
-
-        const uploadRes = await createFile(fd);
-
-        imageUrl = "http://localhost:8008" + uploadRes.data[0].path;
-      }
+      const imageUrl =
+        "http://localhost:8008" + uploadRes.data[0].path;
 
       await createWhyChooseUs({
         headingId: headingId || headingIdFromData,
         icon: imageUrl,
-        title: formValues.title,
-        description: formValues.description,
-        color: formValues.color
+        ...formValues,
       });
 
-      handleSuccess("Card Created");
+      handleSuccess("Created Successfully");
 
       setShowForm(false);
-
       fetchData();
 
-    } catch (err) {
-
-      console.error(err);
-
-      handleError("Failed to create card");
+    } catch {
+      handleError("Create Failed");
     }
   };
 
+  // ================= UPDATE =================
   const handleUpdate = async () => {
 
-    if (!hasPermission("update")) {
-      return handleNoPermission();
-    }
+    if (!hasPermission("update")) return handleNoPermission();
 
     try {
 
@@ -315,72 +266,48 @@ const heading = data?.data?.heading || null;
       if (imageFile) {
 
         const fd = new FormData();
-
         fd.append("file", imageFile);
 
         const uploadRes = await createFile(fd);
 
-        imageUrl = "http://localhost:8008" + uploadRes.data[0].path;
+        imageUrl =
+          "http://localhost:8008" + uploadRes.data[0].path;
       }
 
       await updateWhyChooseUs(cardId, {
         headingId: headingId || headingIdFromData,
         icon: imageUrl,
-        title: formValues.title,
-        description: formValues.description,
-        color: formValues.color
+        ...formValues,
       });
 
-      handleSuccess("Card Updated");
+      handleSuccess("Updated Successfully");
 
       setShowForm(false);
-
       fetchData();
 
-    } catch (err) {
-
-      console.error(err);
-
-      handleError("Failed to update card");
+    } catch {
+      handleError("Update Failed");
     }
   };
 
+  // ================= DELETE =================
   const handleDelete = (id) => {
 
-    if (!hasPermission("delete")) {
-      return handleNoPermission();
-    }
+    if (!hasPermission("delete")) return handleNoPermission();
 
-    handleConfirm(
-      "Delete Card?",
-      async () => {
-
-        try {
-
-          await singleDeleteWhyChooseUs(id);
-
-          handleSuccess("Card deleted successfully ✅");
-
-          fetchData();
-
-        } catch (err) {
-
-          console.error(err);
-
-          handleError("Failed to delete card ❌");
-        }
-      }
-    );
+    handleConfirm("Delete Card?", async () => {
+      await singleDeleteWhyChooseUs(id);
+      fetchData();
+      handleSuccess("Deleted");
+    });
   };
 
+  // ================= EDIT =================
   const handleEdit = (item) => {
 
-    if (!hasPermission("update")) {
-      return handleNoPermission();
-    }
+    if (!hasPermission("update")) return handleNoPermission();
 
     setMode("update");
-
     setShowForm(true);
 
     setCardId(item._id);
@@ -388,31 +315,23 @@ const heading = data?.data?.heading || null;
     setFormValues({
       title: item.title,
       description: item.description,
-      color: item.color
+      color: item.color,
     });
 
     setPreview(item.icon);
-
     setOldImage(item.icon);
-
-    setImageFile(null);
   };
 
+  // ================= GET =================
   const handleGet = (item) => {
 
-    if (!hasPermission("read")) {
-      return handleNoPermission();
-    }
+    if (!hasPermission("read")) return handleNoPermission();
 
     setGetData(item);
-
     setShowGet(true);
   };
 
   if (isLoading) return <p>Loading...</p>;
-
-
-
 
 
   return (

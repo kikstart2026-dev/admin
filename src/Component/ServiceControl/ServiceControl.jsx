@@ -44,7 +44,6 @@ export default function ServiceControl() {
   const [oldImage, setOldImage] = useState("");
   const [getData, setGetData] = useState(null);
 
-  // PAGINATION STATE
   const [page, setPage] = useState(1);
   const limit = 10;
 
@@ -58,15 +57,30 @@ export default function ServiceControl() {
     details: ""
   });
 
+
+    // ================= QUILL MODULES =================
+  const modules = {
+    toolbar: [
+      [{ font: [] }, { size: [] }],
+      [{ header: [1, 2, 3, false] }],
+      ["bold", "italic", "underline", "strike"],
+      [{ color: [] }, { background: [] }],
+      [{ list: "ordered" }, { list: "bullet" }],
+      [{ align: [] }],
+      ["link"],
+      ["clean"],
+    ],
+  };
+
   // ================= USER =================
   const userData = JSON.parse(
     localStorage.getItem("adminUser") || "{}"
   );
 
-  // ================= PERMISSION STORAGE KEY =================
+  // ================= PERMISSION KEY =================
   const permissionKey = "ServicePermission";
 
-  // --- FETCH DATA WITH PAGINATION ---
+  // ================= FETCH DATA =================
   const { data = {}, isLoading } = useQuery({
     queryKey: ["services", page],
 
@@ -74,30 +88,27 @@ export default function ServiceControl() {
 
       const res = await getAllService(page, limit);
 
-      // ================= GET SINGLE PERMISSION =================
-      if (userData?.dynamicRole) {
+      // ================= PERMISSION (ABOUT STYLE FIX) =================
+      try {
+        const permissionRes = await getSingle({
+          role: userData?.role,
+          dynamicRole: userData?.dynamicRole,
+          moduleName: "Service Control",
+        });
 
-        try {
+        localStorage.setItem(
+          permissionKey,
+          JSON.stringify(permissionRes?.data || {})
+        );
 
-          const permissionRes = await getSingle({
-            dynamicRole: userData?.dynamicRole,
-            moduleName: "Service Control",
-          });
+      } catch (error) {
 
-          localStorage.setItem(
-            permissionKey,
-            JSON.stringify(permissionRes?.data || {})
-          );
+        console.error("Permission Error:", error);
 
-        } catch (error) {
-
-          console.error("Permission Error:", error);
-
-          localStorage.setItem(
-            permissionKey,
-            JSON.stringify({})
-          );
-        }
+        localStorage.setItem(
+          permissionKey,
+          JSON.stringify({})
+        );
       }
 
       return res || {};
@@ -108,21 +119,19 @@ export default function ServiceControl() {
     keepPreviousData: true,
   });
 
-  // ================= GET PERMISSION =================
+  // ================= PERMISSION =================
   const permissions = JSON.parse(
     localStorage.getItem(permissionKey) || "{}"
   );
 
-  // ================= NO PERMISSION =================
+  const hasPermission = (type) =>
+    permissions?.[type] === true;
+
   const handleNoPermission = () => {
     handleError("Permission not granted");
   };
 
-  // ================= CHECK PERMISSION =================
-  const hasPermission = (type) => {
-    return permissions?.[type] === true;
-  };
-
+  // ================= DATA =================
   const services = data.data || [];
   const totalPages = data.totalPages || 1;
 
@@ -153,7 +162,7 @@ export default function ServiceControl() {
     });
   };
 
-  // --- HANDLERS ---
+  // ================= SELECT =================
   const handleSelect = (id) => {
 
     setSelected(prev =>
@@ -179,6 +188,7 @@ export default function ServiceControl() {
     }
   };
 
+  // ================= DELETE SELECTED =================
   const handleDeleteSelected = async () => {
 
     if (!hasPermission("delete")) {
@@ -204,13 +214,12 @@ export default function ServiceControl() {
       fetchData();
 
     } catch (err) {
-
       console.error(err);
-
       handleError("Failed to delete selected services");
     }
   };
 
+  // ================= IMAGE =================
   const handleImageChange = (e) => {
 
     const file = e.target.files[0];
@@ -218,10 +227,10 @@ export default function ServiceControl() {
     if (!file) return;
 
     setImageFile(file);
-
     setPreview(URL.createObjectURL(file));
   };
 
+  // ================= CREATE =================
   const handleCreate = async () => {
 
     if (!hasPermission("create")) {
@@ -234,15 +243,12 @@ export default function ServiceControl() {
 
     try {
 
-      let imageUrl = "";
-
       const fd = new FormData();
-
       fd.append("file", imageFile);
 
       const uploadRes = await createFile(fd);
 
-      imageUrl =
+      const imageUrl =
         "http://localhost:8008" +
         uploadRes.data[0].path;
 
@@ -260,13 +266,12 @@ export default function ServiceControl() {
       fetchData();
 
     } catch (err) {
-
       console.error(err);
-
       handleError("Failed to create service");
     }
   };
 
+  // ================= UPDATE =================
   const handleUpdate = async () => {
 
     if (!hasPermission("update")) {
@@ -280,7 +285,6 @@ export default function ServiceControl() {
       if (imageFile) {
 
         const fd = new FormData();
-
         fd.append("file", imageFile);
 
         const uploadRes = await createFile(fd);
@@ -304,41 +308,37 @@ export default function ServiceControl() {
       fetchData();
 
     } catch (err) {
-
       console.error(err);
-
       handleError("Failed to update service");
     }
   };
 
+  // ================= DELETE =================
   const handleDelete = (id) => {
 
     if (!hasPermission("delete")) {
       return handleNoPermission();
     }
 
-    handleConfirm(
-      "Delete?",
-      async () => {
+    handleConfirm("Delete?", async () => {
 
-        try {
+      try {
 
-          await singleDeleteService(id);
+        await singleDeleteService(id);
 
-          handleSuccess("Deleted Successfully");
+        handleSuccess("Deleted Successfully");
 
-          fetchData();
+        fetchData();
 
-        } catch (err) {
+      } catch (err) {
 
-          console.error(err);
-
-          handleError("Failed to delete service");
-        }
+        console.error(err);
+        handleError("Failed to delete service");
       }
-    );
+    });
   };
 
+  // ================= HEADING =================
   const handleHeadingSave = async () => {
 
     if (
@@ -351,18 +351,9 @@ export default function ServiceControl() {
     try {
 
       if (headingId) {
-
-        await updateHeading(
-          headingId,
-          headingData
-        );
-
+        await updateHeading(headingId, headingData);
       } else {
-
-        const res = await createHeading(
-          headingData
-        );
-
+        const res = await createHeading(headingData);
         setHeadingId(res?.data?._id);
       }
 
@@ -375,25 +366,14 @@ export default function ServiceControl() {
     } catch (err) {
 
       console.error(err);
-
       handleError("Failed to save heading");
     }
   };
 
-  const modules = {
-    toolbar: [
-      [{ font: [] }, { size: [] }],
-      [{ header: [1, 2, 3, false] }],
-      ["bold", "italic", "underline"],
-      [{ list: "ordered" }, { list: "bullet" }],
-      ["link", "clean"]
-    ],
-  };
-
   if (isLoading) return <p>Loading...</p>;
 
-  const cleanHtml = getData?.details
-    ?.replace(/&nbsp;/g, " ");
+  const cleanHtml = getData?.details?.replace(/&nbsp;/g, " ");
+
 
 
   return (
@@ -409,8 +389,8 @@ export default function ServiceControl() {
 
           <button
             className={`${styles.createBtn} ${!hasPermission("create")
-                ? styles.disabledBtn
-                : ""
+              ? styles.disabledBtn
+              : ""
               }`}
             onClick={() => {
 
@@ -439,11 +419,11 @@ export default function ServiceControl() {
 
           <button
             className={`${styles.createBtn} ${(
-                !hasPermission("create") &&
-                !hasPermission("update")
-              )
-                ? styles.disabledBtn
-                : ""
+              !hasPermission("create") &&
+              !hasPermission("update")
+            )
+              ? styles.disabledBtn
+              : ""
               }`}
             onClick={() => {
 
@@ -462,8 +442,8 @@ export default function ServiceControl() {
 
           <button
             className={`${styles.deleteSelected} ${!hasPermission("delete")
-                ? styles.disabledBtn
-                : ""
+              ? styles.disabledBtn
+              : ""
               }`}
             onClick={handleDeleteSelected}
           >
@@ -495,8 +475,8 @@ export default function ServiceControl() {
                   }
                   onChange={handleSelectAll}
                   className={`${!hasPermission("delete")
-                      ? styles.disabledBtn
-                      : ""
+                    ? styles.disabledBtn
+                    : ""
                     }`}
                 />
 
@@ -526,8 +506,8 @@ export default function ServiceControl() {
                     type="checkbox"
                     checked={selected.includes(item._id)}
                     className={`${!hasPermission("delete")
-                        ? styles.disabledBtn
-                        : ""
+                      ? styles.disabledBtn
+                      : ""
                       }`}
                     onChange={() => {
 
@@ -648,8 +628,8 @@ export default function ServiceControl() {
             key={index + 1}
             onClick={() => setPage(index + 1)}
             className={`${styles.numberBtn} ${page === index + 1
-                ? styles.activePage
-                : ""
+              ? styles.activePage
+              : ""
               }`}
           >
             {index + 1}
@@ -733,15 +713,15 @@ export default function ServiceControl() {
 
               <button
                 className={`${(
-                    mode === "create" &&
-                    !hasPermission("create")
-                  ) ||
-                    (
-                      mode === "update" &&
-                      !hasPermission("update")
-                    )
-                    ? styles.disabledBtn
-                    : ""
+                  mode === "create" &&
+                  !hasPermission("create")
+                ) ||
+                  (
+                    mode === "update" &&
+                    !hasPermission("update")
+                  )
+                  ? styles.disabledBtn
+                  : ""
                   }`}
                 onClick={() => {
 
@@ -821,11 +801,11 @@ export default function ServiceControl() {
 
               <button
                 className={`${(
-                    !hasPermission("create") &&
-                    !hasPermission("update")
-                  )
-                    ? styles.disabledBtn
-                    : ""
+                  !hasPermission("create") &&
+                  !hasPermission("update")
+                )
+                  ? styles.disabledBtn
+                  : ""
                   }`}
                 onClick={handleHeadingSave}
               >
