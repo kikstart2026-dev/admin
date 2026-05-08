@@ -255,6 +255,10 @@ export default function WhyChooseUsControl() {
 
   if (isLoading) return <p>Loading...</p>;
 
+
+
+
+
   return (
     <div className={styles.banner}>
 
@@ -299,7 +303,7 @@ export default function WhyChooseUsControl() {
           >
             {heading ? "Update Heading" : "Create Heading"}
 
-            
+
           </button>
 
           <button
@@ -604,7 +608,15 @@ export default function WhyChooseUsControl() {
 
                 <tr>
                   <th>Description</th>
-                  <td dangerouslySetInnerHTML={{ __html: getData.description }}></td>
+
+                  <td
+                    dangerouslySetInnerHTML={{
+                      __html:
+                        getData?.description
+                          ?.replace(/&nbsp;/g, " ")
+                        || "",
+                    }}
+                  ></td>
                 </tr>
 
                 <tr>

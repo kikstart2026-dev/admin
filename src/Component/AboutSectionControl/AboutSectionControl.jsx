@@ -52,31 +52,31 @@ export default function AboutSectionControl() {
       return res?.data?.data || res?.data || [];
     },
   });
-   const modules = {
-  toolbar: [
-    // FONT + SIZE
-    [{ font: [] }, { size: [] }],
+  const modules = {
+    toolbar: [
+      // FONT + SIZE
+      [{ font: [] }, { size: [] }],
 
-    // HEADINGS
-    [{ header: [1, 2, 3, false] }],
+      // HEADINGS
+      [{ header: [1, 2, 3, false] }],
 
-    // TEXT STYLE
-    ["bold", "italic", "underline", "strike"],
+      // TEXT STYLE
+      ["bold", "italic", "underline", "strike"],
 
-    // COLOR
-    [{ color: [] }, { background: [] }],
+      // COLOR
+      [{ color: [] }, { background: [] }],
 
-    // LIST + ALIGN
-    [{ list: "ordered" }, { list: "bullet" }],
-    [{ align: [] }],
+      // LIST + ALIGN
+      [{ list: "ordered" }, { list: "bullet" }],
+      [{ align: [] }],
 
-    // LINK
-    ["link"],
+      // LINK
+      ["link"],
 
-    // CLEAN
-    ["clean"],
-  ],
-};
+      // CLEAN
+      ["clean"],
+    ],
+  };
 
   const refresh = () => {
     queryClient.invalidateQueries(["aboutSection"]);
@@ -297,6 +297,12 @@ export default function AboutSectionControl() {
   };
 
   if (isLoading) return <p>Loading...</p>;
+
+
+
+  const cleanHtml = getData?.headingData?.description
+    ?.replace(/&nbsp;/g, " ");
+
 
   return (
 
@@ -525,11 +531,10 @@ export default function AboutSectionControl() {
 
             <div className={styles.descriptionBlock}>
               <span className={styles.label}>Description</span>
-
               <div
                 className={styles.descriptionText}
                 dangerouslySetInnerHTML={{
-                  __html: getData.headingData?.description,
+                  __html: cleanHtml || "",
                 }}
               ></div>
             </div>

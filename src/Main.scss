@@ -88,12 +88,12 @@ html, body {
   }
 }
 
-// .disabledBtn {
-//   opacity: 0.5 !important;
-//   cursor: not-allowed !important;
-//   pointer-events: auto !important;
+.disabledBtn {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+  pointer-events: auto !important;
 
-//   &:hover {
-//     transform: none !important;
-//   }
-// }
+  &:hover {
+    transform: none !important;
+  }
+}

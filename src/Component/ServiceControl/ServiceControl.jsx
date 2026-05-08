@@ -156,6 +156,10 @@ export default function ServiceControl() {
 
   if (isLoading) return <p>Loading...</p>;
 
+const cleanHtml = getData?.details
+  ?.replace(/&nbsp;/g, " ");
+  
+
   return (
     <div className={styles.banner}>
       <div className={styles.bannerWrap}>
@@ -274,7 +278,15 @@ export default function ServiceControl() {
               <tbody>
                 <tr><th>Image</th><td><img src={getData.image} alt="" width="100" /></td></tr>
                 <tr><th>Title</th><td>{getData.title}</td></tr>
-                <tr><th>Details</th><td dangerouslySetInnerHTML={{ __html: getData.details }} /></tr>
+                <tr><th>Details</th>
+                
+               <td
+  dangerouslySetInnerHTML={{
+    __html: cleanHtml || "",
+  }}
+></td>
+                
+                </tr>
               </tbody>
             </table>
             <button className={styles.closeBtn} onClick={() => setShowGet(false)}>Close</button>
