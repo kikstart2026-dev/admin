@@ -752,3 +752,18 @@ export const getAllRoles = async () => {
     const res = await axiosInstance.get(endpoints.getAllRoles);
     return res.data;
 };
+
+
+
+
+// ✅ GET ALL USERS
+export const getAllUsers = async () => {
+  const res = await axiosInstance.get(endpoints.getAllUsers);
+  return res.data;
+};
+
+// ✅ DELETE USER
+export const deleteUser = async (id) => {
+  const res = await axiosInstance.delete(endpoints.deleteUser(id));
+  return res.data;
+};

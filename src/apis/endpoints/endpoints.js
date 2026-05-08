@@ -182,5 +182,18 @@ export const endpoints = {
   updateRole: (id) => `admin/roles/${id}`,
   deleteRole: (id) => `admin/roles/${id}`,
 
+
+  // ================================
+  //  USERS
+  // ================================
+  getAllUsers: "admin/users/",
+  deleteUser: (id) => `admin/users/${id}`,
+
 };
+
+
+
+
+
+
 

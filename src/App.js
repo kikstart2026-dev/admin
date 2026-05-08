@@ -30,6 +30,8 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import RoleManagementPage from "./Pages/RoleManagementPage/RoleManagementPage";
 import PermissionManagementPage from "./Pages/PermissionManagementPage/PermissionManagementPage";
 
+import User from "./Pages/User/User";
+
 // ================= 🔐 ADMIN PROTECTED ROUTE =================
 function AdminProtectedRoute({ children, blockSubadmin = false }) {
   const token = Cookies.get("token");
@@ -137,11 +139,14 @@ function Layout() {
             }
           />
 
+          
+          
+
           <Route
-            path="/contact-control"
+            path="/user-control"
             element={
               <AdminProtectedRoute>
-                <Contact />
+                <User />
               </AdminProtectedRoute>
             }
           />
