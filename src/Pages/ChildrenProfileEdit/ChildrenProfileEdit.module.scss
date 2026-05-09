@@ -1,0 +1,162 @@
+.childrenProfileEdit {
+  padding: 20px;
+  background: #f7f7f7;
+  min-height: 100vh;
+}
+
+/* TOP BAR (EXACT SAME) */
+
+.topBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.tabs {
+  display: flex;
+  gap: 30px;
+
+  button {
+    border: none;
+    background: transparent;
+    font-size: 15px;
+    font-weight: 600;
+    color: #888;
+    padding-bottom: 10px;
+    cursor: pointer;
+  }
+}
+
+.activeTab {
+  color: #ff1e1e !important;
+  border-bottom: 2px solid #ff1e1e !important;
+}
+
+.addBtn {
+  border: none;
+  background: #ff1e1e;
+  color: white;
+  padding: 14px 28px;
+  border-radius: 40px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* MAIN CONTENT (EXACT SAME) */
+
+.content {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 20px;
+}
+
+/* LEFT SIDE */
+
+.leftSection {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+/* CARD (PROFILE + EDIT SAME LOOK) */
+
+.card {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 14px;
+  padding: 18px 20px;
+
+  label {
+    display: block;
+    font-size: 13px;
+    color: #aaa;
+    margin-bottom: 6px;
+  }
+
+  p,
+  input {
+    font-size: 16px;
+    color: #333;
+    margin: 0;
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+  }
+
+  input:disabled {
+    color: #777;
+  }
+}
+
+/* RIGHT SIDE (EXACT SAME PROFILE CARD) */
+
+.rightSection {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.profileCard {
+  background: white;
+  border-radius: 18px;
+  padding: 25px;
+  text-align: center;
+
+  img {
+    width: 190px;
+    height: 190px;
+    border-radius: 24px;
+    object-fit: cover;
+    margin-bottom: 18px;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 22px;
+    color: #222;
+  }
+
+  span {
+    display: block;
+    margin-top: 6px;
+    color: #777;
+  }
+
+  button {
+    margin-top: 22px;
+    border: none;
+    background: #ff1e1e;
+    color: white;
+    padding: 14px 28px;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
+    text-transform: uppercase;
+    width: 100%;
+  }
+}
+
+/* SAVE BUTTON */
+
+.saveBtn {
+  margin-top: 15px;
+  border: none;
+  background: red;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 40px;
+  font-weight: 600;
+  cursor: pointer;
+
+  width: auto;       
+  display: inline-block;
+  align-self: flex-start;  /* ✅ left align (flex container হলে কাজ করবে) */
+}

@@ -156,10 +156,9 @@ const ChildrenProfile = () => {
                             <span>
                                 {activeChild.age} years old
                             </span>
-
-                            <button>
-                                Edit Profile
-                            </button>
+<button onClick={() => navigate(`/children-edit/${activeChild._id}`)}>
+    Edit Profile
+</button>
 
                         </div>
 
