@@ -197,5 +197,16 @@ export const endpoints = {
 
   deleteAllChild: "/children/deleteAllChild",
 
+  // ================================
+// Schools (PUBLIC / USER SIDE)
+// ================================
+
+createSchoolDetails: "school/createSchoolDetails",
+getAllSchoolDetails: "school/getAllSchoolDetails",
+getSchoolDetailsById: (id) => `school/getSchoolDetailsById/${id}`,
+updateSchoolDetails: (id) => `school/updateSchoolDetails/${id}`,
+deleteSchoolDetails: (id) => `school/deleteSchoolDetails/${id}`,
+deleteAllSchoolDetails: "school/deleteAllSchoolDetails",
+
 }
 
