@@ -1,0 +1,15 @@
+.totalWrapper {
+  background: #FFFFFF;
+  border: 1px solid #E9E9E9;
+  border-radius: 30px;
+  overflow: hidden; /* prevent layout overflow */
+
+  .left {
+    padding: 40px 65px 0 50px;     /* balanced padding */
+  }
+
+  .right {
+    border-left: 1px solid #E9E9E9;
+    padding: 40px 124px 40px 85px;   /* reduced from 88px */
+  }
+}

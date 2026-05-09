@@ -166,6 +166,7 @@ export const endpoints = {
 
   createPermission: "/admin/permission",
   getAllPermissions: "/admin/permission",
+  getSingle: "/admin/permission/single",
   // getModules: "admin/permission/modules",
   getPermissionsByRole: (dynamicRole) => `/admin/permission/role/${dynamicRole}`,
   updatePermission: (id) => `/admin/permission/${id}`,
@@ -181,5 +182,20 @@ export const endpoints = {
   updateRole: (id) => `admin/roles/${id}`,
   deleteRole: (id) => `admin/roles/${id}`,
 
-};
+
+  // ================= CHILDREN PROFILE =================
+
+  createChild: "/children/createChild",
+
+  getAllChild: "/children/getAllChild",
+
+  getChildById: "/children/getChildById",
+
+  updateChild: "/children/updateChild",
+
+  deleteChild: "/children/deleteChild",
+
+  deleteAllChild: "/children/deleteAllChild",
+
+}
 
