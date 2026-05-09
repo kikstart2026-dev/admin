@@ -223,7 +223,7 @@ export default function ChildrenDetailsForm() {
               </ul>
             </div>
 
-            <label className={`${styles.lbl} ${allergy ? styles.lblActive : ""}`}>
+            <label className={`${styles.lbl} ${allergy !== "" ? styles.lblActive : ""}`}>
               Have Any Type Of Allergy?
             </label>
           </div>
