@@ -18,6 +18,8 @@
     font-size: 28px;
     font-weight: 700;
     color: #111827;
+   
+
   }
 }
 
@@ -110,8 +112,8 @@
 }
 
 .viewBtn {
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   border: none;
   border-radius: 12px;
   background: #c9ffd7;
@@ -124,6 +126,7 @@
 
   i {
     font-size: 20px;
+
   }
 
   &:hover {
@@ -134,14 +137,17 @@
 }
 
 .deleteBtn {
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   border: none;
   border-radius: 12px;
   background: #fee2e2;
   color: #dc2626;
   cursor: pointer;
   transition: 0.3s ease;
+    display: flex;
+  align-items: center;
+  justify-content: center;
 
   i {
     font-size: 18px;
@@ -180,7 +186,7 @@
 
 .error {
   padding: 20px;
-  color: red;
+  color: dc2626;
   font-weight: 700;
 }
 
@@ -195,7 +201,8 @@
   justify-content: center;
   z-index: 9999;
   padding: 20px;
-  backdrop-filter: blur(3px);
+  backdrop-filter: blur(5px);
+
 }
 
 .modal {
@@ -206,27 +213,29 @@
   overflow: hidden;
   animation: popup 0.3s ease;
   box-shadow: 0 15px 50px rgba(0, 0, 0, 0.18);
+
 }
 
 .modalHeader {
-  padding: 22px 28px;
+  padding: 20px 28px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid #ebe5e5;
 
   h2 {
     font-size: 26px;
     font-weight: 700;
     color: #111827;
+  
   }
 
   button {
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
     border: none;
     border-radius: 12px;
-    background: #f3f4f6;
+    background: #f6f3f3;
     cursor: pointer;
     transition: 0.3s ease;
 
@@ -235,7 +244,8 @@
     }
 
     &:hover {
-      background: #e5e7eb;
+      background: #ff1313;
+      color: #fff;
     }
   }
 }
@@ -262,7 +272,7 @@
   width: 130px;
   height: 130px;
   border-radius: 50%;
-  background: #2563eb;
+  background: #dc2626;
   color: #fff;
   display: flex;
   align-items: center;
@@ -278,16 +288,16 @@
 }
 
 .infoCard {
-  background: #f9fafb;
+  background: #fff6f6;
   padding: 20px;
   border-radius: 18px;
-  border: 1px solid #f1f5f9;
+  border: 1px solid #ffdde2;
 
   span {
     display: block;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
-    color: #6b7280;
+    color: #e12727;
     margin-bottom: 8px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
