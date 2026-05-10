@@ -1,0 +1,77 @@
+.sidebar {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.step {
+  margin-bottom: 35px;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #2B2B2B;
+  margin-top: 16px;
+  text-align: right;
+  transition: 0.3s ease;
+}
+
+.activeTitle {
+  color: #2B2B2B;
+}
+
+.completedTitle {
+  color: #ED1C24;
+}
+
+
+
+.iconCircle {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  background: #E9E9E9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.3s ease;
+}
+
+/* Default Icon */
+.iconCircle img {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) saturate(100%);
+  transition: 0.3s ease;
+}
+
+/* SUB ACTIVE */
+.subActive {
+  background: #FFF8F8;
+}
+
+.subActive img {
+  filter: invert(17%) sepia(96%) saturate(7470%) hue-rotate(357deg)
+    brightness(96%) contrast(112%);
+}
+
+/* COMPLETED */
+.completed {
+  background: #ed1c24;
+}
+
+.completed img {
+  filter: brightness(0) invert(1);
+}
+
+/* LINE */
+.line {
+  width: 2px;
+  height: 60px;
+  background: #E9E9E9;
+  margin: 2px 0 2px 0;
+}
+
+.lineActive {
+  background: #ed1c24;
+}

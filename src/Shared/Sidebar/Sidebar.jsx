@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useMutation } from "@tanstack/react-query";
+import Frame from "../../assets/images/Frame.png";
 
 import styles from "./Sidebar.module.scss";
 import "../../Main.scss";
@@ -83,9 +84,8 @@ export default function Sidebar() {
 
       {/* SIDEBAR */}
       <div
-        className={`${styles.sidebar} ${
-          isOpen ? styles.open : styles.close
-        }`}
+        className={`${styles.sidebar} ${isOpen ? styles.open : styles.close
+          }`}
       >
         <ul className="list-unstyled">
           {/* DASHBOARD */}
@@ -99,6 +99,19 @@ export default function Sidebar() {
             >
               <i className={`bi bi-speedometer2 ${styles.icon}`}></i>
               <span>Dashboard</span>
+            </NavLink>
+          </li>
+
+          {/* CHILDREN PROFILE */}
+          <li>
+            <NavLink
+              to="/children-profile"
+              className={({ isActive }) =>
+                isActive ? styles.active : ""
+              }
+            >
+              <img src={Frame} alt="Children Profile" className={styles.icon} />
+              <span>Children Profile</span>
             </NavLink>
           </li>
 

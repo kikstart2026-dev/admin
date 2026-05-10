@@ -8,12 +8,25 @@ import {
 } from "react-router-dom";
 
 import Header from "./Shared/Header/Header";
-import Sidebar from "./Shared/Sidebar/Sidebar"; // ✅ ADD THIS
+import Sidebar from "./Shared/Sidebar/Sidebar";
 
 import Dashboard from "./Pages/Dashboard/Dashboard";
 import HomePage from "./Pages/Home/HomePage";
 import About from "./Pages/About/About";
 import Contact from "./Pages/Contact/Contact";
+
+import ChildrenProfile from "./Pages/ChildrenProfile/ChildrenProfile";
+
+// ================= CHILD FORM FLOW =================
+import ChildrenDetails from "./Pages/FormDetails/ChildrenDetails/ChildrenDetails";
+import ChildrenEdit from "./Pages/ChildrenProfileEdit/ChildrenProfileEdit";
+
+
+import SchoolDetails from "./Pages/FormDetails/SchoolDetails/SchoolDetails";
+
+import WaiverAcceptance from "./Pages/FormDetails/WaiverAcceptance/WaiverAcceptance";
+
+import ProgramDetailss from "./Pages/FormDetails/ProgramDetailss/ProgramDetailss";
 
 import AdminLogin from "./Pages/Authentication/AdminLogin/AdminLogin";
 import AdminOtpVerify from "./Pages/Authentication/AdminOtpVerify/AdminOtpVerify";
@@ -34,6 +47,7 @@ import User from "./Pages/User/User";
 
 // ================= 🔐 ADMIN PROTECTED ROUTE =================
 function AdminProtectedRoute({ children, blockSubadmin = false }) {
+
   const token = Cookies.get("token");
 
   if (!token) {
@@ -50,8 +64,10 @@ function AdminProtectedRoute({ children, blockSubadmin = false }) {
   return children;
 }
 
+
 // ================= 🔁 AUTH ROUTE =================
 function AdminAuthRoute({ children }) {
+
   const token = Cookies.get("token");
 
   if (token) {
@@ -61,8 +77,10 @@ function AdminAuthRoute({ children }) {
   return children;
 }
 
+
 // ================= LAYOUT =================
 function Layout() {
+
   const location = useLocation();
 
   const hideRoutes = [
@@ -94,7 +112,9 @@ function Layout() {
 
       {/* MAIN CONTENT */}
       <div className={!isAuthPage ? "mainContent" : ""}>
+
         <Routes>
+
           {/* ================= AUTH ================= */}
 
           <Route
@@ -107,10 +127,13 @@ function Layout() {
           />
 
           <Route path="/admin-otp" element={<AdminOtpVerify />} />
+
           <Route path="/admin-forgot" element={<AdminForgotPass />} />
+
           <Route path="/admin-reset" element={<AdminResetPass />} />
 
-          {/* ================= PROTECTED ================= */}
+
+          {/* ================= DASHBOARD ================= */}
 
           <Route
             path="/"
@@ -151,6 +174,67 @@ function Layout() {
             }
           />
 
+
+          {/* ================= CHILDREN PROFILE ================= */}
+
+          <Route
+            path="/children-profile"
+            element={
+              <AdminProtectedRoute>
+                <ChildrenProfile />
+              </AdminProtectedRoute>
+            }
+          />
+
+
+          {/* ================= CHILD FORM FLOW ================= */}
+
+          <Route
+            path="/children-details"
+            element={
+              <AdminProtectedRoute>
+                <ChildrenDetails />
+              </AdminProtectedRoute>
+            }
+          />
+
+          <Route
+  path="/children-edit/:id"
+  element={
+    <AdminProtectedRoute>
+      <ChildrenEdit />
+    </AdminProtectedRoute>
+  }
+/>
+
+          <Route
+            path="/Schooldetails"
+            element={
+              <AdminProtectedRoute>
+                <SchoolDetails />
+              </AdminProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/WaiverAcceptance"
+            element={
+              <AdminProtectedRoute>
+                <WaiverAcceptance />
+              </AdminProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/ProgramDetailss"
+            element={
+              <AdminProtectedRoute>
+                <ProgramDetailss />
+              </AdminProtectedRoute>
+            }
+          />
+
+
           {/* 🔥 ONLY ADMIN */}
 
           <Route
@@ -170,23 +254,32 @@ function Layout() {
               </AdminProtectedRoute>
             }
           />
+
         </Routes>
       </div>
     </>
   );
 }
 
+
 // ================= APP =================
 function App() {
+
   return (
     <div className="App">
+
       <GoogleOAuthProvider clientId="YOUR_GOOGLE_CLIENT_ID">
+
         <Router>
+
           <ToastContainer position="top-center" />
 
           <Layout />
+
         </Router>
+
       </GoogleOAuthProvider>
+
     </div>
   );
 }

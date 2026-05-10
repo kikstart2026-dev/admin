@@ -189,11 +189,29 @@ export const endpoints = {
   getAllUsers: "admin/users/",
   deleteUser: (id) => `admin/users/${id}`,
 
-};
+  // ================= CHILDREN PROFILE =================
 
+  createChild: "/children/createChild",
 
+  getAllChild: "/children/getAllChild",
 
+  getChildById: "/children/getChildById",
 
+  updateChild: "/children/updateChild",
 
+  deleteChild: "/children/deleteChild",
 
+  deleteAllChild: "/children/deleteAllChild",
 
+  // ================================
+// Schools (PUBLIC / USER SIDE)
+// ================================
+
+createSchoolDetails: "school/createSchoolDetails",
+getAllSchoolDetails: "school/getAllSchoolDetails",
+getSchoolDetailsById: (id) => `school/getSchoolDetailsById/${id}`,
+updateSchoolDetails: (id) => `school/updateSchoolDetails/${id}`,
+deleteSchoolDetails: (id) => `school/deleteSchoolDetails/${id}`,
+deleteAllSchoolDetails: "school/deleteAllSchoolDetails",
+
+}

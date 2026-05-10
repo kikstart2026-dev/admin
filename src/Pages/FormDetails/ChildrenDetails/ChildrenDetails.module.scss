@@ -1,0 +1,15 @@
+.totalWrapper {
+  background: #FFFFFF;
+  border: 1px solid #E9E9E9;
+  border-radius: 30px;
+  overflow: hidden; 
+
+  .left {
+    padding: 40px 65px 40px 50px;    
+  }
+
+  .right {
+    border-left: 1px solid #E9E9E9;
+    padding: 40px 62px 95px 85px;  
+  }
+}
