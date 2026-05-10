@@ -434,6 +434,7 @@ td {
 /* Wrapper */
 .dropdownWrapper {
   position: relative;
+  z-index: 999;
 }
 
 /* Button */
@@ -469,13 +470,24 @@ td {
 /* ✅ Dropdown (NO animation, NO scroll issue) */
 :global(.dropdown-menu) {
   position: absolute !important;
-  z-index: 9999;
+  z-index: 10000;
   display: none;
-
+height: 350px;
+overflow-y: auto;
   top: auto !important;
-  bottom: -100px !important;
+  bottom: -80px !important;
   transform: translateY(-6px);
+  background-color: #ffffff;
 
+
+}
+
+
+.view,
+.edit,
+.delete {
+  position: relative;
+  z-index: 1;
 }
 
   
@@ -495,6 +507,22 @@ td {
 /* যদি table responsive wrapper থাকে */
 .table {
   overflow: visible !important;
+}
+
+
+/* Chrome, Edge, Safari */
+:global(.dropdown-menu::-webkit-scrollbar-track) {
+  background: #f1f1f1; /* ✅ track color */
+  border-radius: 20px;
+}
+
+:global(.dropdown-menu::-webkit-scrollbar-thumb) {
+  background: #ff2d2d;
+  border-radius: 20px;
+}
+
+:global(.dropdown-menu::-webkit-scrollbar) {
+  width: 8px;
 }
 
 
