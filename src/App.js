@@ -19,6 +19,8 @@ import ChildrenProfile from "./Pages/ChildrenProfile/ChildrenProfile";
 
 // ================= CHILD FORM FLOW =================
 import ChildrenDetails from "./Pages/FormDetails/ChildrenDetails/ChildrenDetails";
+import ChildrenEdit from "./Pages/ChildrenProfileEdit/ChildrenProfileEdit";
+
 
 import SchoolDetails from "./Pages/FormDetails/SchoolDetails/SchoolDetails";
 
@@ -172,7 +174,7 @@ function Layout() {
           {/* ================= CHILDREN PROFILE ================= */}
 
           <Route
-            path="/children-profile"
+            path="/children-profile/:id?"
             element={
               <AdminProtectedRoute>
                 <ChildrenProfile />
@@ -191,6 +193,15 @@ function Layout() {
               </AdminProtectedRoute>
             }
           />
+
+          <Route
+  path="/children-edit/:id"
+  element={
+    <AdminProtectedRoute>
+      <ChildrenEdit />
+    </AdminProtectedRoute>
+  }
+/>
 
           <Route
             path="/Schooldetails"

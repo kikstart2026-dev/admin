@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import styles from "./ChildrenProfile.module.scss";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { getAllChild } from "../../apis/api";
 
 const ChildrenProfile = () => {
 
+    const IMAGE_BASE_URL = "http://localhost:8008";
+    const { id } = useParams();
     const navigate = useNavigate();
     const [children, setChildren] = useState([]);
     const [activeChild, setActiveChild] = useState(null);
@@ -25,7 +27,22 @@ const ChildrenProfile = () => {
                 setChildren(res.data);
 
                 if (res.data.length > 0) {
-                    setActiveChild(res.data[0]);
+
+                    if (id) {
+
+                        const selectedChild = res.data.find(
+                            (child) => child._id === id
+                        );
+
+                        setActiveChild(
+                            selectedChild || res.data[0]
+                        );
+
+                    } else {
+
+                        setActiveChild(res.data[0]);
+
+                    }
                 }
             }
 
@@ -121,7 +138,13 @@ const ChildrenProfile = () => {
 
                         <div className={styles.card}>
                             <label>Have Any Type Of Allergy?</label>
-                            <p>{activeChild.allergy || "N/A"}</p>
+                            <p>
+                                {activeChild.allergy === true
+                                    ? "Yes"
+                                    : activeChild.allergy === false
+                                        ? "No"
+                                        : "N/A"}
+                            </p>
                         </div>
 
                         <div className={styles.card}>
@@ -142,11 +165,13 @@ const ChildrenProfile = () => {
 
                         {/* PROFILE CARD */}
                         <div className={styles.profileCard}>
+                            {console.log("IMAGE => ", activeChild?.profileImage)}
 
                             <img
                                 src={
-                                    activeChild.profileImage ||
-                                    "https://placehold.co/300x300"
+                                    activeChild.profileImage
+                                        ? `${IMAGE_BASE_URL}${activeChild.profileImage}`
+                                        : "https://placehold.co/300x300"
                                 }
                                 alt="child"
                             />
@@ -156,8 +181,7 @@ const ChildrenProfile = () => {
                             <span>
                                 {activeChild.age} years old
                             </span>
-
-                            <button>
+                            <button onClick={() => navigate(`/children-edit/${activeChild._id}`)}>
                                 Edit Profile
                             </button>
 

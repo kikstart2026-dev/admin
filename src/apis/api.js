@@ -816,3 +816,59 @@ export const deleteAllChild = async () => {
 
     return res.data;
 };
+
+
+
+/* ================================
+   SCHOOL DETAILS APIs
+================================ */
+
+// CREATE SCHOOL
+export const createSchoolDetails = async (payload) => {
+  const res = await axiosInstance.post(
+    endpoints.createSchoolDetails,
+    payload
+  );
+  return res.data;
+};
+
+// GET ALL SCHOOL
+export const getAllSchoolDetails = async () => {
+  const res = await axiosInstance.get(
+    endpoints.getAllSchoolDetails
+  );
+  return res.data;
+};
+
+// GET SCHOOL BY ID
+export const getSchoolDetailsById = async (id) => {
+  const res = await axiosInstance.get(
+    endpoints.getSchoolDetailsById(id)
+  );
+  return res.data;
+};
+
+// UPDATE SCHOOL
+export const updateSchoolDetails = async (id, payload) => {
+  const res = await axiosInstance.put(
+    endpoints.updateSchoolDetails(id),
+    payload
+  );
+  return res.data;
+};
+
+// DELETE SCHOOL
+export const deleteSchoolDetails = async (id) => {
+  const res = await axiosInstance.delete(
+    endpoints.deleteSchoolDetails(id)
+  );
+  return res.data;
+};
+
+// DELETE ALL SCHOOL
+export const deleteAllSchoolDetails = async () => {
+  const res = await axiosInstance.delete(
+    endpoints.deleteAllSchoolDetails
+  );
+  return res.data;
+};

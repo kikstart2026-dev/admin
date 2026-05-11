@@ -12,6 +12,7 @@ export default function ChildrenDetailsForm() {
   const navigate = useNavigate();
 
   const [allergy, setAllergy] = useState("");
+  const [allergyDetails, setAllergyDetails] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -202,6 +203,7 @@ export default function ChildrenDetailsForm() {
                     className="dropdown-item"
                     onClick={() => {
                       setAllergy(true);
+                      setAllergyDetails("");
                       setIsOpen(false);
                     }}
                   >
@@ -223,15 +225,34 @@ export default function ChildrenDetailsForm() {
               </ul>
             </div>
 
-            <label className={`${styles.lbl} ${allergy ? styles.lblActive : ""}`}>
+            <label className={`${styles.lbl} ${allergy !== "" ? styles.lblActive : ""}`}>
               Have Any Type Of Allergy?
             </label>
           </div>
 
           {/* Allergy Details */}
+          {/* Allergy Details */}
+          {/* Allergy Details */}
           <div className={styles.inputWrapper}>
-            <input name="allergyDetails" className={styles.inp} type="text" placeholder=" " />
-            <label className={styles.lbl}>Allergy Details</label>
+            <input
+              name="allergyDetails"
+              className={styles.inp}
+              type="text"
+              placeholder=" "
+              value={
+                allergy === false
+                  ? "N/A"
+                  : allergyDetails
+              }
+              disabled={allergy === false}
+              onChange={(e) =>
+                setAllergyDetails(e.target.value)
+              }
+            />
+
+            <label className={styles.lbl}>
+              Allergy Details
+            </label>
           </div>
 
           {/* Disease */}

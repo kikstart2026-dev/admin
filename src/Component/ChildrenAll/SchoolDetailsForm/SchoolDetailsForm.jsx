@@ -4,6 +4,7 @@ import styles2 from "./SchoolDetailsForm.module.scss";
 import styles from "../ChildrenDetailsForm/ChildrenDetailsForm.module.scss";
 import Button from "../../Buttons/Button";
 import { handleError } from "../../../utils";
+import { createSchoolDetails } from "../../../apis/api"; // ✅ FIXED
 
 export default function SchoolDetailsForm() {
 
@@ -36,20 +37,29 @@ export default function SchoolDetailsForm() {
         );
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         const formData = new FormData(e.target);
 
         const data = {
-            name: formData.get("name"),
-            location: formData.get("location"),
+            schoolName: formData.get("name"),
+            schoolLocation: formData.get("location"),
         };
 
-        console.log(data);
+        try {
 
-        // NEXT page
-        navigate("/WaiverAcceptance");
+            const res = await createSchoolDetails(data); // ✅ FIXED
+
+            if (res?.success) {
+                navigate("/WaiverAcceptance");
+            }
+
+        } catch (error) {
+            handleError(
+                error?.response?.data?.message || "Something went wrong"
+            );
+        }
     };
 
     return (
@@ -97,25 +107,23 @@ export default function SchoolDetailsForm() {
 
                     <div className={`${styles2.btns}`}>
 
-                        {/* BACK BUTTON */}
                         <Button
                             className={`${styles.nextBtn} ${styles2.blackbtn}`}
                             type="button"
                             text="BACK"
                             variant="dark"
-                            onClick={() => navigate("/childrendetails")}
+                            onClick={() => navigate("/children-details")}
                         />
 
-                        {/* NEXT BUTTON */}
                         <Button
                             className={`${styles.nextBtn} ${styles2.redbtn}`}
                             type="submit"
                             text="NEXT"
                             variant="primary"
-                            onClick={() => navigate("/WaiverAcceptance")}
                         />
 
                     </div>
+
                 </form>
 
             </div>
