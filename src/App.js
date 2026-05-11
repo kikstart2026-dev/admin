@@ -15,18 +15,6 @@ import HomePage from "./Pages/Home/HomePage";
 import About from "./Pages/About/About";
 import Contact from "./Pages/Contact/Contact";
 
-import ChildrenProfile from "./Pages/ChildrenProfile/ChildrenProfile";
-
-// ================= CHILD FORM FLOW =================
-import ChildrenDetails from "./Pages/FormDetails/ChildrenDetails/ChildrenDetails";
-import ChildrenEdit from "./Pages/ChildrenProfileEdit/ChildrenProfileEdit";
-
-
-import SchoolDetails from "./Pages/FormDetails/SchoolDetails/SchoolDetails";
-
-import WaiverAcceptance from "./Pages/FormDetails/WaiverAcceptance/WaiverAcceptance";
-
-import ProgramDetailss from "./Pages/FormDetails/ProgramDetailss/ProgramDetailss";
 
 import AdminLogin from "./Pages/Authentication/AdminLogin/AdminLogin";
 import AdminOtpVerify from "./Pages/Authentication/AdminOtpVerify/AdminOtpVerify";
@@ -175,64 +163,6 @@ function Layout() {
           />
 
 
-          {/* ================= CHILDREN PROFILE ================= */}
-
-          <Route
-            path="/children-profile"
-            element={
-              <AdminProtectedRoute>
-                <ChildrenProfile />
-              </AdminProtectedRoute>
-            }
-          />
-
-
-          {/* ================= CHILD FORM FLOW ================= */}
-
-          <Route
-            path="/children-details"
-            element={
-              <AdminProtectedRoute>
-                <ChildrenDetails />
-              </AdminProtectedRoute>
-            }
-          />
-
-          <Route
-  path="/children-edit/:id"
-  element={
-    <AdminProtectedRoute>
-      <ChildrenEdit />
-    </AdminProtectedRoute>
-  }
-/>
-
-          <Route
-            path="/Schooldetails"
-            element={
-              <AdminProtectedRoute>
-                <SchoolDetails />
-              </AdminProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/WaiverAcceptance"
-            element={
-              <AdminProtectedRoute>
-                <WaiverAcceptance />
-              </AdminProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/ProgramDetailss"
-            element={
-              <AdminProtectedRoute>
-                <ProgramDetailss />
-              </AdminProtectedRoute>
-            }
-          />
 
 
           {/* 🔥 ONLY ADMIN */}

@@ -102,18 +102,7 @@ export default function Sidebar() {
             </NavLink>
           </li>
 
-          {/* CHILDREN PROFILE */}
-          <li>
-            <NavLink
-              to="/children-profile"
-              className={({ isActive }) =>
-                isActive ? styles.active : ""
-              }
-            >
-              <img src={Frame} alt="Children Profile" className={styles.icon} />
-              <span>Children Profile</span>
-            </NavLink>
-          </li>
+
 
           {/* CMS */}
           <li>
