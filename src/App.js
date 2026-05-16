@@ -198,7 +198,7 @@ function App() {
   return (
     <div className="App">
 
-      <GoogleOAuthProvider clientId="YOUR_GOOGLE_CLIENT_ID">
+      <GoogleOAuthProvider clientId="377086841705-i670mebv74mj7kjusc7rle7kvp2hpmse.apps.googleusercontent.com">
 
         <Router>
 
