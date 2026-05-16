@@ -41,10 +41,18 @@ export default function AuthLeft({ comment, linkName }) {
       });
 
       // ✅ Save user info
-        localStorage.setItem(
-          "adminUser",
-          JSON.stringify(user)
-        );
+        const adminData = {
+          role: user?.role || "",
+          dynamicRole: user?.dynamicRole || "",
+          image: user?.image || null,
+          fullname: user?.fullname || "",
+          email: user?.email || "",
+          phone: user?.phone || "",
+          location: user?.location || "",
+          passcode: user?.passcode || "",
+        };
+
+        localStorage.setItem("adminUser", JSON.stringify(adminData));
 
       navigate("/");
     },
