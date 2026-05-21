@@ -8,10 +8,13 @@ import { getAllUsers, deleteUser, getAllPayments } from "../../apis/api";
 export default function UserControl() {
     const queryClient = useQueryClient();
 
-    const { data: paymentData } = useQuery({
-        queryKey: ["all-payments"],
-        queryFn: getAllPayments,
-    });
+    const {
+    data: paymentData,
+    isLoading: paymentLoading,
+} = useQuery({
+    queryKey: ["all-payments"],
+    queryFn: getAllPayments,
+});
 
     // ✅ MODAL STATE
     const [selectedUser, setSelectedUser] = useState(null);
@@ -56,23 +59,23 @@ export default function UserControl() {
     const payments = paymentData?.payments || [];
 
     const userPayments = payments.filter(
-    (pay) =>
-        pay.status === "captured" &&
-        (
-            pay.email?.toLowerCase() ===
+        (pay) =>
+            pay.status === "captured" &&
+            (
+                pay.email?.toLowerCase() ===
                 selectedUser?.email?.toLowerCase() ||
 
-            pay.contact === selectedUser?.phone
-        )
-);
+                pay.contact === selectedUser?.phone
+            )
+    );
 
-const totalPaymentAmount = userPayments.reduce(
-    (acc, item) => acc + item.amount,
-    0
-);
+    const totalPaymentAmount = userPayments.reduce(
+        (acc, item) => acc + item.amount,
+        0
+    );
 
-const lastPayment =
-    userPayments[userPayments.length - 1];
+    const lastPayment =
+        userPayments[userPayments.length - 1];
 
 
 
@@ -190,22 +193,34 @@ const lastPayment =
                                     </td>
 
                                     {/* PAYMENT */}
-                                    <td>
-                                        {payments.some(
-                                            (pay) =>
-                                                pay.email?.toLowerCase() ===
-                                                user.email?.toLowerCase() &&
-                                                pay.status === "captured"
-                                        ) ? (
-                                            <span className={styles.paid}>
-                                                Paid
-                                            </span>
-                                        ) : (
-                                            <span className={styles.unpaid}>
-                                                Unpaid
-                                            </span>
-                                        )}
-                                    </td>
+                                   <td>
+
+    {paymentLoading ? (
+
+        <span>
+            Loading...
+        </span>
+
+    ) : payments.some(
+        (pay) =>
+            pay.email?.toLowerCase() ===
+            user.email?.toLowerCase() &&
+            pay.status === "captured"
+    ) ? (
+
+        <span className={styles.paid}>
+            Paid
+        </span>
+
+    ) : (
+
+        <span className={styles.unpaid}>
+            Unpaid
+        </span>
+
+    )}
+
+</td>
 
                                     {/* VIEW */}
                                     <td>
@@ -325,42 +340,42 @@ const lastPayment =
                                 </div>
 
                                 <div className={styles.infoCard}>
-    <span>Total Payments</span>
+                                    <span>Total Payments</span>
 
-    <p>
-        {userPayments.length} Payment
-        {userPayments.length > 1 ? "s" : ""}
-    </p>
-</div>
+                                    <p>
+                                        {userPayments.length} Payment
+                                        {userPayments.length > 1 ? "s" : ""}
+                                    </p>
+                                </div>
 
-<div className={styles.infoCard}>
-    <span>Current Package</span>
+                                <div className={styles.infoCard}>
+                                    <span>Current Package</span>
 
-    <p>
-        {lastPayment?.description ||
-            "No Package Found"}
-    </p>
-</div>
+                                    <p>
+                                        {lastPayment?.description ||
+                                            "No Package Found"}
+                                    </p>
+                                </div>
 
-<div className={styles.infoCard}>
-    <span>Last Payment Date</span>
+                                <div className={styles.infoCard}>
+                                    <span>Last Payment Date</span>
 
-    <p>
-        {lastPayment
-            ? lastPayment.created_at
-            : "No Payment Found"}
-    </p>
-</div>
+                                    <p>
+                                        {lastPayment
+                                            ? lastPayment.created_at
+                                            : "No Payment Found"}
+                                    </p>
+                                </div>
 
-<div className={styles.infoCard}>
-    <span>Last Payment Amount</span>
+                                <div className={styles.infoCard}>
+                                    <span>Last Payment Amount</span>
 
-    <p>
-        {lastPayment
-            ? `₹ ${lastPayment.amount}`
-            : "No Payment"}
-    </p>
-</div>
+                                    <p>
+                                        {lastPayment
+                                            ? `₹ ${lastPayment.amount}`
+                                            : "No Payment"}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
