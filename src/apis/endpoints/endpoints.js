@@ -189,4 +189,7 @@ export const endpoints = {
   getAllUsers: "admin/users/",
   deleteUser: (id) => `admin/users/${id}`,
 
+  // PAYMENT ---------------------->>
+  ALL_PAYMENTS: "/all-payments",
+
 }

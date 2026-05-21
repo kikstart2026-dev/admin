@@ -3,10 +3,15 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import styles from "./UserControl.module.scss";
 
-import { getAllUsers, deleteUser } from "../../apis/api";
+import { getAllUsers, deleteUser, getAllPayments } from "../../apis/api";
 
 export default function UserControl() {
     const queryClient = useQueryClient();
+
+    const { data: paymentData } = useQuery({
+        queryKey: ["all-payments"],
+        queryFn: getAllPayments,
+    });
 
     // ✅ MODAL STATE
     const [selectedUser, setSelectedUser] = useState(null);
@@ -47,6 +52,29 @@ export default function UserControl() {
                 );
             });
     }, [data, searchTerm]);
+
+    const payments = paymentData?.payments || [];
+
+    const userPayments = payments.filter(
+    (pay) =>
+        pay.status === "captured" &&
+        (
+            pay.email?.toLowerCase() ===
+                selectedUser?.email?.toLowerCase() ||
+
+            pay.contact === selectedUser?.phone
+        )
+);
+
+const totalPaymentAmount = userPayments.reduce(
+    (acc, item) => acc + item.amount,
+    0
+);
+
+const lastPayment =
+    userPayments[userPayments.length - 1];
+
+
 
     // ✅ DELETE HANDLER
     const handleDelete = (id) => {
@@ -92,7 +120,7 @@ export default function UserControl() {
                     </div>
 
                     <div className={styles.countBox}>
-                       Total Users :  <span>{users.length}</span>
+                        Total Users :  <span>{users.length}</span>
                     </div>
                 </div>
             </div>
@@ -108,6 +136,7 @@ export default function UserControl() {
                             <th>Phone</th>
                             <th>Verified</th>
                             <th>Created</th>
+                            <th>Payment</th>
                             <th>View</th>
                             <th>Delete</th>
                         </tr>
@@ -158,6 +187,24 @@ export default function UserControl() {
                                     {/* CREATED */}
                                     <td>
                                         {new Date(user.createdAt).toLocaleDateString()}
+                                    </td>
+
+                                    {/* PAYMENT */}
+                                    <td>
+                                        {payments.some(
+                                            (pay) =>
+                                                pay.email?.toLowerCase() ===
+                                                user.email?.toLowerCase() &&
+                                                pay.status === "captured"
+                                        ) ? (
+                                            <span className={styles.paid}>
+                                                Paid
+                                            </span>
+                                        ) : (
+                                            <span className={styles.unpaid}>
+                                                Unpaid
+                                            </span>
+                                        )}
                                     </td>
 
                                     {/* VIEW */}
@@ -276,6 +323,44 @@ export default function UserControl() {
                                         ).toLocaleDateString()}
                                     </p>
                                 </div>
+
+                                <div className={styles.infoCard}>
+    <span>Total Payments</span>
+
+    <p>
+        {userPayments.length} Payment
+        {userPayments.length > 1 ? "s" : ""}
+    </p>
+</div>
+
+<div className={styles.infoCard}>
+    <span>Current Package</span>
+
+    <p>
+        {lastPayment?.description ||
+            "No Package Found"}
+    </p>
+</div>
+
+<div className={styles.infoCard}>
+    <span>Last Payment Date</span>
+
+    <p>
+        {lastPayment
+            ? lastPayment.created_at
+            : "No Payment Found"}
+    </p>
+</div>
+
+<div className={styles.infoCard}>
+    <span>Last Payment Amount</span>
+
+    <p>
+        {lastPayment
+            ? `₹ ${lastPayment.amount}`
+            : "No Payment"}
+    </p>
+</div>
                             </div>
                         </div>
                     </div>

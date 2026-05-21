@@ -753,9 +753,6 @@ export const getAllRoles = async () => {
     return res.data;
 };
 
-
-
-
 // ✅ GET ALL USERS
 export const getAllUsers = async () => {
   const res = await axiosInstance.get(endpoints.getAllUsers);
@@ -765,5 +762,11 @@ export const getAllUsers = async () => {
 // ✅ DELETE USER
 export const deleteUser = async (id) => {
   const res = await axiosInstance.delete(endpoints.deleteUser(id));
+    return res.data;
+};
+
+//==================== PAYMENT ===============================
+export const getAllPayments = async () => {
+    const res = await axiosInstance.get(endpoints.ALL_PAYMENTS);
     return res.data;
 };
