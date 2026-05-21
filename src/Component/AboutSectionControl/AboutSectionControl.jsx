@@ -13,14 +13,20 @@ import {
   createHeading,
   updateHeading,
   createFile,
+  getSingle,
 } from "../../apis/api";
 
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
-import { handleSuccess, handleError, handleWarning } from "../../utils";
+
+import {
+  handleSuccess,
+  handleError,
+  handleWarning,
+  handleConfirm,
+} from "../../utils";
 
 export default function AboutSectionControl() {
-
   const queryClient = useQueryClient();
 
   const [selected, setSelected] = useState([]);
@@ -43,49 +49,69 @@ export default function AboutSectionControl() {
     description: "",
   });
 
-  /* ================= FETCH ================= */
+  const userData = JSON.parse(localStorage.getItem("adminUser") || "{}");
 
+  const permissionKey = "AboutSectionPermission";
+
+  // ================= GET ALL + PERMISSION =================
   const { data = [], isLoading } = useQuery({
     queryKey: ["aboutSection"],
+
     queryFn: async () => {
-      const res = await getAllAboutSection();
-      return res?.data?.data || res?.data || [];
+      const aboutRes = await getAllAboutSection();
+
+      // 🔥 SAME AS HOMEBANNER STYLE
+      try {
+        const res = await getSingle({
+          role: userData?.role,
+          dynamicRole: userData?.dynamicRole,
+          moduleName: "About Us Control",
+        });
+
+        localStorage.setItem(permissionKey, JSON.stringify(res?.data || {}));
+      } catch (err) {
+        console.error(err);
+        localStorage.setItem(permissionKey, JSON.stringify({}));
+      }
+
+      return aboutRes?.data?.data || aboutRes?.data || [];
     },
+
+    enabled: !!userData,
   });
-   const modules = {
+
+
+  
+  const modules = {
   toolbar: [
-    // FONT + SIZE
     [{ font: [] }, { size: [] }],
-
-    // HEADINGS
     [{ header: [1, 2, 3, false] }],
-
-    // TEXT STYLE
     ["bold", "italic", "underline", "strike"],
-
-    // COLOR
     [{ color: [] }, { background: [] }],
-
-    // LIST + ALIGN
     [{ list: "ordered" }, { list: "bullet" }],
     [{ align: [] }],
-
-    // LINK
     ["link"],
-
-    // CLEAN
     ["clean"],
   ],
 };
 
-  const refresh = () => {
+  // ================= PERMISSION =================
+  const permissions = JSON.parse(localStorage.getItem(permissionKey) || "{}");
+
+  const hasPermission = (type) => permissions?.[type] === true;
+
+  const handleNoPermission = () => {
+    handleError("Permission not granted");
+  };
+
+  const fetchAbout = () => {
     queryClient.invalidateQueries(["aboutSection"]);
   };
 
-  /* ================= SELECT ================= */
+  const allSelected =
+    selected.length === data.length && data.length > 0;
 
-  const allSelected = selected.length === data.length && data.length > 0;
-
+  // ================= SELECT =================
   const handleSelect = (id) => {
     if (selected.includes(id)) {
       setSelected(selected.filter((x) => x !== id));
@@ -95,16 +121,17 @@ export default function AboutSectionControl() {
   };
 
   const handleSelectAll = () => {
-    if (allSelected) {
-      setSelected([]);
-    } else {
-      setSelected(data.map((x) => x._id));
-    }
+    if (!hasPermission("delete")) return handleNoPermission();
+
+    if (allSelected) setSelected([]);
+    else setSelected(data.map((x) => x._id));
   };
 
+  // ================= DELETE SELECTED =================
   const handleDeleteSelected = async () => {
+    if (!hasPermission("delete")) return handleNoPermission();
 
-    if (selected.length === 0) {
+    if (!selected.length) {
       handleWarning("Select About first");
       return;
     }
@@ -112,65 +139,47 @@ export default function AboutSectionControl() {
     if (!window.confirm("Delete Selected About?")) return;
 
     try {
-
       await selectiveDeleteAboutSection({ ids: selected });
-
       setSelected([]);
-
-      refresh();
-
+      fetchAbout();
+      handleSuccess("Deleted Successfully");
     } catch (err) {
-      console.log(err);
+      handleError("Delete Failed");
     }
-
   };
 
-  /* ================= INPUT ================= */
-
+  // ================= INPUT =================
   const handleChange = (e) => {
-
     setFormValues({
       ...formValues,
       [e.target.name]: e.target.value,
     });
-
   };
 
   const handleImageChange = (e) => {
-
     const file = e.target.files[0];
-
     if (!file) return;
 
     setImageFile(file);
     setPreview(URL.createObjectURL(file));
-
   };
 
-  /* ================= CREATE ================= */
-
+  // ================= CREATE =================
   const handleCreate = async () => {
-    try {
+    if (!hasPermission("create")) return handleNoPermission();
 
+    try {
       const headingRes = await createHeading(formValues);
       const newHeadingId = headingRes?.data?._id;
-
-      if (!formValues.tagline || !formValues.heading || !imageFile) {
-        handleError("Tagline, Heading and Image are required");
-        return;
-      }
 
       let imageUrl = "";
 
       if (imageFile) {
-
         const fd = new FormData();
         fd.append("file", imageFile);
 
         const uploadRes = await createFile(fd);
-
         imageUrl = uploadRes.data[0].path;
-
       }
 
       const aboutRes = await createAboutSection({
@@ -184,38 +193,31 @@ export default function AboutSectionControl() {
         await toggleActiveAboutSection(newAboutId);
       }
 
-      handleSuccess("About Created Successfully");
-
+      handleSuccess("Created Successfully");
       setShowForm(false);
-
       setImageFile(null);
-
-      refresh();
-
+      fetchAbout();
     } catch (err) {
-      console.log(err);
+      handleError("Create Failed");
     }
   };
 
-  /* ================= UPDATE ================= */
-
+  // ================= UPDATE =================
   const handleUpdate = async () => {
+    if (!hasPermission("update")) return handleNoPermission();
 
     try {
-
       await updateHeading(headingId, formValues);
 
       let imageUrl = preview;
 
       if (imageFile) {
-
         const fd = new FormData();
         fd.append("file", imageFile);
 
         const uploadRes = await createFile(fd);
-
-        imageUrl = "http://localhost:8008" + uploadRes.data[0].path;
-
+        imageUrl =
+          "http://localhost:8008" + uploadRes.data[0].path;
       }
 
       await updateAboutSection(aboutId, {
@@ -223,48 +225,38 @@ export default function AboutSectionControl() {
         image: imageUrl,
       });
 
-      handleSuccess("About Updated Successfully");
-
+      handleSuccess("Updated Successfully");
       setShowForm(false);
-
-      setAboutId(null);
-      setHeadingId(null);
-
-      refresh();
-
+      fetchAbout();
     } catch (err) {
-      console.log(err);
+      handleError("Update Failed");
     }
-
   };
 
-  /* ================= DELETE ================= */
+  // ================= DELETE =================
+  const handleDelete = (id) => {
+    if (!hasPermission("delete")) return handleNoPermission();
 
-  const handleDelete = async (id) => {
-
-    if (!window.confirm("Delete About?")) return;
-
-    try {
-
-      await singleDeleteAboutSection(id);
-
-      refresh();
-
-    } catch (err) {
-      console.log(err);
-    }
-
+    handleConfirm("Delete About?", async () => {
+      try {
+        await singleDeleteAboutSection(id);
+        fetchAbout();
+        handleSuccess("Deleted");
+      } catch {
+        handleError("Delete Failed");
+      }
+    });
   };
 
-  /* ================= EDIT ================= */
-
+  // ================= EDIT =================
   const handleEdit = (item) => {
+    if (!hasPermission("update")) return handleNoPermission();
 
     setMode("update");
     setShowForm(true);
 
     setAboutId(item._id);
-    setHeadingId(item.headingData?._id);
+    setHeadingId(item.headingData._id);
 
     setFormValues({
       tagline: item.headingData?.tagline || "",
@@ -273,30 +265,32 @@ export default function AboutSectionControl() {
     });
 
     setPreview(item.image);
-
+    setImageFile(null);
   };
 
-  /* ================= GET ================= */
-
+  // ================= GET =================
   const handleGet = (item) => {
+    if (!hasPermission("read")) return handleNoPermission();
 
     setGetData(item);
     setShowGet(true);
-
   };
 
-  /* ================= ACTIVE ================= */
-
+  // ================= ACTIVE =================
   const toggleActive = async (id) => {
+    if (!hasPermission("update")) return handleNoPermission();
+
     try {
       await toggleActiveAboutSection(id);
-      refresh();
-    } catch (err) {
-      console.error(err);
+      fetchAbout();
+    } catch {
+      handleError("Toggle Failed");
     }
   };
 
   if (isLoading) return <p>Loading...</p>;
+
+  const cleanHtml = getData?.headingData?.description?.replace(/&nbsp;/g, " ");
 
   return (
 
@@ -304,15 +298,26 @@ export default function AboutSectionControl() {
 
       <div className={styles.bannerWrap}>
 
-        <h3 className={styles.title}>Control As You Want</h3>
+        <h3 className={styles.title}>
+          Control As You Want
+        </h3>
 
         <div className={styles.topActions}>
 
           <button
-            className={styles.createBtn}
+            className={`${styles.createBtn} ${
+              !hasPermission("create")
+                ? styles.disabledBtn
+                : ""
+            }`}
             onClick={() => {
 
+              if (!hasPermission("create")) {
+                return handleNoPermission();
+              }
+
               setMode("create");
+
               setShowForm(true);
 
               setPreview("");
@@ -323,21 +328,28 @@ export default function AboutSectionControl() {
                 description: "",
               });
 
+              setImageFile(null);
+
             }}
           >
             Create About
           </button>
 
           <button
-            className={styles.deleteSelected}
+            className={`${styles.deleteSelected} ${
+              !hasPermission("delete")
+                ? styles.disabledBtn
+                : ""
+            }`}
             onClick={handleDeleteSelected}
           >
             <i className="bi bi-trash"></i>
+
             {selected.length === 0
               ? ""
               : allSelected
-                ? " ALL"
-                : ` (${selected.length}/${data.length})`}
+              ? " ALL"
+              : ` (${selected.length}/${data.length})`}
           </button>
 
         </div>
@@ -353,18 +365,30 @@ export default function AboutSectionControl() {
             <tr>
 
               <th className={styles.selectAll}>
+
                 <input
+                  className={`${styles.checkbox} ${
+                    !hasPermission("delete")
+                      ? styles.disabledBtn
+                      : ""
+                  }`}
                   type="checkbox"
                   checked={allSelected}
                   onChange={handleSelectAll}
                 />
+
                 <span>Select All</span>
+
               </th>
 
               <th>Image</th>
+
               <th>Tagline</th>
+
               <th>Heading</th>
+
               <th>Active</th>
+
               <th>Action</th>
 
             </tr>
@@ -373,63 +397,151 @@ export default function AboutSectionControl() {
 
           <tbody>
 
-            {data.map((item) => (
+            {data.length === 0 ? (
 
-              <tr key={item._id}>
+              <tr>
 
-                <td>
-                  <input
-                    type="checkbox"
-                    checked={selected.includes(item._id)}
-                    onChange={() => handleSelect(item._id)}
-                  />
-                </td>
-
-                <td>
-                  <img src={item.image} width="80" alt="" />
-                </td>
-
-                <td>{item.headingData?.tagline}</td>
-
-                <td>{item.headingData?.heading}</td>
-
-                <td>
-
-                  <i
-                    className={
-                      item.isActive
-                        ? "bi bi-toggle-on"
-                        : "bi bi-toggle-off"
-                    }
-                    style={{
-                      fontSize: "28px",
-                      cursor: "pointer",
-                      color: item.isActive ? "#ED1C24" : "#aaa",
-                    }}
-                    onClick={() => toggleActive(item._id)}
-                  ></i>
-
-                </td>
-
-                <td className={styles.actions}>
-
-                  <button onClick={() => handleEdit(item)}>
-                    <i className="bi bi-pencil-square"></i>
-                  </button>
-
-                  <button onClick={() => handleGet(item)}>
-                    <i className="bi bi-eye"></i>
-                  </button>
-
-                  <button onClick={() => handleDelete(item._id)}>
-                    <i className="bi bi-trash"></i>
-                  </button>
-
+                <td
+                  colSpan={6}
+                  style={{
+                    textAlign: "center",
+                    padding: "20px",
+                  }}
+                >
+                  No About Found
                 </td>
 
               </tr>
 
-            ))}
+            ) : (
+
+              data.map((item) => (
+
+                <tr key={item._id}>
+
+                  <td>
+
+                    <input
+                      className={`${styles.checkbox} ${
+                        !hasPermission("delete")
+                          ? styles.disabledBtn
+                          : ""
+                      }`}
+                      type="checkbox"
+                      checked={selected.includes(item._id)}
+                      onChange={() => {
+
+                        if (!hasPermission("delete")) {
+                          return handleNoPermission();
+                        }
+
+                        handleSelect(item._id);
+
+                      }}
+                    />
+
+                  </td>
+
+                  <td>
+                    <img
+                      src={
+                        item?.image ||
+                        "https://via.placeholder.com/80?text=No+Image"
+                      }
+                      width="80"
+                      alt=""
+                    />
+                  </td>
+
+                  <td>
+                    {item?.headingData?.tagline ||
+                      "No tagline"}
+                  </td>
+
+                  <td>
+                    {item?.headingData?.heading ||
+                      "No Heading"}
+                  </td>
+
+                  <td>
+
+                    <i
+                      className={`${
+                        item.isActive
+                          ? "bi bi-toggle-on"
+                          : "bi bi-toggle-off"
+                      } ${
+                        !hasPermission("update")
+                          ? styles.disabledBtn
+                          : ""
+                      }`}
+                      style={{
+                        fontSize: "28px",
+                        cursor: "pointer",
+                        color: item.isActive
+                          ? "#ED1C24"
+                          : "#aaa",
+                      }}
+                      onClick={() => {
+
+                        if (!hasPermission("update")) {
+                          return handleNoPermission();
+                        }
+
+                        toggleActive(item._id);
+
+                      }}
+                    ></i>
+
+                  </td>
+
+                  <td className={styles.actions}>
+
+                    <button
+                      className={
+                        !hasPermission("update")
+                          ? styles.disabledBtn
+                          : ""
+                      }
+                      onClick={() =>
+                        handleEdit(item)
+                      }
+                    >
+                      <i className="bi bi-pencil-square"></i>
+                    </button>
+
+                    <button
+                      className={
+                        !hasPermission("read")
+                          ? styles.disabledBtn
+                          : ""
+                      }
+                      onClick={() =>
+                        handleGet(item)
+                      }
+                    >
+                      <i className="bi bi-eye"></i>
+                    </button>
+
+                    <button
+                      className={
+                        !hasPermission("delete")
+                          ? styles.disabledBtn
+                          : ""
+                      }
+                      onClick={() =>
+                        handleDelete(item._id)
+                      }
+                    >
+                      <i className="bi bi-trash"></i>
+                    </button>
+
+                  </td>
+
+                </tr>
+
+              ))
+            )}
 
           </tbody>
 
@@ -444,7 +556,9 @@ export default function AboutSectionControl() {
           <div className={styles.modalContent}>
 
             <h4>
-              {mode === "create" ? "Create About" : "Update About"}
+              {mode === "create"
+                ? "Create About"
+                : "Update About"}
             </h4>
 
             <input
@@ -462,7 +576,9 @@ export default function AboutSectionControl() {
               value={formValues.heading}
               onChange={handleChange}
             />
+
             <div className={styles.ck}>
+
               <ReactQuill
                 theme="snow"
                 value={formValues.description}
@@ -474,27 +590,70 @@ export default function AboutSectionControl() {
                 }
                 modules={modules}
               />
+
             </div>
 
+            <input
+              type="file"
+              onChange={handleImageChange}
+            />
 
-            <input type="file" onChange={handleImageChange} />
-
-            {preview && <img src={preview} width="120" alt="" />}
+            {preview && (
+              <img
+                src={preview}
+                width="120"
+                alt=""
+              />
+            )}
 
             <div className={styles.modalActions}>
 
-              <button onClick={() => setShowForm(false)}>
+              <button
+                onClick={() =>
+                  setShowForm(false)
+                }
+              >
                 Cancel
               </button>
 
               <button
-                onClick={
+                className={`${
+                  (
+                    mode === "create" &&
+                    !hasPermission("create")
+                  ) ||
+                  (
+                    mode === "update" &&
+                    !hasPermission("update")
+                  )
+                    ? styles.disabledBtn
+                    : ""
+                }`}
+                onClick={() => {
+
+                  if (
+                    mode === "create" &&
+                    !hasPermission("create")
+                  ) {
+                    return handleNoPermission();
+                  }
+
+                  if (
+                    mode === "update" &&
+                    !hasPermission("update")
+                  ) {
+                    return handleNoPermission();
+                  }
+
                   mode === "create"
-                    ? handleCreate
-                    : handleUpdate
-                }
+                    ? handleCreate()
+                    : handleUpdate();
+
+                }}
               >
-                {mode === "create" ? "Create" : "Update"}
+                {mode === "create"
+                  ? "Create"
+                  : "Update"}
               </button>
 
             </div>
@@ -514,33 +673,49 @@ export default function AboutSectionControl() {
             <h4>About Details</h4>
 
             <div className={styles.detailRow}>
-              <span className={styles.label}>Tagline</span>
-              <span className={styles.value}>{getData.headingData?.tagline}</span>
+              <span className={styles.label}>
+                Tagline
+              </span>
+
+              <span className={styles.value}>
+                {getData.headingData?.tagline}
+              </span>
             </div>
 
             <div className={styles.detailRow}>
-              <span className={styles.label}>Heading</span>
-              <span className={styles.value}>{getData.headingData?.heading}</span>
+              <span className={styles.label}>
+                Heading
+              </span>
+
+              <span className={styles.value}>
+                {getData.headingData?.heading}
+              </span>
             </div>
 
             <div className={styles.descriptionBlock}>
               <span className={styles.label}>Description</span>
-
               <div
                 className={styles.descriptionText}
                 dangerouslySetInnerHTML={{
-                  __html: getData.headingData?.description,
+                  __html: cleanHtml || "",
                 }}
               ></div>
+
             </div>
 
-            <img src={getData.image} width="200" alt="" />
+            <img
+              src={getData.image}
+              width="200"
+              alt=""
+            />
 
             <br /><br />
 
             <button
               className={styles.closeBtn}
-              onClick={() => setShowGet(false)}
+              onClick={() =>
+                setShowGet(false)
+              }
             >
               Close
             </button>

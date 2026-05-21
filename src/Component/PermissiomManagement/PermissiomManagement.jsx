@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
+import {handleError, handleSuccess, handleWarning, handleConfirm, } from "../../utils"
 import {
   getPermissionsByRole,
-  savePermissions,
+  createPermission,
+  updatePermission,
   getAllRoles,
-  createPermission,     
-  updatePermission   
 } from "../../apis/api";
 
 import { menuData } from "../../DATA/data";
@@ -29,51 +29,47 @@ const PermissionManagement = () => {
     []
   );
 
-  // ✅ FETCH PERMISSIONS BY ROLE
-  const {
-    data: permissionsData = [],
-    isLoading: loading,
-  } = useQuery({
+  // ✅ FETCH PERMISSIONS
+  const { data: permissionsData = [], isLoading: loading } = useQuery({
     queryKey: ["permissions", selectedRole],
     queryFn: async () => {
       if (!selectedRole) return [];
       const res = await getPermissionsByRole(selectedRole);
-      console.log("API PERMISSIONS RESPONSE:", res);
       return res?.data || [];
     },
     enabled: !!selectedRole,
   });
 
-  // ✅ MERGE DEFAULT + API DATA
-useEffect(() => {
-  if (!modules.length || !selectedRole) return;
+  const isAdmin = selectedRole?.toLowerCase() === "admin";
 
-  const merged = modules.map((module) => {
-    const found = permissionsData.find(
-      (p) => p.module === module
-    );
+  // ✅ MERGE DATA + ADMIN AUTO TRUE
+  useEffect(() => {
+    if (!modules.length || !selectedRole) return;
 
-    return {
-      _id: found?._id || null,
-      module,
-      create: found?.create ?? false,
-      read: found?.read ?? false,
-      update: found?.update ?? false,
-      delete: found?.delete ?? false,
-    };
-  });
+    const merged = modules.map((module) => {
+      const found = permissionsData.find((p) => p.module === module);
 
-  setPermissions((prev) => {
-    const prevString = JSON.stringify(prev);
-    const newString = JSON.stringify(merged);
+      return {
+        _id: found?._id || null,
+        module,
+        create: isAdmin ? true : found?.create ?? false,
+        read: isAdmin ? true : found?.read ?? false,
+        update: isAdmin ? true : found?.update ?? false,
+        delete: isAdmin ? true : found?.delete ?? false,
+      };
+    });
 
-    return prevString === newString ? prev : merged;
-  });
-
-}, [selectedRole, permissionsData]);
+    setPermissions((prev) => {
+      const prevString = JSON.stringify(prev);
+      const newString = JSON.stringify(merged);
+      return prevString === newString ? prev : merged;
+    });
+  }, [selectedRole, permissionsData, modules, isAdmin]);
 
   // ✅ TOGGLE SINGLE
   const handleChange = (moduleName, field) => {
+    if (isAdmin) return;
+
     setPermissions((prev) =>
       prev.map((item) =>
         item.module === moduleName
@@ -85,6 +81,8 @@ useEffect(() => {
 
   // ✅ SELECT ALL
   const handleSelectAll = (moduleName) => {
+    if (isAdmin) return;
+
     setPermissions((prev) =>
       prev.map((item) => {
         if (item.module !== moduleName) return item;
@@ -103,63 +101,46 @@ useEffect(() => {
     );
   };
 
-  // ✅ SAVE (BULK)
-const handleSave = async () => {
+  // ✅ SAVE
+  const handleSave = async () => {
   if (!selectedRole) {
-    alert("Role is required");
+    handleWarning("Role is required");
     return;
   }
 
-  try {
-    setSaving(true);
+    try {
+      setSaving(true);
 
-    console.log("START SAVE PROCESS");
+      for (const perm of permissions) {
+        const payload = {
+          dynamicRole: selectedRole,
+          module: perm.module,
+          create: isAdmin ? true : perm.create,
+          read: isAdmin ? true : perm.read,
+          update: isAdmin ? true : perm.update,
+          delete: isAdmin ? true : perm.delete,
+        };
 
-    for (const perm of permissions) {
-      const payload = {
-        dynamicRole: selectedRole,
-        module: perm.module,
-        create: perm.create,
-        read: perm.read,
-        update: perm.update,
-        delete: perm.delete,
-      };
+        const existing = permissionsData.find(
+          (p) => p.module === perm.module && p.dynamicRole === selectedRole
+        );
 
-      // 🔥 CHECK USING permissionsData (NOT _id)
-      const existing = permissionsData.find(
-        (p) =>
-          p.module.trim() === perm.module.trim() &&
-          p.dynamicRole === selectedRole
-      );
-
-      try {
         if (existing) {
-          console.log("UPDATING:", perm.module, existing._id);
-
           await updatePermission(existing._id, payload);
         } else {
-          console.log("CREATING:", perm.module);
-
           await createPermission(payload);
         }
-      } catch (err) {
-        console.log(
-          `❌ ERROR in ${perm.module}:`,
-          err.response?.data || err.message
-        );
       }
+
+      handleSuccess("Permissions saved successfully");
+    } catch (err) {
+      console.log(err);
+      handleError("Save failed");
+    } finally {
+      setSaving(false);
     }
+  };
 
-    alert("Permissions saved successfully");
-  } catch (err) {
-    console.log("FINAL ERROR:", err);
-    alert("Save failed");
-  } finally {
-    setSaving(false);
-  }
-};
-
-  // ✅ SELECT ROLE
   const handleSelect = (role) => {
     setSelectedRole(role);
     setOpen(false);
@@ -173,15 +154,10 @@ const handleSave = async () => {
     <div className={styles.container}>
       {/* HEADER */}
       <div className={styles.header}>
-        <h2 className={styles.title}>
-          Add Permissions for Selected Role
-        </h2>
+        <h2>Add Permissions for Selected Role</h2>
 
         <div className={styles.dropdownWrapper}>
-          <div
-            className={styles.selectBox}
-            onClick={() => setOpen(!open)}
-          >
+          <div className={styles.selectBox} onClick={() => setOpen(!open)}>
             {selectedRole || "Select Role"}
           </div>
 
@@ -203,22 +179,16 @@ const handleSave = async () => {
         </div>
       </div>
 
-      {/* MESSAGE */}
+      {/* WARNING */}
       {!selectedRole && (
-        <p style={{ color: "red", marginBottom: "10px" }}>
-          Please select a role first
-        </p>
+        <p style={{ color: "red" }}>Please select a role first</p>
       )}
 
       {/* TABLE */}
       {loading ? (
-        <p className={styles.loading}>Loading permissions...</p>
+        <p>Loading...</p>
       ) : (
-        <div
-          className={`${styles.tableWrapper} ${
-            !selectedRole ? styles.disabledTable : ""
-          }`}
-        >
+        <div className={styles.tableWrapper}>
           <table className={styles.table}>
             <thead>
               <tr>
@@ -235,14 +205,7 @@ const handleSave = async () => {
               {menuData.map((section) => (
                 <React.Fragment key={section.name}>
                   <tr>
-                    <td
-                      colSpan="6"
-                      style={{
-                        color: "#ED1C24",
-                        fontWeight: "600",
-                        paddingTop: "20px",
-                      }}
-                    >
+                    <td colSpan="6" style={{ color: "red" }}>
                       {section.name}
                     </td>
                   </tr>
@@ -253,9 +216,9 @@ const handleSave = async () => {
 
                     return (
                       <tr key={mod}>
-                        <td className={styles.moduleCell}>{mod}</td>
+                        <td>{mod}</td>
 
-                        <td className={styles.center}>
+                        <td>
                           <input
                             type="checkbox"
                             checked={
@@ -264,18 +227,18 @@ const handleSave = async () => {
                               item.update &&
                               item.delete
                             }
-                            disabled={!selectedRole}
+                            disabled={!selectedRole || isAdmin}
                             onChange={() => handleSelectAll(mod)}
                           />
                         </td>
 
                         {["create", "read", "update", "delete"].map(
                           (field) => (
-                            <td key={field} className={styles.center}>
+                            <td key={field}>
                               <input
                                 type="checkbox"
                                 checked={item[field] || false}
-                                disabled={!selectedRole}
+                                disabled={!selectedRole || isAdmin}
                                 onChange={() =>
                                   handleChange(mod, field)
                                 }
@@ -296,11 +259,9 @@ const handleSave = async () => {
       {/* FOOTER */}
       <div className={styles.footer}>
         <button
-          className={styles.saveBtn}
+        className={styles.saveBtn}
           onClick={handleSave}
-          disabled={
-            saving || !selectedRole || !hasAnyPermissionSelected
-          }
+          disabled={saving || !selectedRole || !hasAnyPermissionSelected}
         >
           {saving ? "Saving..." : "Save Permissions"}
         </button>

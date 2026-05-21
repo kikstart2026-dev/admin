@@ -8,6 +8,7 @@ import styles from "./Sidebar.module.scss";
 import "../../Main.scss";
 
 import { adminLogout } from "../../apis/api";
+import {handleError, handleSuccess, handleWarning, handleConfirm, } from "../../utils"
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(true);
@@ -40,7 +41,7 @@ export default function Sidebar() {
     },
 
     onError: (error) => {
-      alert(error?.response?.data?.message || "Logout failed ❌");
+      handleError(error?.response?.data?.message || "Logout failed ❌");
     },
   });
 
@@ -101,18 +102,7 @@ export default function Sidebar() {
             </NavLink>
           </li>
 
-          {/* CHILDREN PROFILE */}
-          <li>
-            <NavLink
-              to="/children-profile"
-              className={({ isActive }) =>
-                isActive ? styles.active : ""
-              }
-            >
-              <img src={Frame} alt="Children Profile" className={styles.icon} />
-              <span>Children Profile</span>
-            </NavLink>
-          </li>
+
 
           {/* CMS */}
           <li>
@@ -212,7 +202,7 @@ export default function Sidebar() {
                 disabled={isPending}
                 onClick={() => {
                   if (!email) {
-                    alert("Email not found ❌");
+                    handleWarning("Email not found ❌");
                     return;
                   }
                   logoutMutate({ email });

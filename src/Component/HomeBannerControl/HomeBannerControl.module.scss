@@ -89,6 +89,7 @@ textarea {
   color: #fff;
   font-weight: 500;
   transition: 0.3s ease;
+   cursor: pointer;
 }
 
 .actions button:hover {
@@ -314,17 +315,11 @@ textarea {
   font-family: Arial, sans-serif;
 }
 
-.disabledBtn {
+ .disabledBtn {
   opacity: 0.5 !important;
-  // cursor: not-allowed !important;
+  cursor: not-allowed !important;
 
   &:hover {
     transform: none !important;
   }
 }
-
-// button:disabled,
-// input:disabled {
-//   opacity: 0.5;
-//   cursor: not-allowed;
-// }

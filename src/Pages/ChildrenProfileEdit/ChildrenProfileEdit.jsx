@@ -153,7 +153,7 @@ const ChildrenEdit = () => {
 
                 {/* ================= RIGHT SIDE ================= */}
                 <div className={styles.rightSection}>
-
+                                      
                     <div className={styles.profileCard}>
 
                         <img

@@ -83,6 +83,8 @@ textarea {
   td {
     padding: 12px;
     text-align: center;
+    
+
 
     .checkbox {
       accent-color: #ED1C24;
@@ -175,6 +177,7 @@ textarea {
     td {
       padding: 8px;
       font-size: 14px;
+      word-break: break-word;
 
       img {
         width: 150px;
@@ -422,5 +425,14 @@ textarea {
   &:focus {
     outline: none;
     box-shadow: 0 0 0 2px rgba(237, 28, 36, 0.2);
+  }
+}
+
+.disabledBtn {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+
+  &:hover {
+    transform: none !important;
   }
 }

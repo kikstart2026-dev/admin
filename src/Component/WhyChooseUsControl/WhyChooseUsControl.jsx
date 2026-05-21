@@ -10,12 +10,20 @@ import {
   selectiveDeleteWhyChooseUs,
   createHeading,
   updateHeading,
-  createFile
+  createFile,
+  getSingle
 } from "../../apis/api";
 
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
-import { handleSuccess, handleError } from "../../utils";
+
+import "../../Main.scss";
+
+import {
+  handleSuccess,
+  handleError,
+  handleConfirm,
+} from "../../utils";
 
 export default function WhyChooseUsControl() {
 
@@ -28,7 +36,6 @@ export default function WhyChooseUsControl() {
 
   const [mode, setMode] = useState("create");
   const [cardId, setCardId] = useState(null);
-
   const [headingId, setHeadingId] = useState(null);
 
   const [imageFile, setImageFile] = useState(null);
@@ -51,43 +58,79 @@ export default function WhyChooseUsControl() {
 
   const [page, setPage] = useState(1);
 
-  const { data = {}, isLoading } = useQuery({
-    queryKey: ["whyChooseUs", page],
-    queryFn: () =>
-      getAllWhyChooseUs({
-        page,
-        limit: 8,
-      }),
-  });
+  // ================= USER =================
+  const userData = JSON.parse(
+    localStorage.getItem("adminUser") || "{}"
+  );
 
+  // ================= PERMISSION KEY =================
+  const permissionKey = "WhyChooseUsPermission";
+
+  // ================= QUILL MODULES =================
   const modules = {
     toolbar: [
-      // FONT + SIZE
       [{ font: [] }, { size: [] }],
-
-      // HEADINGS
       [{ header: [1, 2, 3, false] }],
-
-      // TEXT STYLE
       ["bold", "italic", "underline", "strike"],
-
-      // COLOR
       [{ color: [] }, { background: [] }],
-
-      // LIST + ALIGN
       [{ list: "ordered" }, { list: "bullet" }],
       [{ align: [] }],
-
-      // LINK
       ["link"],
-
-      // CLEAN
       ["clean"],
     ],
   };
 
+  // ================= FETCH + PERMISSION =================
+  const { data = {}, isLoading } = useQuery({
+    queryKey: ["whyChooseUs", page],
+
+    queryFn: async () => {
+      const res = await getAllWhyChooseUs({
+        page,
+        limit: 8,
+      });
+
+      // ================= PERMISSION (ABOUT STYLE FIX) =================
+      try {
+        const permissionRes = await getSingle({
+          role: userData?.role,
+          dynamicRole: userData?.dynamicRole,
+          moduleName: "Why Choose Us Control",
+        });
+
+        localStorage.setItem(
+          permissionKey,
+          JSON.stringify(permissionRes?.data || {})
+        );
+      } catch (err) {
+        console.error("Permission Error:", err);
+
+        localStorage.setItem(
+          permissionKey,
+          JSON.stringify({})
+        );
+      }
+
+      return res;
+    },
+
+    enabled: !!userData,
+  });
+
+  // ================= PERMISSION =================
+  const permissions = JSON.parse(
+    localStorage.getItem(permissionKey) || "{}"
+  );
+
+  const hasPermission = (type) => permissions?.[type] === true;
+
+  const handleNoPermission = () => {
+    handleError("Permission not granted");
+  };
+
+  // ================= DATA =================
   const cards = data?.data?.cards || [];
-  const totalPages = data.totalPages || 1;
+  const totalPages = data?.totalPages || 1;
 
   const heading = data?.data?.heading || null;
   const headingIdFromData = heading?._id || null;
@@ -96,139 +139,173 @@ export default function WhyChooseUsControl() {
     queryClient.invalidateQueries(["whyChooseUs", page]);
   };
 
-  const allSelected = selected.length === cards.length && cards.length > 0;
+  const allSelected =
+    selected.length === cards.length && cards.length > 0;
 
+  // ================= SELECT =================
   const handleSelect = (id) => {
-    if (selected.includes(id)) {
-      setSelected(selected.filter((x) => x !== id));
-    } else {
-      setSelected([...selected, id]);
-    }
+    setSelected(
+      selected.includes(id)
+        ? selected.filter((x) => x !== id)
+        : [...selected, id]
+    );
   };
 
   const handleSelectAll = () => {
-    if (allSelected) setSelected([]);
-    else setSelected(cards.map((x) => x._id));
+    if (!hasPermission("delete")) return handleNoPermission();
+
+    setSelected(allSelected ? [] : cards.map((x) => x._id));
   };
 
+  // ================= DELETE SELECTED =================
   const handleDeleteSelected = async () => {
 
-    if (selected.length === 0) {
+    if (!hasPermission("delete")) return handleNoPermission();
+
+    if (!selected.length) {
       handleError("Select cards first");
       return;
     }
 
     if (!window.confirm("Delete Selected Cards?")) return;
 
-    await selectiveDeleteWhyChooseUs({ ids: selected });
+    try {
+      await selectiveDeleteWhyChooseUs({ ids: selected });
 
-    setSelected([]);
+      setSelected([]);
+      fetchData();
+      handleSuccess("Deleted Successfully");
 
-    fetchData();
+    } catch (err) {
+      handleError("Delete Failed");
+    }
   };
 
+  // ================= HEADING =================
   const handleHeadingSave = async () => {
 
-    if (headingId) {
-      await updateHeading(headingId, headingData);
-      handleSuccess("Heading Updated");
-    } else {
-      const res = await createHeading(headingData);
-      setHeadingId(res?.data?._id);
-      handleSuccess("Heading Created");
+    if (!hasPermission("create") && !hasPermission("update")) {
+      return handleNoPermission();
     }
 
-    fetchData();
+    try {
+
+      if (headingId) {
+        await updateHeading(headingId, headingData);
+        handleSuccess("Heading Updated");
+      } else {
+        const res = await createHeading(headingData);
+        setHeadingId(res?.data?._id);
+        handleSuccess("Heading Created");
+      }
+
+      fetchData();
+
+    } catch {
+      handleError("Heading Save Failed");
+    }
   };
 
+  // ================= IMAGE =================
   const handleImageChange = (e) => {
-
     const file = e.target.files[0];
-
     if (!file) return;
 
     setImageFile(file);
     setPreview(URL.createObjectURL(file));
   };
 
+  // ================= CREATE =================
   const handleCreate = async () => {
 
-    if (!headingId) {
-      handleError("Create heading first");
-      return;
+    if (!hasPermission("create")) return handleNoPermission();
+
+    if (!headingId && !headingIdFromData) {
+      return handleError("Create heading first");
     }
 
-    // ✅ ADD HERE
     if (!formValues.title || !formValues.color || !imageFile) {
-      handleError("Title, Color and Icon are required");
-      return;
+      return handleError("Title, Color & Icon required");
     }
 
-    let imageUrl = "";
+    try {
 
-    if (imageFile) {
       const fd = new FormData();
       fd.append("file", imageFile);
 
       const uploadRes = await createFile(fd);
 
-      imageUrl = "http://localhost:8008" + uploadRes.data[0].path;
+      const imageUrl =
+        "http://localhost:8008" + uploadRes.data[0].path;
+
+      await createWhyChooseUs({
+        headingId: headingId || headingIdFromData,
+        icon: imageUrl,
+        ...formValues,
+      });
+
+      handleSuccess("Created Successfully");
+
+      setShowForm(false);
+      fetchData();
+
+    } catch {
+      handleError("Create Failed");
     }
-
-    await createWhyChooseUs({
-      headingId,
-      icon: imageUrl,
-      title: formValues.title,
-      description: formValues.description,
-      color: formValues.color
-    });
-
-    handleSuccess("Card Created");
-
-    setShowForm(false);
-
-    fetchData();
   };
 
+  // ================= UPDATE =================
   const handleUpdate = async () => {
 
-    let imageUrl = oldImage;
+    if (!hasPermission("update")) return handleNoPermission();
 
-    if (imageFile) {
+    try {
 
-      const fd = new FormData();
-      fd.append("file", imageFile);
+      let imageUrl = oldImage;
 
-      const uploadRes = await createFile(fd);
+      if (imageFile) {
 
-      imageUrl = "http://localhost:8008" + uploadRes.data[0].path;
+        const fd = new FormData();
+        fd.append("file", imageFile);
+
+        const uploadRes = await createFile(fd);
+
+        imageUrl =
+          "http://localhost:8008" + uploadRes.data[0].path;
+      }
+
+      await updateWhyChooseUs(cardId, {
+        headingId: headingId || headingIdFromData,
+        icon: imageUrl,
+        ...formValues,
+      });
+
+      handleSuccess("Updated Successfully");
+
+      setShowForm(false);
+      fetchData();
+
+    } catch {
+      handleError("Update Failed");
     }
+  };
 
-    await updateWhyChooseUs(cardId, {
-      headingId,
-      icon: imageUrl,
-      title: formValues.title,
-      description: formValues.description,
-      color: formValues.color
+  // ================= DELETE =================
+  const handleDelete = (id) => {
+
+    if (!hasPermission("delete")) return handleNoPermission();
+
+    handleConfirm("Delete Card?", async () => {
+      await singleDeleteWhyChooseUs(id);
+      fetchData();
+      handleSuccess("Deleted");
     });
-
-    handleSuccess("Card Updated");
-
-    setShowForm(false);
-
-    fetchData();
   };
 
-  const handleDelete = async (id) => {
-
-    if (!window.confirm("Delete Card?")) return;
-
-    await singleDeleteWhyChooseUs(id);
-
-    fetchData();
-  };
-
+  // ================= EDIT =================
   const handleEdit = (item) => {
+
+    if (!hasPermission("update")) return handleNoPermission();
 
     setMode("update");
     setShowForm(true);
@@ -238,22 +315,24 @@ export default function WhyChooseUsControl() {
     setFormValues({
       title: item.title,
       description: item.description,
-      color: item.color
+      color: item.color,
     });
 
     setPreview(item.icon);
     setOldImage(item.icon);
-    setImageFile(null);
   };
 
+  // ================= GET =================
   const handleGet = (item) => {
 
-    setGetData(item);
+    if (!hasPermission("read")) return handleNoPermission();
 
+    setGetData(item);
     setShowGet(true);
   };
 
   if (isLoading) return <p>Loading...</p>;
+
 
   return (
     <div className={styles.banner}>
@@ -265,10 +344,19 @@ export default function WhyChooseUsControl() {
         <div className={styles.topActions}>
 
           <button
-            className={styles.createBtn}
+            className={`${styles.createBtn} ${
+              !hasPermission("create")
+                ? styles.disabledBtn
+                : ""
+            }`}
             onClick={() => {
 
+              if (!hasPermission("create")) {
+                return handleNoPermission();
+              }
+
               setMode("create");
+
               setShowForm(true);
 
               setFormValues({
@@ -284,29 +372,52 @@ export default function WhyChooseUsControl() {
           </button>
 
           <button
-            className={styles.createBtn}
+            className={`${styles.createBtn} ${
+              (
+                !hasPermission("create") &&
+                !hasPermission("update")
+              )
+                ? styles.disabledBtn
+                : ""
+            }`}
             onClick={() => {
+
+              if (
+                !hasPermission("create") &&
+                !hasPermission("update")
+              ) {
+                return handleNoPermission();
+              }
+
               if (heading) {
+
                 setHeadingData({
                   tagline: heading.tagline || "",
                   heading: heading.heading || "",
                   description: heading.description || ""
                 });
+
                 setHeadingId(heading._id);
               }
+
               setShowHeadingModal(true);
             }}
           >
             {heading ? "Update Heading" : "Create Heading"}
 
-            
+
           </button>
 
           <button
-            className={styles.deleteSelected} // About style delete
+            className={`${styles.deleteSelected} ${
+              !hasPermission("delete")
+                ? styles.disabledBtn
+                : ""
+            }`}
             onClick={handleDeleteSelected}
           >
             <i className="bi bi-trash"></i>
+
             {selected.length === 0
               ? ""
               : allSelected
@@ -326,12 +437,20 @@ export default function WhyChooseUsControl() {
             <tr>
 
               <th>
+
                 <input
-                  className={styles.checkbox}
+                  className={`${styles.checkbox} ${
+                    !hasPermission("delete")
+                      ? styles.disabledBtn
+                      : ""
+                  }`}
                   type="checkbox"
                   checked={allSelected}
                   onChange={handleSelectAll}
-                /> Select All
+                />
+
+                {" "}Select All
+
               </th>
 
               <th>Icon</th>
@@ -346,12 +465,23 @@ export default function WhyChooseUsControl() {
           <tbody>
 
             {cards.length === 0 ? (
+
               <tr>
-                <td colSpan={5} style={{ textAlign: "center", padding: "20px" }}>
+
+                <td
+                  colSpan={5}
+                  style={{
+                    textAlign: "center",
+                    padding: "20px"
+                  }}
+                >
                   No Cards Found
                 </td>
+
               </tr>
+
             ) : (
+
               cards.map((item) => (
 
                 <tr key={item._id}>
@@ -360,9 +490,20 @@ export default function WhyChooseUsControl() {
 
                     <input
                       type="checkbox"
-                      className={styles.checkbox}
+                      className={`${styles.checkbox} ${
+                        !hasPermission("delete")
+                          ? styles.disabledBtn
+                          : ""
+                      }`}
                       checked={selected.includes(item._id)}
-                      onChange={() => handleSelect(item._id)}
+                      onChange={() => {
+
+                        if (!hasPermission("delete")) {
+                          return handleNoPermission();
+                        }
+
+                        handleSelect(item._id);
+                      }}
                     />
 
                   </td>
@@ -374,6 +515,7 @@ export default function WhyChooseUsControl() {
                   <td>{item.title}</td>
 
                   <td>
+
                     <div
                       style={{
                         background: item.color,
@@ -383,19 +525,41 @@ export default function WhyChooseUsControl() {
                     >
                       {item.color}
                     </div>
+
                   </td>
 
                   <td className={styles.actions}>
 
-                    <button onClick={() => handleEdit(item)}>
+                    <button
+                      className={
+                        !hasPermission("update")
+                          ? styles.disabledBtn
+                          : ""
+                      }
+                      onClick={() => handleEdit(item)}
+                    >
                       <i className="bi bi-pencil-square"></i>
                     </button>
 
-                    <button onClick={() => handleGet(item)}>
+                    <button
+                      className={
+                        !hasPermission("read")
+                          ? styles.disabledBtn
+                          : ""
+                      }
+                      onClick={() => handleGet(item)}
+                    >
                       <i className="bi bi-eye"></i>
                     </button>
 
-                    <button onClick={() => handleDelete(item._id)}>
+                    <button
+                      className={
+                        !hasPermission("delete")
+                          ? styles.disabledBtn
+                          : ""
+                      }
+                      onClick={() => handleDelete(item._id)}
+                    >
                       <i className="bi bi-trash"></i>
                     </button>
 
@@ -412,10 +576,11 @@ export default function WhyChooseUsControl() {
       </div>
 
       <nav className="mt-4">
+
         <ul className={`pagination justify-content-center ${styles.customPagination}`}>
 
-          {/* LEFT ARROW */}
           <li className={`page-item ${page === 1 ? "disabled" : ""}`}>
+
             <button
               className="page-link arrow"
               onClick={() => setPage(page - 1)}
@@ -423,25 +588,28 @@ export default function WhyChooseUsControl() {
             >
               &lt;
             </button>
+
           </li>
 
-          {/* PAGE NUMBERS */}
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
+
             <li
               key={num}
               className={`page-item ${page === num ? "active" : ""}`}
             >
+
               <button
                 className={`page-link ${page === num ? "num" : ""}`}
                 onClick={() => setPage(num)}
               >
                 {num}
               </button>
+
             </li>
           ))}
 
-          {/* RIGHT ARROW */}
           <li className={`page-item ${page === totalPages ? "disabled" : ""}`}>
+
             <button
               className="page-link arrow"
               onClick={() => setPage(page + 1)}
@@ -449,9 +617,11 @@ export default function WhyChooseUsControl() {
             >
               &gt;
             </button>
+
           </li>
 
         </ul>
+
       </nav>
 
       {/* Create / Update Modal */}
@@ -474,6 +644,7 @@ export default function WhyChooseUsControl() {
             />
 
             <div className={styles.ck}>
+
               <ReactQuill
                 theme="snow"
                 value={formValues.description}
@@ -485,6 +656,7 @@ export default function WhyChooseUsControl() {
                 }
                 modules={modules}
               />
+
             </div>
 
             <input
@@ -502,9 +674,44 @@ export default function WhyChooseUsControl() {
 
             <div className={styles.modalActions}>
 
-              <button onClick={() => setShowForm(false)}>Cancel</button>
+              <button onClick={() => setShowForm(false)}>
+                Cancel
+              </button>
 
-              <button onClick={mode === "create" ? handleCreate : handleUpdate}>
+              <button
+                className={`${
+                  (
+                    mode === "create" &&
+                    !hasPermission("create")
+                  ) ||
+                  (
+                    mode === "update" &&
+                    !hasPermission("update")
+                  )
+                    ? styles.disabledBtn
+                    : ""
+                }`}
+                onClick={() => {
+
+                  if (
+                    mode === "create" &&
+                    !hasPermission("create")
+                  ) {
+                    return handleNoPermission();
+                  }
+
+                  if (
+                    mode === "update" &&
+                    !hasPermission("update")
+                  ) {
+                    return handleNoPermission();
+                  }
+
+                  mode === "create"
+                    ? handleCreate()
+                    : handleUpdate();
+                }}
+              >
                 {mode === "create" ? "Create" : "Update"}
               </button>
 
@@ -531,7 +738,10 @@ export default function WhyChooseUsControl() {
               placeholder="Tagline"
               value={headingData.tagline}
               onChange={(e) =>
-                setHeadingData({ ...headingData, tagline: e.target.value })
+                setHeadingData({
+                  ...headingData,
+                  tagline: e.target.value
+                })
               }
             />
 
@@ -540,11 +750,15 @@ export default function WhyChooseUsControl() {
               placeholder="Heading"
               value={headingData.heading}
               onChange={(e) =>
-                setHeadingData({ ...headingData, heading: e.target.value })
+                setHeadingData({
+                  ...headingData,
+                  heading: e.target.value
+                })
               }
             />
 
             <div className={styles.ck}>
+
               <ReactQuill
                 theme="snow"
                 value={headingData.description}
@@ -556,15 +770,35 @@ export default function WhyChooseUsControl() {
                 }
                 modules={modules}
               />
+
             </div>
 
             <div className={styles.modalActions}>
 
-              <button onClick={() => setShowHeadingModal(false)}>Cancel</button>
+              <button onClick={() => setShowHeadingModal(false)}>
+                Cancel
+              </button>
 
               <button
+                className={`${
+                  (
+                    !hasPermission("create") &&
+                    !hasPermission("update")
+                  )
+                    ? styles.disabledBtn
+                    : ""
+                }`}
                 onClick={async () => {
+
+                  if (
+                    !hasPermission("create") &&
+                    !hasPermission("update")
+                  ) {
+                    return handleNoPermission();
+                  }
+
                   await handleHeadingSave();
+
                   setShowHeadingModal(false);
                 }}
               >
@@ -582,44 +816,68 @@ export default function WhyChooseUsControl() {
       {/* View Modal */}
 
       {showGet && getData && (
+
         <div className={styles.modal}>
+
           <div className={styles.modalContent}>
 
             <h4>View Card</h4>
 
             <table>
+
               <tbody>
 
                 <tr>
+
                   <th>Icon</th>
+
                   <td>
                     <img src={getData.icon} alt="" />
                   </td>
+
                 </tr>
 
                 <tr>
+
                   <th>Title</th>
+
                   <td>{getData.title}</td>
+
                 </tr>
 
                 <tr>
+
                   <th>Description</th>
-                  <td dangerouslySetInnerHTML={{ __html: getData.description }}></td>
+
+                  <td
+                    dangerouslySetInnerHTML={{
+                      __html:
+                        getData?.description
+                          ?.replace(/&nbsp;/g, " ")
+                        || "",
+                    }}
+                  ></td>
                 </tr>
 
                 <tr>
+
                   <th>Color</th>
+
                   <td>
+
                     <div
                       className={styles.colorBox}
                       style={{ background: getData.color }}
                     >
                       {getData.color}
                     </div>
+
                   </td>
+
                 </tr>
 
               </tbody>
+
             </table>
 
             <button
@@ -630,6 +888,7 @@ export default function WhyChooseUsControl() {
             </button>
 
           </div>
+
         </div>
       )}
 

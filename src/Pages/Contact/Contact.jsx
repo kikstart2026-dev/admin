@@ -7,7 +7,7 @@ export default function Contact() {
       <div className={styles.content}>
         <h2>Contact Page</h2>
 
-        {/* এখানে তোমার Contact form / data থাকবে */}
+
       </div>
     </div>
   );

@@ -323,3 +323,12 @@ margin-bottom: 15px;
         font-weight: 700;
     }
 }
+
+.disabledBtn {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+
+  &:hover {
+    transform: none !important;
+  }
+}

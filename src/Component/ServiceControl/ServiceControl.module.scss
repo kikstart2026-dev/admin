@@ -320,3 +320,12 @@ margin-bottom: 15px;
   }
 
 }
+
+.disabledBtn {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+
+  &:hover {
+    transform: none !important;
+  }
+}

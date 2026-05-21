@@ -15,18 +15,6 @@ import HomePage from "./Pages/Home/HomePage";
 import About from "./Pages/About/About";
 import Contact from "./Pages/Contact/Contact";
 
-import ChildrenProfile from "./Pages/ChildrenProfile/ChildrenProfile";
-
-// ================= CHILD FORM FLOW =================
-import ChildrenDetails from "./Pages/FormDetails/ChildrenDetails/ChildrenDetails";
-import ChildrenEdit from "./Pages/ChildrenProfileEdit/ChildrenProfileEdit";
-
-
-import SchoolDetails from "./Pages/FormDetails/SchoolDetails/SchoolDetails";
-
-import WaiverAcceptance from "./Pages/FormDetails/WaiverAcceptance/WaiverAcceptance";
-
-import ProgramDetailss from "./Pages/FormDetails/ProgramDetailss/ProgramDetailss";
 
 import AdminLogin from "./Pages/Authentication/AdminLogin/AdminLogin";
 import AdminOtpVerify from "./Pages/Authentication/AdminOtpVerify/AdminOtpVerify";
@@ -43,6 +31,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import RoleManagementPage from "./Pages/RoleManagementPage/RoleManagementPage";
 import PermissionManagementPage from "./Pages/PermissionManagementPage/PermissionManagementPage";
 
+import User from "./Pages/User/User";
 
 // ================= 🔐 ADMIN PROTECTED ROUTE =================
 function AdminProtectedRoute({ children, blockSubadmin = false }) {
@@ -161,74 +150,19 @@ function Layout() {
             }
           />
 
+          
+          
+
           <Route
-            path="/contact-control"
+            path="/user-control"
             element={
               <AdminProtectedRoute>
-                <Contact />
+                <User />
               </AdminProtectedRoute>
             }
           />
 
 
-          {/* ================= CHILDREN PROFILE ================= */}
-
-          <Route
-            path="/children-profile/:id?"
-            element={
-              <AdminProtectedRoute>
-                <ChildrenProfile />
-              </AdminProtectedRoute>
-            }
-          />
-
-
-          {/* ================= CHILD FORM FLOW ================= */}
-
-          <Route
-            path="/children-details"
-            element={
-              <AdminProtectedRoute>
-                <ChildrenDetails />
-              </AdminProtectedRoute>
-            }
-          />
-
-          <Route
-  path="/children-edit/:id"
-  element={
-    <AdminProtectedRoute>
-      <ChildrenEdit />
-    </AdminProtectedRoute>
-  }
-/>
-
-          <Route
-            path="/Schooldetails"
-            element={
-              <AdminProtectedRoute>
-                <SchoolDetails />
-              </AdminProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/WaiverAcceptance"
-            element={
-              <AdminProtectedRoute>
-                <WaiverAcceptance />
-              </AdminProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/ProgramDetailss"
-            element={
-              <AdminProtectedRoute>
-                <ProgramDetailss />
-              </AdminProtectedRoute>
-            }
-          />
 
 
           {/* 🔥 ONLY ADMIN */}
@@ -264,7 +198,7 @@ function App() {
   return (
     <div className="App">
 
-      <GoogleOAuthProvider clientId="YOUR_GOOGLE_CLIENT_ID">
+      <GoogleOAuthProvider clientId="377086841705-i670mebv74mj7kjusc7rle7kvp2hpmse.apps.googleusercontent.com">
 
         <Router>
 
