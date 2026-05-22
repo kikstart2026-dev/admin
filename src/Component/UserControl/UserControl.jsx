@@ -9,12 +9,12 @@ export default function UserControl() {
     const queryClient = useQueryClient();
 
     const {
-    data: paymentData,
-    isLoading: paymentLoading,
-} = useQuery({
-    queryKey: ["all-payments"],
-    queryFn: getAllPayments,
-});
+        data: paymentData,
+        isLoading: paymentLoading,
+    } = useQuery({
+        queryKey: ["all-payments"],
+        queryFn: getAllPayments,
+    });
 
     // ✅ MODAL STATE
     const [selectedUser, setSelectedUser] = useState(null);
@@ -74,8 +74,12 @@ export default function UserControl() {
         0
     );
 
-    const lastPayment =
-        userPayments[userPayments.length - 1];
+    const sortedPayments = [...userPayments].sort(
+        (a, b) =>
+            new Date(b.created_at) - new Date(a.created_at)
+    );
+
+    const lastPayment = sortedPayments[0];
 
 
 
@@ -193,34 +197,34 @@ export default function UserControl() {
                                     </td>
 
                                     {/* PAYMENT */}
-                                   <td>
+                                    <td>
 
-    {paymentLoading ? (
+                                        {paymentLoading ? (
 
-        <span>
-            Loading...
-        </span>
+                                            <span>
+                                                Loading...
+                                            </span>
 
-    ) : payments.some(
-        (pay) =>
-            pay.email?.toLowerCase() ===
-            user.email?.toLowerCase() &&
-            pay.status === "captured"
-    ) ? (
+                                        ) : payments.some(
+                                            (pay) =>
+                                                pay.email?.toLowerCase() ===
+                                                user.email?.toLowerCase() &&
+                                                pay.status === "captured"
+                                        ) ? (
 
-        <span className={styles.paid}>
-            Paid
-        </span>
+                                            <span className={styles.paid}>
+                                                Paid
+                                            </span>
 
-    ) : (
+                                        ) : (
 
-        <span className={styles.unpaid}>
-            Unpaid
-        </span>
+                                            <span className={styles.unpaid}>
+                                                Unpaid
+                                            </span>
 
-    )}
+                                        )}
 
-</td>
+                                    </td>
 
                                     {/* VIEW */}
                                     <td>
