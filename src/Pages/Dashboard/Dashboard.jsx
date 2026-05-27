@@ -352,7 +352,7 @@ export default function Dashboard() {
                 <tr>
                   <th>Name</th>
                   <th>Age</th>
-                  <th>Course</th>
+                  <th>Subscription Package</th>
                   <th>Status</th>
                 </tr>
               </thead>
