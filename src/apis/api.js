@@ -765,8 +765,57 @@ export const deleteUser = async (id) => {
     return res.data;
 };
 
-//==================== PAYMENT ===============================
-export const getAllPayments = async () => {
-    const res = await axiosInstance.get(endpoints.ALL_PAYMENTS);
-    return res.data;
+
+/* ================================
+    Payment APIs
+================================ */
+
+export const kikpayment = async (
+  paymentData
+) => {
+
+  const user =
+    JSON.parse(
+      localStorage.getItem("user")
+    );
+
+  const res =
+    await axiosInstance.post(
+      endpoints.payment,
+      {
+        ...paymentData,
+
+        fullname:
+          user?.fullname,
+
+        email:
+          user?.email,
+      }
+    );
+
+  return res.data;
+};
+
+// GET ALL PAYMENTS
+export const getAllPayments = async (paymentData) => {
+
+  const res =
+    await axiosInstance.get(
+      endpoints.getAllPayments,
+      paymentData
+    );
+
+  return res.data;
+};
+
+
+
+
+// GET ALL CHILDREN
+export const getAllChild = async () => {
+  const res = await axiosInstance.get(
+    endpoints.getAllChild
+  );
+
+  return res.data;
 };

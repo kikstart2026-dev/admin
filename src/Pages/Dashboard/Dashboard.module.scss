@@ -4,7 +4,7 @@
   min-height: calc(100vh - 100px);
 }
 
-/* stats cards */
+/* ================= STATS ================= */
 .statsCard {
   text-align: center;
   color: #fff;
@@ -19,7 +19,24 @@
   }
 }
 
-/* pie chart */
+/* different stat colors (moved from JSX inline styles) */
+.red1 {
+  background-color: #ff4d4d;
+}
+
+.red2 {
+  background-color: #fa3939;
+}
+
+.red3 {
+  background-color: #ff2424;
+}
+
+.red4 {
+  background-color: #e60000;
+}
+
+/* ================= PIE ================= */
 .pieCard {
   border: 2px solid #ff3333;
   padding: 20px;
@@ -32,26 +49,49 @@
   margin-bottom: 15px;
 }
 
-/* pie */
-.pie {
-  width: 200px;
-  height: 200px;
-  margin: 0 auto;
+.realPie {
+  width: 260px;
+  height: 260px;
   border-radius: 50%;
-  background: conic-gradient(
-    #ff4d4d 0% 25%,
-    #ff6666 25% 50%,
-    #ff9999 50% 75%,
-    #ffb3b3 75% 100%
-  );
+  margin: 20px auto;
+  position: relative;
+  cursor: pointer;
+  transition: 0.3s ease;
 }
 
-/* legend */
+.realPie:hover {
+  transform: scale(1.03);
+}
+
+.tooltip {
+  position: absolute;
+  background: #000;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  transform: translate(-50%, -120%);
+  pointer-events: none;
+  z-index: 10;
+}
+
+tr {
+  text-align: left;
+  margin: 0 20px;
+}
+
+td {
+  margin: 0 20px;
+}
+
+/* ================= LEGEND ================= */
 .legend {
   display: flex;
   justify-content: center;
   gap: 10px;
   margin-top: 15px;
+  flex-wrap: wrap;
 
   span {
     font-size: 12px;
@@ -60,20 +100,65 @@
   }
 }
 
-.math { color: #ff4d4d; }
-.english { color: #ff6666; }
-.science { color: #ff9999; }
-.art { color: #ffb3b3; }
+/* ================= BAR CHART ================= */
+.barCard {
+  border: 2px solid #ff3333;
+  border-radius: 10px;
+  height: 100% !important;
 
-/* bars */
+  h5.barHeading {
+    text-align: center;
+    color: #b30000;
+    margin-bottom: 15px;
+  }
+
+}
+
 .bars {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  height: 150px;
+  height: 100%;
 
-  div {
-    width: 25px;
-    border-radius: 5px 5px 0 0;
-  }
+}
+
+
+.barItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  width: 40px;
+}
+
+.singleBar {
+  width: 30px;
+  border-radius: 8px 8px 0 0;
+  background: linear-gradient(to top, #ff1a1a, #ff8080);
+  transition: 0.4s ease;
+}
+
+.singleBar:hover {
+  transform: scaleY(1.05);
+}
+
+.badgeActive {
+  color: rgb(1, 148, 1);
+  background-color: #d6ffd7;
+  padding: 0 8px;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.badgeFailed {
+  color: #ed1c24;
+  background-color: #ffd6d6;
+  padding: 0 8px;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
