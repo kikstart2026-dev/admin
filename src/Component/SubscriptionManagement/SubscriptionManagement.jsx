@@ -1,18 +1,65 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import styles from "./SubscriptionManagement.module.scss";
 
 export default function SubscriptionManagement({
   title,
   data,
 }) {
+
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // SEARCH FILTER
+  const filteredData = useMemo(() => {
+
+    return data.filter((item) => {
+
+      const search = searchTerm.toLowerCase();
+
+      return (
+        item.fullname
+          ?.toLowerCase()
+          .includes(search) ||
+
+        item.email
+          ?.toLowerCase()
+          .includes(search) ||
+
+        item.contact
+          ?.toLowerCase()
+          .includes(search)
+      );
+    });
+
+  }, [data, searchTerm]);
+
   return (
     <div className={styles.wrapper}>
-      {/* TOP */}
-      <div className={styles.topBar}>
+
+      {/* HEADER */}
+      <div className={styles.header}>
         <h2>{title} Subscription</h2>
 
-        <div className={styles.totalBox}>
-          Total Users : {data.length}
+        <div className={styles.headerRight}>
+
+          {/* SEARCH */}
+          <div className={styles.searchWrapper}>
+            <i className="bi bi-search"></i>
+
+            <input
+              type="text"
+              placeholder="Search user by name, email or phone..."
+              value={searchTerm}
+              onChange={(e) =>
+                setSearchTerm(e.target.value)
+              }
+            />
+          </div>
+
+          {/* TOTAL */}
+          <div className={styles.countBox}>
+            Total Users : <span>{filteredData.length}</span>
+          </div>
+
         </div>
       </div>
 
@@ -34,9 +81,11 @@ export default function SubscriptionManagement({
           </thead>
 
           <tbody>
-            {data?.length > 0 ? (
-              data.map((item) => (
+            {filteredData?.length > 0 ? (
+
+              filteredData.map((item) => (
                 <tr key={item.payment_id}>
+
                   <td>
                     {item.fullname || "N/A"}
                   </td>
@@ -82,9 +131,12 @@ export default function SubscriptionManagement({
                   <td>
                     {item.created_at}
                   </td>
+
                 </tr>
               ))
+
             ) : (
+
               <tr>
                 <td
                   colSpan="9"
@@ -93,6 +145,7 @@ export default function SubscriptionManagement({
                   No Subscription Found
                 </td>
               </tr>
+
             )}
           </tbody>
         </table>
