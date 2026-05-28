@@ -10,7 +10,6 @@ export const endpoints = {
   logout: "/logout",
   googleAuth: "/google",
 
-
   // Enquiry---------------------->>
 
   createEnq: "/createEnq",
@@ -24,7 +23,6 @@ export const endpoints = {
   updateHeading: (id) => `headings/${id}`,
   createHeading: "headings/create",
 
-
   createFile: "/media/create",
 
   // Home Banner------------------------------------>>
@@ -36,7 +34,6 @@ export const endpoints = {
   singleDeleteHomeBanner: (id) => `admin/home-banner/${id}`,
   selectiveDeleteHomeBanner: "admin/home-banner/select/delete",
   multipleDeleteHomeBanner: "admin/home-banner/delete/all",
-
 
   // ✅ ACTIVE BANNER
   toggleActiveBanner: (id) => `admin/home-banner/active/${id}`,
@@ -129,11 +126,7 @@ export const endpoints = {
   //  DELETE SELECTED
   deleteSelectedSchools: "admin/schools/delete-selected",
 
-
-
-
   // Admin Auth -------------------------------------->>>
-
 
   adminLogin: "admin/login",
   adminVerifyOtp: "admin/verify-otp",
@@ -148,8 +141,6 @@ export const endpoints = {
   deleteAllUsers: "api/admin/users/delete-all",
   deleteMultipleUsers: "admin/users/delete-multiple",
 
-
-
   // USER MANAGEMENT ---------------------->>
 
   createSubAdmin: "admin/emp",
@@ -157,8 +148,6 @@ export const endpoints = {
   getSubAdminById: (id) => `admin/emp/${id}`,
   deleteSubAdmin: (id) => `admin/emp/${id}`,
   assignDynamicRole: (id) => `admin/emp/assign-role/${id}`,
-
-
 
   // ================================
   // PERMISSION MANAGEMENT
@@ -168,7 +157,8 @@ export const endpoints = {
   getAllPermissions: "/admin/permission",
   getSingle: "/admin/permission/single",
   // getModules: "admin/permission/modules",
-  getPermissionsByRole: (dynamicRole) => `/admin/permission/role/${dynamicRole}`,
+  getPermissionsByRole: (dynamicRole) =>
+    `/admin/permission/role/${dynamicRole}`,
   updatePermission: (id) => `/admin/permission/${id}`,
   deletePermission: (id) => `/admin/permission/${id}`,
 
@@ -182,7 +172,6 @@ export const endpoints = {
   updateRole: (id) => `admin/roles/${id}`,
   deleteRole: (id) => `admin/roles/${id}`,
 
-
   // ================================
   //  USERS
   // ================================
@@ -192,10 +181,13 @@ export const endpoints = {
   // PAYMENT ---------------------->
   payment: "/kikPayment",
   getAllPayments: "/all-payments",
-  
+
   // ALL CHILDREN ---------------------->
   getAllChild: "/children/getAllChild",
-}
 
+  // SUBSCRIPTION --------------------------------------->>
 
+  getAllPlans: "/subscription/all",
 
+  getSinglePlan: (id) => `/subscription/single/${id}`,
+};

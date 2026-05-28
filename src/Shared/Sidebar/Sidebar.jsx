@@ -155,6 +155,18 @@ export default function Sidebar() {
               </NavLink>
             </li>
           )}
+          {/* SUBSCRIPTION MANAGEMENT (ONLY ADMIN) */}
+          {role !== "subadmin" && (
+            <li>
+              <NavLink
+                to="/subscription-management"
+                className={({ isActive }) => (isActive ? styles.active : "")}
+              >
+                <i className={`bi bi-pencil-square ${styles.icon}`}></i>
+                <span>Subscription Management</span>
+              </NavLink>
+            </li>
+          )}
 
           {/* LOGOUT */}
           <li>

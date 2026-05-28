@@ -32,6 +32,7 @@ import RoleManagementPage from "./Pages/RoleManagementPage/RoleManagementPage";
 import PermissionManagementPage from "./Pages/PermissionManagementPage/PermissionManagementPage";
 
 import User from "./Pages/User/User";
+import SubscriptionManagementPage from "./Pages/SubscriptionManagementPage/SubscriptionManagementPage";
 
 // ================= 🔐 ADMIN PROTECTED ROUTE =================
 function AdminProtectedRoute({ children, blockSubadmin = false }) {
@@ -181,6 +182,14 @@ function Layout() {
             element={
               <AdminProtectedRoute blockSubadmin={true}>
                 <PermissionManagementPage />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/subscription-management"
+            element={
+              <AdminProtectedRoute blockSubadmin={true}>
+                <SubscriptionManagementPage />
               </AdminProtectedRoute>
             }
           />
