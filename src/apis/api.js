@@ -809,6 +809,29 @@ export const getAllPayments = async (paymentData) => {
 };
 
 
+/* ================================
+    SUBSCRIPTION APIs
+================================ */
+
+// GET ALL PLANS
+export const getAllPlans = async () => {
+  const res = await axiosInstance.get(
+   endpoints.getAllPlans
+  );
+
+    return res.data;
+  };
+
+
+// GET SINGLE PLAN
+export const getSinglePlan = async (id) => {
+ const res = await axiosInstance.get(
+   endpoints.getSinglePlan(id)
+  );
+  return res.data;
+  };
+
+
 
 
 // GET ALL CHILDREN
