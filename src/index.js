@@ -14,7 +14,7 @@ const queryClient = new QueryClient();
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
-  <React.StrictMode>
+
 
     <QueryClientProvider client={queryClient}>
       
@@ -28,7 +28,7 @@ root.render(
 
     </QueryClientProvider>
 
-  </React.StrictMode>
+
 );
 
 reportWebVitals();
