@@ -6,7 +6,8 @@ import {
     deleteSubAdmin,
     getSubAdminById,
     createRole,
-    getAllRoles
+    getAllRoles,
+    exportSubAdminsCSV
 } from "../../apis/api";
 
 import styles from "./RoleManagement.module.scss";
@@ -43,6 +44,11 @@ const RoleManagement = () => {
 
     const [rolesList, setRolesList] = useState([]);
 
+    const [search, setSearch] = useState("");
+    const [roleFilter, setRoleFilter] = useState("");
+    const [sortBy, setSortBy] = useState("createdAt");
+    const [sortOrder, setSortOrder] = useState("desc");
+
     const fetchRoles = async () => {
         try {
             const res = await getAllRoles();
@@ -59,7 +65,14 @@ const RoleManagement = () => {
 
     const fetchUsers = async () => {
         try {
-            const res = await getAllSubAdmins({ page, limit });
+            const res = await getAllSubAdmins({
+                page,
+                limit,
+                search,
+                role: roleFilter,
+                sortBy,
+                sortOrder,
+            });
             setUsers(res?.data || []);
             setTotalPages(res?.totalPages || 1);
         } catch (err) {
@@ -69,8 +82,17 @@ const RoleManagement = () => {
 
     useEffect(() => {
         fetchUsers();
+    }, [
+        page,
+        search,
+        roleFilter,
+        sortBy,
+        sortOrder
+    ]);
+
+    useEffect(() => {
         fetchRoles();
-    }, [page]);
+    }, []);
 
     const handleCreateRole = async (e) => {
         e.preventDefault();
@@ -169,12 +191,48 @@ const RoleManagement = () => {
         };
     }, [openModal, viewModal]);
 
+
+    const handleExportCSV =
+        async () => {
+            try {
+
+                const blob =
+                    await exportSubAdminsCSV();
+
+                const url =
+                    window.URL.createObjectURL(blob);
+
+                const link =
+                    document.createElement("a");
+
+                link.href = url;
+
+                link.download =
+                    "sub-admins.csv";
+
+                document.body.appendChild(
+                    link
+                );
+
+                link.click();
+
+                link.remove();
+
+                window.URL.revokeObjectURL(
+                    url
+                );
+
+            } catch (err) {
+                console.log(err);
+            }
+        };
+
     return (
         <div className={styles.wrap}>
 
             <div className={styles.header}>
                 <h2>Sub Admins</h2>
-                <div>
+                <div className={styles.allBtn}>
                     <button
                         onClick={() => setRoleModal(true)}
                         className={styles.addBtn}
@@ -189,7 +247,90 @@ const RoleManagement = () => {
                     >
                         + Add New User
                     </button>
+
+                    <button
+                        onClick={handleExportCSV}
+                        className={styles.exportBtn}
+                        style={{ marginRight: "10px" }}
+                    >
+                        <i class="bi bi-download"></i>
+                        Export CSV
+                    </button>
                 </div>
+            </div>
+
+            <div className={styles.filterBar}>
+
+                <input
+                    type="text"
+                    placeholder="Search by name, email, role..."
+                    value={search}
+                    onChange={(e) => {
+                        setPage(1);
+                        setSearch(e.target.value);
+                    }}
+                    className={styles.searchInput}
+                />
+
+                <select
+                    className={styles.filterSelect}
+                    value={roleFilter}
+                    onChange={(e) => {
+                        setPage(1);
+                        setRoleFilter(e.target.value);
+                    }}
+                >
+                    <option value="">All Roles</option>
+
+                    <option value="no-role">
+                        No Role
+                    </option>
+
+                    {rolesList.map((role) => (
+                        <option key={role} value={role}>
+                            {role}
+                        </option>
+                    ))}
+                </select>
+
+                <select
+                    className={styles.filterSelect}
+                    value={`${sortBy}-${sortOrder}`}
+                    onChange={(e) => {
+
+                        const [field, order] =
+                            e.target.value.split("-");
+
+                        setSortBy(field);
+                        setSortOrder(order);
+                    }}
+                >
+                    <option value="createdAt-desc">
+                        Newest First
+                    </option>
+
+                    <option value="createdAt-asc">
+                        Oldest First
+                    </option>
+
+                    <option value="fullname-asc">
+                        Name A-Z
+                    </option>
+
+                    <option value="fullname-desc">
+                        Name Z-A
+                    </option>
+
+                    <option value="dynamicRole-asc">
+                        Role A-Z
+                    </option>
+
+                    <option value="dynamicRole-desc">
+                        Role Z-A
+                    </option>
+
+                </select>
+
             </div>
 
             <table className={styles.table}>

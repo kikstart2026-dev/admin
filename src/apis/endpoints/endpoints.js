@@ -148,6 +148,7 @@ export const endpoints = {
   getSubAdminById: (id) => `admin/emp/${id}`,
   deleteSubAdmin: (id) => `admin/emp/${id}`,
   assignDynamicRole: (id) => `admin/emp/assign-role/${id}`,
+  exportSubAdminsCSV: "admin/emp/export-csv",
 
   // ================================
   // PERMISSION MANAGEMENT
