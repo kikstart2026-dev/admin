@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from "react";
 import {
+    useQuery,
+    useMutation,
+    useQueryClient
+} from "@tanstack/react-query";
+import {
     createSubAdmin,
     getAllSubAdmins,
     assignDynamicRole,
@@ -14,7 +19,8 @@ import styles from "./RoleManagement.module.scss";
 
 const RoleManagement = () => {
 
-    const [users, setUsers] = useState([]);
+    const queryClient = useQueryClient();
+
     const [openModal, setOpenModal] = useState(false);
 
     const [assignLoadingId, setAssignLoadingId] = useState(null);
@@ -39,60 +45,60 @@ const RoleManagement = () => {
     const [openDropdownId, setOpenDropdownId] = useState(null);
 
     const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
     const limit = 5;
-
-    const [rolesList, setRolesList] = useState([]);
 
     const [search, setSearch] = useState("");
     const [roleFilter, setRoleFilter] = useState("");
     const [sortBy, setSortBy] = useState("createdAt");
     const [sortOrder, setSortOrder] = useState("desc");
 
-    const fetchRoles = async () => {
-        try {
-            const res = await getAllRoles();
-            console.log("ROLES API RESPONSE:", res);
 
-            const roleNames = res.map(role => role.name);
-
-            setRolesList(roleNames);
-
-        } catch (err) {
-            console.log("ROLE ERROR:", err)
-        }
-    };
-
-    const fetchUsers = async () => {
-        try {
-            const res = await getAllSubAdmins({
+    const {
+        data: usersData,
+        isLoading,
+        isFetching,
+    } = useQuery({
+        queryKey: [
+            "subAdmins",
+            page,
+            search,
+            roleFilter,
+            sortBy,
+            sortOrder,
+        ],
+        queryFn: () =>
+            getAllSubAdmins({
                 page,
                 limit,
                 search,
                 role: roleFilter,
                 sortBy,
                 sortOrder,
-            });
-            setUsers(res?.data || []);
-            setTotalPages(res?.totalPages || 1);
-        } catch (err) {
-            console.log(err);
-        }
-    };
+            }),
+        placeholderData: (previousData) => previousData,
+    });
 
-    useEffect(() => {
-        fetchUsers();
-    }, [
-        page,
-        search,
-        roleFilter,
-        sortBy,
-        sortOrder
-    ]);
+    const {
+        data: rolesData,
+    } = useQuery({
+        queryKey: ["roles"],
+        queryFn: getAllRoles,
+    });
 
-    useEffect(() => {
-        fetchRoles();
-    }, []);
+
+    const users =
+        usersData?.data || [];
+
+    const totalPages =
+        usersData?.totalPages || 1;
+
+    const rolesList =
+        rolesData?.map(
+            (role) => role.name
+        ) || [];
+
+
+
 
     const handleCreateRole = async (e) => {
         e.preventDefault();
@@ -107,7 +113,9 @@ const RoleManagement = () => {
             setRoleModal(false);
             setRoleName("");
 
-            fetchRoles(); //dropdown refresh
+            queryClient.invalidateQueries({
+                queryKey: ["roles"],
+            });
 
         } catch (err) {
             console.log(err);
@@ -122,7 +130,9 @@ const RoleManagement = () => {
             setLoading(true);
             await createSubAdmin(form);
             setOpenModal(false);
-            fetchUsers();
+            queryClient.invalidateQueries({
+                queryKey: ["subAdmins"],
+            });
 
             // ✅ FIXED (no password reset)
             setForm({ fullname: "", email: "" });
@@ -133,19 +143,70 @@ const RoleManagement = () => {
     };
 
     const handleRoleSelect = async (userId, role) => {
-        setUsers((prev) =>
-            prev.map((u) =>
-                u._id === userId ? { ...u, dynamicRole: role } : u
-            )
-        );
-
         setOpenDropdownId(null);
+
+        const previousData =
+            queryClient.getQueryData([
+                "subAdmins",
+                page,
+                search,
+                roleFilter,
+                sortBy,
+                sortOrder,
+            ]);
+
+        queryClient.setQueryData(
+            [
+                "subAdmins",
+                page,
+                search,
+                roleFilter,
+                sortBy,
+                sortOrder,
+            ],
+            (old) => {
+                if (!old) return old;
+
+                return {
+                    ...old,
+                    data: old.data.map((user) =>
+                        user._id === userId
+                            ? {
+                                ...user,
+                                dynamicRole: role,
+                            }
+                            : user
+                    ),
+                };
+            }
+        );
 
         try {
             setAssignLoadingId(userId);
-            await assignDynamicRole(userId, { dynamicRole: role });
+
+            await assignDynamicRole(
+                userId,
+                { dynamicRole: role }
+            );
+
+            queryClient.invalidateQueries({
+                queryKey: ["subAdmins"],
+            });
+
         } catch (err) {
-            fetchUsers();
+
+            queryClient.setQueryData(
+                [
+                    "subAdmins",
+                    page,
+                    search,
+                    roleFilter,
+                    sortBy,
+                    sortOrder,
+                ],
+                previousData
+            );
+
         } finally {
             setAssignLoadingId(null);
         }
@@ -173,7 +234,9 @@ const RoleManagement = () => {
             setDeleteLoading(true);
             await deleteSubAdmin(deleteId);
             setDeleteModal(false);
-            fetchUsers();
+            queryClient.invalidateQueries({
+                queryKey: ["subAdmins"],
+            });
         } finally {
             setDeleteLoading(false);
         }
@@ -226,6 +289,7 @@ const RoleManagement = () => {
                 console.log(err);
             }
         };
+
 
     return (
         <div className={styles.wrap}>
@@ -332,6 +396,7 @@ const RoleManagement = () => {
                 </select>
 
             </div>
+
 
             <table className={styles.table}>
                 <thead className={styles.thead}>
