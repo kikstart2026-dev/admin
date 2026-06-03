@@ -162,7 +162,7 @@ export default function Sidebar() {
                 to="/subscription-management"
                 className={({ isActive }) => (isActive ? styles.active : "")}
               >
-                <i className={`bi bi-pencil-square ${styles.icon}`}></i>
+                <i className={`bi bi-credit-card ${styles.icon}`}></i>
                 <span>Subscription Management</span>
               </NavLink>
             </li>
