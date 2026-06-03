@@ -1,19 +1,26 @@
 import React, { useEffect, useState } from "react";
 import {
+    useQuery,
+    useMutation,
+    useQueryClient
+} from "@tanstack/react-query";
+import {
     createSubAdmin,
     getAllSubAdmins,
     assignDynamicRole,
     deleteSubAdmin,
     getSubAdminById,
     createRole,
-    getAllRoles
+    getAllRoles,
+    exportSubAdminsCSV
 } from "../../apis/api";
 
 import styles from "./RoleManagement.module.scss";
 
 const RoleManagement = () => {
 
-    const [users, setUsers] = useState([]);
+    const queryClient = useQueryClient();
+
     const [openModal, setOpenModal] = useState(false);
 
     const [assignLoadingId, setAssignLoadingId] = useState(null);
@@ -38,39 +45,60 @@ const RoleManagement = () => {
     const [openDropdownId, setOpenDropdownId] = useState(null);
 
     const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
     const limit = 5;
 
-    const [rolesList, setRolesList] = useState([]);
+    const [search, setSearch] = useState("");
+    const [roleFilter, setRoleFilter] = useState("");
+    const [sortBy, setSortBy] = useState("createdAt");
+    const [sortOrder, setSortOrder] = useState("desc");
 
-    const fetchRoles = async () => {
-        try {
-            const res = await getAllRoles();
-            console.log("ROLES API RESPONSE:", res);
 
-            const roleNames = res.map(role => role.name);
+    const {
+        data: usersData,
+        isLoading,
+        isFetching,
+    } = useQuery({
+        queryKey: [
+            "subAdmins",
+            page,
+            search,
+            roleFilter,
+            sortBy,
+            sortOrder,
+        ],
+        queryFn: () =>
+            getAllSubAdmins({
+                page,
+                limit,
+                search,
+                role: roleFilter,
+                sortBy,
+                sortOrder,
+            }),
+        placeholderData: (previousData) => previousData,
+    });
 
-            setRolesList(roleNames);
+    const {
+        data: rolesData,
+    } = useQuery({
+        queryKey: ["roles"],
+        queryFn: getAllRoles,
+    });
 
-        } catch (err) {
-            console.log("ROLE ERROR:", err)
-        }
-    };
 
-    const fetchUsers = async () => {
-        try {
-            const res = await getAllSubAdmins({ page, limit });
-            setUsers(res?.data || []);
-            setTotalPages(res?.totalPages || 1);
-        } catch (err) {
-            console.log(err);
-        }
-    };
+    const users =
+        usersData?.data || [];
 
-    useEffect(() => {
-        fetchUsers();
-        fetchRoles();
-    }, [page]);
+    const totalPages =
+        usersData?.totalPages || 1;
+
+    const rolesList =
+        rolesData?.map(
+            (role) => role.name
+        ) || [];
+
+
+
 
     const handleCreateRole = async (e) => {
         e.preventDefault();
@@ -85,7 +113,9 @@ const RoleManagement = () => {
             setRoleModal(false);
             setRoleName("");
 
-            fetchRoles(); //dropdown refresh
+            queryClient.invalidateQueries({
+                queryKey: ["roles"],
+            });
 
         } catch (err) {
             console.log(err);
@@ -100,7 +130,9 @@ const RoleManagement = () => {
             setLoading(true);
             await createSubAdmin(form);
             setOpenModal(false);
-            fetchUsers();
+            queryClient.invalidateQueries({
+                queryKey: ["subAdmins"],
+            });
 
             // ✅ FIXED (no password reset)
             setForm({ fullname: "", email: "" });
@@ -111,19 +143,70 @@ const RoleManagement = () => {
     };
 
     const handleRoleSelect = async (userId, role) => {
-        setUsers((prev) =>
-            prev.map((u) =>
-                u._id === userId ? { ...u, dynamicRole: role } : u
-            )
-        );
-
         setOpenDropdownId(null);
+
+        const previousData =
+            queryClient.getQueryData([
+                "subAdmins",
+                page,
+                search,
+                roleFilter,
+                sortBy,
+                sortOrder,
+            ]);
+
+        queryClient.setQueryData(
+            [
+                "subAdmins",
+                page,
+                search,
+                roleFilter,
+                sortBy,
+                sortOrder,
+            ],
+            (old) => {
+                if (!old) return old;
+
+                return {
+                    ...old,
+                    data: old.data.map((user) =>
+                        user._id === userId
+                            ? {
+                                ...user,
+                                dynamicRole: role,
+                            }
+                            : user
+                    ),
+                };
+            }
+        );
 
         try {
             setAssignLoadingId(userId);
-            await assignDynamicRole(userId, { dynamicRole: role });
+
+            await assignDynamicRole(
+                userId,
+                { dynamicRole: role }
+            );
+
+            queryClient.invalidateQueries({
+                queryKey: ["subAdmins"],
+            });
+
         } catch (err) {
-            fetchUsers();
+
+            queryClient.setQueryData(
+                [
+                    "subAdmins",
+                    page,
+                    search,
+                    roleFilter,
+                    sortBy,
+                    sortOrder,
+                ],
+                previousData
+            );
+
         } finally {
             setAssignLoadingId(null);
         }
@@ -151,7 +234,9 @@ const RoleManagement = () => {
             setDeleteLoading(true);
             await deleteSubAdmin(deleteId);
             setDeleteModal(false);
-            fetchUsers();
+            queryClient.invalidateQueries({
+                queryKey: ["subAdmins"],
+            });
         } finally {
             setDeleteLoading(false);
         }
@@ -169,12 +254,49 @@ const RoleManagement = () => {
         };
     }, [openModal, viewModal]);
 
+
+    const handleExportCSV =
+        async () => {
+            try {
+
+                const blob =
+                    await exportSubAdminsCSV();
+
+                const url =
+                    window.URL.createObjectURL(blob);
+
+                const link =
+                    document.createElement("a");
+
+                link.href = url;
+
+                link.download =
+                    "sub-admins.csv";
+
+                document.body.appendChild(
+                    link
+                );
+
+                link.click();
+
+                link.remove();
+
+                window.URL.revokeObjectURL(
+                    url
+                );
+
+            } catch (err) {
+                console.log(err);
+            }
+        };
+
+
     return (
         <div className={styles.wrap}>
 
             <div className={styles.header}>
                 <h2>Sub Admins</h2>
-                <div>
+                <div className={styles.allBtn}>
                     <button
                         onClick={() => setRoleModal(true)}
                         className={styles.addBtn}
@@ -189,8 +311,92 @@ const RoleManagement = () => {
                     >
                         + Add New User
                     </button>
+
+                    <button
+                        onClick={handleExportCSV}
+                        className={styles.exportBtn}
+                        style={{ marginRight: "10px" }}
+                    >
+                        <i class="bi bi-download"></i>
+                        Export CSV
+                    </button>
                 </div>
             </div>
+
+            <div className={styles.filterBar}>
+
+                <input
+                    type="text"
+                    placeholder="Search by name, email, role..."
+                    value={search}
+                    onChange={(e) => {
+                        setPage(1);
+                        setSearch(e.target.value);
+                    }}
+                    className={styles.searchInput}
+                />
+
+                <select
+                    className={styles.filterSelect}
+                    value={roleFilter}
+                    onChange={(e) => {
+                        setPage(1);
+                        setRoleFilter(e.target.value);
+                    }}
+                >
+                    <option value="">All Roles</option>
+
+                    <option value="no-role">
+                        No Role
+                    </option>
+
+                    {rolesList.map((role) => (
+                        <option key={role} value={role}>
+                            {role}
+                        </option>
+                    ))}
+                </select>
+
+                <select
+                    className={styles.filterSelect}
+                    value={`${sortBy}-${sortOrder}`}
+                    onChange={(e) => {
+
+                        const [field, order] =
+                            e.target.value.split("-");
+
+                        setSortBy(field);
+                        setSortOrder(order);
+                    }}
+                >
+                    <option value="createdAt-desc">
+                        Newest First
+                    </option>
+
+                    <option value="createdAt-asc">
+                        Oldest First
+                    </option>
+
+                    <option value="fullname-asc">
+                        Name A-Z
+                    </option>
+
+                    <option value="fullname-desc">
+                        Name Z-A
+                    </option>
+
+                    <option value="dynamicRole-asc">
+                        Role A-Z
+                    </option>
+
+                    <option value="dynamicRole-desc">
+                        Role Z-A
+                    </option>
+
+                </select>
+
+            </div>
+
 
             <table className={styles.table}>
                 <thead className={styles.thead}>

@@ -22,7 +22,7 @@ export default function RoleManagementPage() {
           }`}
           onClick={() => toggleSection("users")}
         >
-          <span>User Management</span>
+          <span>Role Management</span>
 
           <i
             className={`bi ${
