@@ -8,7 +8,7 @@ import styles from "./Sidebar.module.scss";
 import "../../Main.scss";
 
 import { adminLogout } from "../../apis/api";
-import {handleError, handleSuccess, handleWarning, handleConfirm, } from "../../utils"
+import { handleError, handleSuccess, handleWarning, handleConfirm, } from "../../utils"
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(true);
@@ -164,6 +164,21 @@ export default function Sidebar() {
               >
                 <i className={`bi bi-credit-card ${styles.icon}`}></i>
                 <span>Subscription Management</span>
+              </NavLink>
+            </li>
+          )}
+
+          {/* REVENUE MANAGEMENT (ONLY ADMIN) */}
+          {role !== "subadmin" && (
+            <li>
+              <NavLink
+                to="/revenue-management"
+                className={({ isActive }) =>
+                  isActive ? styles.active : ""
+                }
+              >
+                <i className={`bi bi-graph-up-arrow ${styles.icon}`}></i>
+                <span>Revenue Management</span>
               </NavLink>
             </li>
           )}

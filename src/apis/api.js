@@ -822,6 +822,17 @@ export const getAllPayments = async (paymentData) => {
   return res.data;
 };
 
+export const getMonthlyPlanRevenue =
+  async () => {
+
+    const res =
+      await axiosInstance.get(
+        endpoints.getMonthlyPlanRevenue
+      );
+
+    return res.data;
+  };
+
 
 /* ================================
     SUBSCRIPTION APIs

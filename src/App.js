@@ -33,6 +33,7 @@ import PermissionManagementPage from "./Pages/PermissionManagementPage/Permissio
 
 import User from "./Pages/User/User";
 import SubscriptionManagementPage from "./Pages/SubscriptionManagementPage/SubscriptionManagementPage";
+import RevenueManagement from "./Pages/ReveueManagement/ReveueManagement";
 
 // ================= 🔐 ADMIN PROTECTED ROUTE =================
 function AdminProtectedRoute({ children, blockSubadmin = false }) {
@@ -85,9 +86,9 @@ function Layout() {
     location.pathname === "/"
       ? "Dashboard"
       : location.pathname
-          .replace("/", "")
-          .replace(/[-_]/g, " ")
-          .replace(/\b\w/g, (c) => c.toUpperCase());
+        .replace("/", "")
+        .replace(/[-_]/g, " ")
+        .replace(/\b\w/g, (c) => c.toUpperCase());
 
   return (
     <>
@@ -151,8 +152,8 @@ function Layout() {
             }
           />
 
-          
-          
+
+
 
           <Route
             path="/user-control"
@@ -190,6 +191,15 @@ function Layout() {
             element={
               <AdminProtectedRoute blockSubadmin={true}>
                 <SubscriptionManagementPage />
+              </AdminProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/revenue-management"
+            element={
+              <AdminProtectedRoute blockSubadmin={true}>
+                <RevenueManagement />
               </AdminProtectedRoute>
             }
           />
