@@ -181,7 +181,7 @@ export const endpoints = {
 
   // PAYMENT ---------------------->
   payment: "/kikPayment",
-  getAllPayments: "/all-payments",
+  getAllPayments: "subscription-payment/all-payments",
 
   // REVENUE
   getMonthlyPlanRevenue:

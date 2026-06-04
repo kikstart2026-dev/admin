@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState , useRef} from "react";
 import styles from "./Dashboard.module.scss";
-
+import Chart from "react-apexcharts";
 import DashboardSkeleton from "../../Skeleton/DashboardSkeleton/DashboardSkeleton";
 
 import {
@@ -23,68 +23,84 @@ export default function Dashboard() {
   const [users, setUsers] =
     useState([]);
 
+  const [page, setPage] = useState(1);
+
+  // // const itemsPerPage = 5;
+  // useEffect(() => {
+  //   fetchDashboardData(true); // initial load = skeleton
+  // }, []);
   useEffect(() => {
-
-    fetchDashboardData();
-
-  }, []);
+    fetchDashboardData(page, page === 1);
+  }, [page]);
 
 
-  const fetchDashboardData =
-    async () => {
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalChildren, setTotalChildren] = useState(0);
 
-      try {
+  const [tableLoading, setTableLoading] = useState(false);
 
-        setLoading(true);
+  // const childCache = new Map();
+ const cache = useRef({
+  payments: null,
+  users: null,
+  children: new Map(),
+});
+  
+ const fetchDashboardData = async (page, isInitial) => {
+  try {
+    if (isInitial) setLoading(true);
+    else setTableLoading(true);
 
-        // payments
-        const paymentRes =
-          await getAllPayments();
+    // ---------------- PAYMENTS CACHE ----------------
+    let paymentsData = cache.current.payments;
 
-        // children
-        const childRes =
-          await getAllChild();
+    if (!paymentsData) {
+      const res = await getAllPayments();
+      paymentsData = res?.payments || res?.data || [];
+      cache.current.payments = paymentsData;
+    }
 
-        // payment data
-        const paymentData =
-          paymentRes?.payments ||
-          paymentRes?.data ||
-          paymentRes ||
-          [];
+    // ---------------- USERS CACHE ----------------
+    let usersData = cache.current.users;
 
-        // children data
-        const childData =
-          childRes?.children ||
-          childRes?.data ||
-          childRes ||
-          [];
+    if (!usersData) {
+      const res = await getAllUsers();
+      usersData = res?.users || [];
+      cache.current.users = usersData;
+    }
 
-        // users
-        const usersRes =
-          await getAllUsers();
+    // ---------------- CHILD CACHE ----------------
+    let childrenData;
+    let totalPagesData = totalPages;
+    let totalChildrenData = totalChildren;
 
-        const usersData =
-          usersRes?.users || [];
+    if (cache.current.children.has(page)) {
+      childrenData = cache.current.children.get(page);
+    } else {
+      const res = await getAllChild(page);
 
-        setUsers(usersData);
+      childrenData = res?.data || [];
+      cache.current.children.set(page, childrenData);
 
-        setPayments(paymentData);
-        setChildren(childData);
+      totalPagesData = res?.totalPages || 1;
+      totalChildrenData = res?.totalChildren || 0;
+    }
 
-      } catch (error) {
+    setPayments(paymentsData);
+    setUsers(usersData);
+    setChildren(childrenData);
 
-        console.log(error);
+    setTotalPages(totalPagesData);
+    setTotalChildren(totalChildrenData);
 
-      } finally {
+  } catch (err) {
+    console.log(err);
+  } finally {
+    setLoading(false);
+    setTableLoading(false);
+  }
+};
 
-        setLoading(false);
-
-      }
-
-
-    };
-
-  // monthly payment chart
   const monthlyData = [
     { month: "Jan", total: 0 },
     { month: "Feb", total: 0 },
@@ -101,46 +117,31 @@ export default function Dashboard() {
   ];
 
   payments?.forEach((item) => {
-
-    const date =
-      new Date(
-        item.created_at ||
-        item.createdAt ||
-        item.date
-      );
-
-    const month =
-      date.getMonth();
-
-    const amount =
-      Number(item.amount || 0) / 100;
+    const date = new Date(item.createdAt || item.created_at);
+    const month = date.getMonth();
+    const amount = Number(item.amount || 0);
 
     if (!isNaN(month)) {
-
-      monthlyData[month].total +=
-        amount;
-
+      monthlyData[month].total += amount;
     }
   });
 
-  const maxAmount =
-    Math.max(
-      ...monthlyData.map(
-        (item) => item.total
-      ),
-      1
-    );
 
-  const [tooltip, setTooltip] = useState(null);
 
-  if (loading) {
-  return <DashboardSkeleton />;
-}
+  const safeSeries = monthlyData.map((item) =>
+    item.total === 0 ? 0 : item.total
+  );
+
+
+
+
+  if (loading) return <DashboardSkeleton />;
 
   return (
     <div className={styles.container}>
 
       <div className="container-fluid mt-4">
+
 
         <h2 className="mb-4 text-danger">
           Kids Education Dashboard
@@ -154,7 +155,7 @@ export default function Dashboard() {
             <div className={`card shadow ${styles.statsCard} ${styles.red1} ${styles.barCard}`}>
               <div className="card-body">
                 <h6>Total Students</h6>
-                <h3>{children?.length || 0}</h3>
+                <h3>{totalChildren}</h3>
               </div>
             </div>
           </div>
@@ -199,7 +200,7 @@ export default function Dashboard() {
         {/* Charts */}
         <div className="row mt-5">
 
-          {/* Pie Chart */}
+          {/* ================= PIE CHART ================= */}
           <div className="col-md-6">
             <div className={`${styles.pieCard} card shadow`}>
               <h5 className={styles.title}>Monthly User Signups</h5>
@@ -218,121 +219,209 @@ export default function Dashboard() {
                   monthlyUsers[month] += 1;
                 });
 
-                const totalUsers = monthlyUsers.reduce((a, b) => a + b, 0);
-
-                const colors = [
-                  "#fd3838", "#e94949", "#ff0000",
-                  "#ff5e5e", "#da3030", "#fe3838",
-                  "#e60000", "#d41010", "#eb1940",
-                  "#da0b3c", "#dc3352", "#c9184a"
-                ];
-
-                let currentAngle = 0;
-
-                const gradient = monthlyUsers
-                  .map((count, index) => {
-                    const percentage = totalUsers
-                      ? (count / totalUsers) * 100
-                      : 0;
-
-                    const start = currentAngle;
-                    const end = currentAngle + percentage;
-
-                    currentAngle = end;
-
-                    return `${colors[index]} ${start}% ${end}%`;
-                  })
-                  .join(",");
 
                 return (
-                  <>
-                    {/* PIE */}
-                    <div
-                      className={styles.realPie}
-                      style={{
-                        background: `conic-gradient(${gradient})`,
-                      }}
-                      onMouseMove={(e) => {
-                        const rect = e.currentTarget.getBoundingClientRect();
+                  <Chart
+                    type="line"
+                    height={320}
+                    series={[
+                      {
+                        name: "Users",
+                        data: monthlyUsers,
+                      },
+                    ]}
+                    options={{
+                      chart: {
+                        toolbar: {
+                          show: true,
+                          tools: {
+                            download: true, // only download like you wanted
+                            selection: false,
+                            zoom: false,
+                            zoomin: false,
+                            zoomout: false,
+                            pan: false,
+                            reset: false,
+                          },
+                        },
 
-                        const x =
-                          e.clientX - rect.left - rect.width / 2;
-                        const y =
-                          e.clientY - rect.top - rect.height / 2;
+                        animations: {
+                          enabled: true,
+                          easing: "easeinout",
+                          speed: 1200,
+                          animateGradually: {
+                            enabled: true,
+                            delay: 120, // 🔥 smooth Jan → Feb → Mar feel
+                          },
+                          dynamicAnimation: {
+                            enabled: true,
+                            speed: 800,
+                          },
+                        },
+                      },
 
-                        let angle =
-                          (Math.atan2(y, x) * 180) / Math.PI + 90;
+                      stroke: {
+                        curve: "smooth",
+                        width: 3,
+                      },
 
-                        if (angle < 0) angle += 360;
+                      colors: ["#EF4444"],
 
-                        const index = Math.floor(angle / 30);
+                      xaxis: {
+                        categories: months,
 
-                        setTooltip({
-                          month: months[index],
-                          count: monthlyUsers[index],
-                          x: e.clientX - rect.left,
-                          y: e.clientY - rect.top,
-                        });
-                      }}
-                      onMouseLeave={() => setTooltip(null)}
-                    >
-                      {/* TOOLTIP */}
-                      {tooltip && (
-                        <div
-                          className={styles.tooltip}
-                          style={{
-                            top: tooltip.y,
-                            left: tooltip.x,
-                          }}
-                        >
-                          {tooltip.month} : {tooltip.count} users
-                        </div>
-                      )}
-                    </div>
+                        axisBorder: { show: false },
+                        axisTicks: { show: false },
+                      },
 
-                    {/* LEGEND */}
-                    <div className={styles.legend}>
-                      {monthlyUsers.map((count, index) =>
-                        count > 0 ? (
-                          <span
-                            key={index}
-                            className={styles.legendItem}
-                            style={{ color: colors[index] }}
-                          >
-                            {months[index]} ({count})
-                          </span>
-                        ) : null
-                      )}
-                    </div>
-                  </>
+                      yaxis: {
+                        min: 0,
+                        labels: {
+                          formatter: (val) => `${val}`,
+                        },
+                      },
+
+                      dataLabels: {
+                        enabled: false,
+                      },
+
+                      markers: {
+                        size: 4,
+                        colors: ["#ff0000"],
+                        strokeColors: "#EF4444",
+                        strokeWidth: 2,
+                        hover: {
+                          size: 6,
+                        },
+                      },
+
+                      grid: {
+                        borderColor: "#f1f1f1",
+                        strokeDashArray: 5,
+                      },
+
+                      tooltip: {
+                        theme: "light",
+                        y: {
+                          formatter: (val) => `${val || 0} users`,
+                        },
+                      },
+                    }}
+                  />
                 );
               })()}
             </div>
           </div>
 
-          {/* Bar Chart */}
+          {/* ================= BAR CHART ================= */}
           <div className="col-md-6">
             <div className={`card shadow p-3 ${styles.barCard}`}>
               <h5 className={styles.barHeading}>
                 Monthly Transactions
               </h5>
 
-              <div className={styles.bars}>
-                {monthlyData.map((item, index) => {
-                  const height =
-                    (item.total / maxAmount) * 200;
+              <Chart
+                type="bar"
+                height={320}
+                series={[
+                  {
+                    name: "Transactions",
+                    data: safeSeries,
+                  },
+                ]}
+                options={{
+                  chart: {
+                    toolbar: { show: true },
 
-                  return (
-                    <div key={index} className={styles.barItem}>
-                      <div
-                        className={styles.singleBar}
-                        style={{ height: `${height}px` }}
-                      ></div>
-                      <small>{item.month}</small>
-                    </div>
-                  );
-                })}
-              </div>
+                    animations: {
+                      enabled: true,
+                      easing: "easeinout",
+                      speed: 900,
+                      animateGradually: {
+                        enabled: true,
+                        delay: 80,
+                      },
+                    },
+                  },
+
+                  colors: ["#fe2e2e"],
+
+                  fill: {
+                    type: "gradient",
+                    gradient: {
+                      shade: "light",
+                      type: "vertical",
+                      shadeIntensity: 0.5,
+                      gradientToColors: ["#ff2f2f"],
+                      opacityFrom: 0.9,
+                      opacityTo: 0.7,
+                    },
+                  },
+
+                  plotOptions: {
+                    bar: {
+                      borderRadius: 5,
+                      columnWidth: "40%",
+                    },
+                  },
+
+                  dataLabels: {
+                    enabled: false,
+                  },
+
+                  xaxis: {
+                    categories: monthlyData.map((item) => item.month),
+                  },
+
+                  yaxis: {
+                    min: 0,
+                    labels: {
+                      formatter: (val) =>
+                        `₹ ${new Intl.NumberFormat("en-IN").format(val || 0)}`,
+                    },
+                  },
+
+                  tooltip: {
+                    enabled: true,
+                    shared: false,
+                    intersect: false, // 🔥 MOST IMPORTANT FIX
+
+                    y: {
+                      formatter: (val) => {
+                        const value = val ?? 0;
+                        return `Revenue: ₹ ${new Intl.NumberFormat("en-IN").format(value)}`;
+                      },
+                    },
+                  },
+
+                  states: {
+                    hover: {
+                      filter: {
+                        type: "darken",
+                        value: 0.15,
+                      },
+                    },
+                  },
+
+                  grid: {
+                    borderColor: "#faf5f5",
+                    strokeDashArray: 5,
+                  },
+
+                  responsive: [
+                    {
+                      breakpoint: 768,
+                      options: {
+                        plotOptions: {
+                          bar: {
+                            columnWidth: "55%",
+                          },
+                        },
+                      },
+                    },
+                  ],
+                }}
+              />
             </div>
           </div>
 
@@ -347,79 +436,125 @@ export default function Dashboard() {
               Recent Students
             </h5>
 
-           
-              <div className="table-responsive">
 
-                <table className={`table table-hover ${styles.table}`}>
+            <div className="table-responsive">
 
-                  <thead className="table-light">
+              <table className={`table table-hover ${styles.table}`}>
+
+                <thead className="table-light">
+                  <tr>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Subscription Package</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+
+                <tbody className={tableLoading ? styles.fade : ""}>
+                  {children?.length > 0 ? (
+                    children.map((item, index) => {
+                      const studentPayment = payments.find(
+                        (pay) =>
+                          pay?.email &&
+                          item?.email &&
+                          pay.email.toLowerCase() === item.email.toLowerCase()
+                      );
+
+                      return (
+                        <tr key={index}>
+                          <td>
+                            {item?.fullName || item?.fullname || item?.name}
+                          </td>
+
+                          <td>{item?.age || "N/A"}</td>
+
+                          <td>
+                            {studentPayment?.description || "No Subscription"}
+                          </td>
+
+                          <td>
+                            {studentPayment?.status === "captured" ? (
+                              <span className={styles.badgeActive}>Paid</span>
+                            ) : (
+                              <span className={styles.badgeFailed}>Failed</span>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })
+                  ) : (
                     <tr>
-                      <th>Name</th>
-                      <th>Age</th>
-                      <th>Subscription Package</th>
-                      <th>Status</th>
+                      <td colSpan="4" className="text-center">
+                        No Students Found
+                      </td>
                     </tr>
-                  </thead>
+                  )}
+                </tbody>
 
-                  <tbody>
+              </table>
+              {totalPages > 1 && (
+                <nav
+                  className={`d-flex justify-content-center ${styles.customPagination}`}
+                >
+                  <ul className="pagination">
 
-                    {children?.length > 0 ? (
+                    <li
+                      className={`page-item ${page === 1 ? "disabled" : ""
+                        }`}
+                    >
+                      <button
+                        className="page-link arrow"
+                        onClick={() =>
+                          setPage((prev) => prev - 1)
+                        }
+                        disabled={page === 1}
+                      >
+                        &lt;
+                      </button>
+                    </li>
 
-                      children.map((item, index) => {
+                    {Array.from(
+                      { length: totalPages },
+                      (_, i) => i + 1
+                    ).map((num) => (
+                      <li
+                        key={num}
+                        className={`page-item ${page === num ? "active" : ""
+                          }`}
+                      >
+                        <button
+                          className={`page-link ${page === num ? "num" : ""
+                            }`}
+                          onClick={() => setPage(num)}
+                        >
+                          {num}
+                        </button>
+                      </li>
+                    ))}
 
-                        const studentPayment = payments.find(
-                          (pay) =>
-                            pay?.email &&
-                            item?.email &&
-                            pay.email.toLowerCase() ===
-                            item.email.toLowerCase()
-                        );
+                    <li
+                      className={`page-item ${page === totalPages
+                        ? "disabled"
+                        : ""
+                        }`}
+                    >
+                      <button
+                        className="page-link arrow"
+                        onClick={() =>
+                          setPage((prev) => prev + 1)
+                        }
+                        disabled={page === totalPages}
+                      >
+                        &gt;
+                      </button>
+                    </li>
 
-                        return (
-                          <tr key={index}>
-                            <td>
-                              {item?.fullName ||
-                                item?.fullname ||
-                                item?.name}
-                            </td>
+                  </ul>
+                </nav>
+              )}
 
-                            <td>{item?.age || "N/A"}</td>
+            </div>
 
-                            <td>
-                              {studentPayment?.description ||
-                                "No Subscription"}
-                            </td>
-
-                            <td>
-                              {studentPayment?.status ===
-                                "captured" ? (
-                                <span className={styles.badgeActive}>
-                                  Paid
-                                </span>
-                              ) : (
-                                <span className={styles.badgeFailed}>
-                                  Failed
-                                </span>
-                              )}
-                            </td>
-                          </tr>
-                        );
-                      })
-
-                    ) : (
-                      <tr>
-                        <td colSpan="4" className="text-center">
-                          No Students Found
-                        </td>
-                      </tr>
-                    )}
-
-                  </tbody>
-
-                </table>
-
-              </div>
-            
 
           </div>
 

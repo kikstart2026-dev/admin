@@ -811,12 +811,11 @@ export const kikpayment = async (
 };
 
 // GET ALL PAYMENTS
-export const getAllPayments = async (paymentData) => {
+export const getAllPayments = async () => {
 
   const res =
     await axiosInstance.get(
-      endpoints.getAllPayments,
-      paymentData
+      endpoints.getAllPayments
     );
 
   return res.data;
@@ -859,10 +858,9 @@ export const getSinglePlan = async (id) => {
 
 
 
-// GET ALL CHILDREN
-export const getAllChild = async () => {
+export const getAllChild = async (page = 1) => {
   const res = await axiosInstance.get(
-    endpoints.getAllChild
+    `${endpoints.getAllChild}?page=${page}`
   );
 
   return res.data;
