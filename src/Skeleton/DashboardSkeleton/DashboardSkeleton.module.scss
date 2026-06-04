@@ -1,17 +1,62 @@
 .dashboardSkeleton {
-  animation: pulse 1.5s infinite ease-in-out;
+  padding: 20px;
+}
+
+
+.title,
+.statsCard,
+.chartHeading,
+.chart,
+.tableHeading,
+.tableHeader,
+.tableRow,
+.pagination {
+  position: relative;
+  overflow: hidden;
+  background: #ececec;
+}
+
+.title::after,
+.statsCard::after,
+.chartHeading::after,
+.chart::after,
+.tableHeading::after,
+.tableHeader::after,
+.tableRow::after,
+.pagination::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150px;
+  width: 150px;
+  height: 100%;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.8),
+    transparent
+  );
+
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    left: 100%;
+  }
 }
 
 .title {
   height: 38px;
-  width: 280px;
+  width: 380px;
   border-radius: 8px;
   margin-bottom: 30px;
   background: #ececec;
 }
 
 .statsCard {
-  height: 120px;
+  height: 98px;
   border-radius: 14px;
   background: #ececec;
 }
@@ -28,7 +73,8 @@
   height: 24px;
   border-radius: 6px;
   background: #ececec;
-  margin-bottom: 20px;
+  // margin-bottom: 20px;
+  margin: 0 auto 20px auto;
 }
 
 .chart {
