@@ -811,12 +811,13 @@ export const kikpayment = async (
 };
 
 // GET ALL PAYMENTS
-export const getAllPayments = async () => {
-
-  const res =
-    await axiosInstance.get(
-      endpoints.getAllPayments
-    );
+export const getAllPayments = async (params) => {
+  const res = await axiosInstance.get(
+    endpoints.getAllPayments,
+    {
+      params, // ✅ query params support
+    }
+  );
 
   return res.data;
 };
@@ -827,6 +828,20 @@ export const getMonthlyPlanRevenue =
     const res =
       await axiosInstance.get(
         endpoints.getMonthlyPlanRevenue
+      );
+
+    return res.data;
+  };
+
+  export const exportPaymentsCSV =
+  async () => {
+
+    const res =
+      await axiosInstance.get(
+        endpoints.exportPaymentsCSV,
+        {
+          responseType: "blob",
+        }
       );
 
     return res.data;
