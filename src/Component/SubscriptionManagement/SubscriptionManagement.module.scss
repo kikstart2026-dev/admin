@@ -118,9 +118,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
+margin: 20px 0;
   gap: 20px;
   flex-wrap: wrap;
+  padding: 0 20px;
 
   h2 {
     font-size: 28px;
@@ -179,12 +180,13 @@
   background: #ffeded;
   color: #ed1c24;
   padding: 12px 18px;
-  border-radius: 14px;
+  border-radius: 6px;
   font-size: 15px;
   font-weight: 700;
 
   span {
     color: #111827;
+    padding-left: 8px;
   }
 }
 
@@ -225,4 +227,100 @@
   .table {
     min-width: 1000px;
   }
+}
+
+
+/* ================= TOOLBAR ================= */
+
+.toolbar {
+display: flex;
+align-items: center;
+gap: 14px;
+margin-bottom: 24px;
+flex-wrap: wrap;
+    padding: 0 20px;
+}
+
+/* ================= SEARCH ================= */
+
+.searchInput {
+    flex: 1;
+    min-width: 260px;
+    padding: 12px 14px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 14px;
+    background: #fff;
+
+    &:focus {
+        outline: none;
+        border-color: #ef4444;
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+    }
+
+&::placeholder {
+color: #9ca3af;
+}
+}
+
+/* ================= SELECT ================= */
+
+.select {
+padding: 10px 40px 10px 14px; /* 👉 RIGHT padding increase */
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    cursor: pointer;
+
+    appearance: none; /* remove default arrow (optional but best) */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    background-image: url("data:image/svg+xml,%3Csvg fill='black' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5.25 7.5L10 12.25 14.75 7.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 14px;
+
+
+    &:focus {
+        outline: none;
+        border-color: #ef4444;
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+    }
+}
+
+/* ================= EXPORT BUTTON ================= */
+
+.exportBtn {
+ display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #ffe30f;
+        color: #000000;
+        border: none;
+        padding: 10px 18px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: 0.3s ease;
+        margin-left: 10px;
+
+        &:hover {
+
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            transform: scale(1.08);
+        }
+
+        i {
+            margin-right: 8px;
+            font-size: 15px;
+        }
+}
+
+/* ================= HEADER RIGHT ================= */
+
+.headerRight {
+display: flex;
+align-items: center;
+gap: 14px;
+flex-wrap: wrap;
 }

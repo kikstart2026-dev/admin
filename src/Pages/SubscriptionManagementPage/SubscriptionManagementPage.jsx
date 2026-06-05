@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-
 import { useQuery } from "@tanstack/react-query";
 
 import styles from "./SubscriptionManagementPage.module.scss";
@@ -9,297 +8,259 @@ import SubscriptionManagement from "../../Component/SubscriptionManagement/Subsc
 import {
   getAllPayments,
   getAllPlans,
+  exportPaymentsCSV,
 } from "../../apis/api";
 
 export default function SubscriptionManagementPage() {
-
   const [activeSection, setActiveSection] =
     useState("");
 
-  // TOGGLE
-  const toggleSection = (section) => {
+  const [search, setSearch] =
+    useState("");
 
-    setActiveSection(
-      activeSection === section
-        ? ""
-        : section
-    );
+  const [status, setStatus] =
+    useState("");
+
+  // Single Sort Dropdown
+  const [sortBy, setSortBy] =
+    useState("newest");
+
+  const [page, setPage] =
+    useState(1);
+
+  const limit = 10;
+
+  const toggleSection = (section) => {
+    if (activeSection === section) {
+      setActiveSection("");
+      return;
+    }
+
+
+    setActiveSection(section);
+    setPage(1);
+
+
   };
 
-  // =========================
-  // GET PAYMENTS
-  // =========================
+  // UI sort -> Backend sort mapping
+  let apiSortBy = "createdAt";
+  let apiSortOrder = "desc";
+
+  switch (sortBy) {
+    case "oldest":
+      apiSortBy = "createdAt";
+      apiSortOrder = "asc";
+      break;
+
+
+    case "az":
+      apiSortBy = "fullname";
+      apiSortOrder = "asc";
+      break;
+
+    case "za":
+      apiSortBy = "fullname";
+      apiSortOrder = "desc";
+      break;
+
+    default:
+      apiSortBy = "createdAt";
+      apiSortOrder = "desc";
+
+
+  }
 
   const {
     data: paymentData,
-    isLoading: paymentLoading,
     isError: paymentError,
   } = useQuery({
+    queryKey: [
+      "all-payments",
+      page,
+      search,
+      status,
+      sortBy,
+      activeSection,
+    ],
 
-    queryKey: ["all-payments"],
 
-    queryFn: getAllPayments,
+    queryFn: () =>
+      getAllPayments({
+        page,
+        limit,
+        search,
+        status,
+        sortBy: apiSortBy,
+        sortOrder: apiSortOrder,
+
+        plan:
+          activeSection === "basic"
+            ? "BASIC"
+            : activeSection ===
+              "professional"
+              ? "PROFESSIONAL"
+              : activeSection ===
+                "advanced"
+                ? "ADVANCED"
+                : "",
+      }),
+
+
   });
 
-  // =========================
-  // GET PLANS
-  // =========================
-
-  const {
-    data: planData,
-    isLoading: planLoading,
-    isError: planError,
-  } = useQuery({
-
+  useQuery({
     queryKey: ["all-plans"],
-
     queryFn: getAllPlans,
   });
 
-  // =========================
-  // LOADING
-  // =========================
-
-  if (paymentLoading || planLoading) {
-
-    return (
-      <div className={styles.loading}>
-        Loading...
-      </div>
+  if (paymentError) {
+    return (<div className={styles.error}>
+      Failed to load data </div>
     );
   }
-
-  // =========================
-  // ERROR
-  // =========================
-
-  if (paymentError || planError) {
-
-    return (
-      <div className={styles.error}>
-        Failed to load data
-      </div>
-    );
-  }
-
-  // =========================
-  // DATA
-  // =========================
 
   const payments =
     paymentData?.payments || [];
 
-  const plans =
-    planData?.plans || [];
+  const totalUsers =
+    paymentData?.totalPayments || 0;
 
-  // =========================
-  // FILTER PAYMENTS
-  // =========================
 
-  const basicPayments =
-    payments.filter(
-      (item) =>
-        item.description
-          ?.toLowerCase()
-          .includes("basic") &&
-        item.status === "captured"
-    );
+  const handleExportCSV = async () => {
+    try {
+      const blob =
+        await exportPaymentsCSV();
 
-  const professionalPayments =
-    payments.filter(
-      (item) =>
-        item.description
-          ?.toLowerCase()
-          .includes("professional") &&
-        item.status === "captured"
-    );
+      const url =
+        window.URL.createObjectURL(
+          new Blob([blob])
+        );
 
-  const advancedPayments =
-    payments.filter(
-      (item) =>
-        item.description
-          ?.toLowerCase()
-          .includes("advanced") &&
-        item.status === "captured"
-    );
+      const link =
+        document.createElement("a");
 
-  // =========================
-  // MATCH PLAN DURATION
-  // =========================
+      link.href = url;
 
-  const getDuration = (
-    data,
-    planName
-  ) => {
-
-    const matchedPlan =
-      plans.find(
-        (plan) =>
-          plan.planName === planName &&
-          plan.amount === data.amount
+      link.setAttribute(
+        "download",
+        "subscriptions.csv"
       );
 
-    return matchedPlan?.durationDays;
+      document.body.appendChild(
+        link
+      );
+
+      link.click();
+
+      link.remove();
+
+      window.URL.revokeObjectURL(
+        url
+      );
+    } catch (error) {
+      console.error(
+        "CSV Export Failed",
+        error
+      );
+    }
   };
 
-  // =========================
-  // FINAL DATA
-  // =========================
-
-  const finalBasic =
-    basicPayments.map((item) => ({
-      ...item,
-
-      durationDays:
-        getDuration(item, "BASIC"),
-    }));
-
-  const finalProfessional =
-    professionalPayments.map(
-      (item) => ({
-        ...item,
-
-        durationDays:
-          getDuration(
-            item,
-            "PROFESSIONAL"
-          ),
-      })
-    );
-
-  const finalAdvanced =
-    advancedPayments.map(
-      (item) => ({
-        ...item,
-
-        durationDays:
-          getDuration(
-            item,
-            "ADVANCED"
-          ),
-      })
-    );
-
-  return (
-    <div className={styles.container}>
-
-      {/* BASIC */}
-      <div className={styles.section}>
-
-        <div
-          className={`${styles.sectionHeader} ${
-            activeSection === "basic"
-              ? styles.active
-              : ""
+  return (<div className={styles.container}>
+    {/* BASIC */} <div className={styles.section}>
+      <div
+        className={`${styles.sectionHeader} ${activeSection === "basic"
+          ? styles.active
+          : ""
           }`}
-          onClick={() =>
-            toggleSection("basic")
-          }
-        >
-          <span>
-            BASIC Subscription Control
-          </span>
+        onClick={() =>
+          toggleSection("basic")
+        }
+      >
+        BASIC Subscription Control </div>
 
-          <i
-            className={`bi ${
-              activeSection === "basic"
-                ? "bi-chevron-up"
-                : "bi-chevron-down"
-            }`}
-          ></i>
-        </div>
-
-        {activeSection === "basic" && (
-          <div className={styles.sectionBody}>
-            <SubscriptionManagement
-              title="BASIC"
-              data={finalBasic}
-            />
-          </div>
-        )}
-      </div>
-
-      {/* PROFESSIONAL */}
-      <div className={styles.section}>
-
-        <div
-          className={`${styles.sectionHeader} ${
-            activeSection ===
-            "professional"
-              ? styles.active
-              : ""
-          }`}
-          onClick={() =>
-            toggleSection(
-              "professional"
-            )
-          }
-        >
-          <span>
-            PROFESSIONAL Subscription
-            Control
-          </span>
-
-          <i
-            className={`bi ${
-              activeSection ===
-              "professional"
-                ? "bi-chevron-up"
-                : "bi-chevron-down"
-            }`}
-          ></i>
-        </div>
-
-        {activeSection ===
-          "professional" && (
-          <div className={styles.sectionBody}>
-            <SubscriptionManagement
-              title="PROFESSIONAL"
-              data={finalProfessional}
-            />
-          </div>
-        )}
-      </div>
-
-      {/* ADVANCED */}
-      <div className={styles.section}>
-
-        <div
-          className={`${styles.sectionHeader} ${
-            activeSection ===
-            "advanced"
-              ? styles.active
-              : ""
-          }`}
-          onClick={() =>
-            toggleSection("advanced")
-          }
-        >
-          <span>
-            ADVANCED Subscription
-            Control
-          </span>
-
-          <i
-            className={`bi ${
-              activeSection ===
-              "advanced"
-                ? "bi-chevron-up"
-                : "bi-chevron-down"
-            }`}
-          ></i>
-        </div>
-
-        {activeSection ===
-          "advanced" && (
-          <div className={styles.sectionBody}>
-            <SubscriptionManagement
-              title="ADVANCED"
-              data={finalAdvanced}
-            />
-          </div>
-        )}
-      </div>
+      {activeSection === "basic" && (
+        <SubscriptionManagement
+          title="BASIC"
+          data={payments}
+          totalUsers={totalUsers}
+          search={search}
+          setSearch={setSearch}
+          status={status}
+          setStatus={setStatus}
+          sortBy={sortBy}
+          setSortBy={setSortBy}
+          onExportCSV={handleExportCSV}
+        />
+      )}
     </div>
+
+    {/* PROFESSIONAL */}
+    <div className={styles.section}>
+      <div
+        className={`${styles.sectionHeader} ${activeSection ===
+          "professional"
+          ? styles.active
+          : ""
+          }`}
+        onClick={() =>
+          toggleSection(
+            "professional"
+          )
+        }
+      >
+        PROFESSIONAL Subscription
+        Control
+      </div>
+
+      {activeSection ===
+        "professional" && (
+          <SubscriptionManagement
+            title="PROFESSIONAL"
+            data={payments}
+            totalUsers={totalUsers}
+            search={search}
+            setSearch={setSearch}
+            status={status}
+            setStatus={setStatus}
+            sortBy={sortBy}
+            setSortBy={setSortBy}
+          />
+        )}
+    </div>
+
+    {/* ADVANCED */}
+    <div className={styles.section}>
+      <div
+        className={`${styles.sectionHeader} ${activeSection ===
+          "advanced"
+          ? styles.active
+          : ""
+          }`}
+        onClick={() =>
+          toggleSection("advanced")
+        }
+      >
+        ADVANCED Subscription Control
+      </div>
+
+      {activeSection ===
+        "advanced" && (
+          <SubscriptionManagement
+            title="ADVANCED"
+            data={payments}
+            totalUsers={totalUsers}
+            search={search}
+            setSearch={setSearch}
+            status={status}
+            setStatus={setStatus}
+            sortBy={sortBy}
+            setSortBy={setSortBy}
+          />
+        )}
+    </div>
+  </div>
+
+
   );
 }
