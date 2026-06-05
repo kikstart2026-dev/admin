@@ -176,6 +176,7 @@ export const endpoints = {
   // ================================
   //  USERS
   // ================================
+  exportUsersCSV: "admin/users/export-csv",
   getAllUsers: "admin/users/",
   deleteUser: (id) => `admin/users/${id}`,
 

@@ -632,6 +632,41 @@ export const createSubAdmin = async (payload) => {
 //   return res.data;
 // };
 
+//GET
+export const getAllRoles = async () => {
+  const res = await axiosInstance.get(endpoints.getAllRoles);
+  return res.data;
+};
+
+// ✅ GET ALL USERS
+export const getAllUsers = async (params) => {
+  const res = await axiosInstance.get(
+    endpoints.getAllUsers,
+    { params }
+  );
+
+  return res.data;
+};
+
+export const exportUsersCSV =
+  async () => {
+
+    const res =
+      await axiosInstance.get(
+        endpoints.exportUsersCSV,
+        {
+          responseType: "blob",
+        }
+      );
+
+    return res.data;
+  };
+
+  // ✅ DELETE USER
+export const deleteUser = async (id) => {
+  const res = await axiosInstance.delete(endpoints.deleteUser(id));
+  return res.data;
+};
 
 export const getAllSubAdmins = async (params) => {
   const res = await axiosInstance.get(endpoints.getAllSubAdmins, {
@@ -758,24 +793,6 @@ export const savePermissions = async (payload) => {
 //CREATE
 export const createRole = async (data) => {
   const res = await axiosInstance.post(endpoints.createRole, data);
-  return res.data;
-};
-
-//GET
-export const getAllRoles = async () => {
-  const res = await axiosInstance.get(endpoints.getAllRoles);
-  return res.data;
-};
-
-// ✅ GET ALL USERS
-export const getAllUsers = async () => {
-  const res = await axiosInstance.get(endpoints.getAllUsers);
-  return res.data;
-};
-
-// ✅ DELETE USER
-export const deleteUser = async (id) => {
-  const res = await axiosInstance.delete(endpoints.deleteUser(id));
   return res.data;
 };
 
