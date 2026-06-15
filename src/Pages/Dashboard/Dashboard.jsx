@@ -1,4 +1,4 @@
-import React, { useEffect, useState , useRef} from "react";
+import React, { useEffect, useState, useRef } from "react";
 import styles from "./Dashboard.module.scss";
 import Chart from "react-apexcharts";
 import DashboardSkeleton from "../../Skeleton/DashboardSkeleton/DashboardSkeleton";
@@ -40,66 +40,66 @@ export default function Dashboard() {
   const [tableLoading, setTableLoading] = useState(false);
 
   // const childCache = new Map();
- const cache = useRef({
-  payments: null,
-  users: null,
-  children: new Map(),
-});
-  
- const fetchDashboardData = async (page, isInitial) => {
-  try {
-    if (isInitial) setLoading(true);
-    else setTableLoading(true);
+  const cache = useRef({
+    payments: null,
+    users: null,
+    children: new Map(),
+  });
 
-    // ---------------- PAYMENTS CACHE ----------------
-    let paymentsData = cache.current.payments;
+  const fetchDashboardData = async (page, isInitial) => {
+    try {
+      if (isInitial) setLoading(true);
+      else setTableLoading(true);
 
-    if (!paymentsData) {
-      const res = await getAllPayments();
-      paymentsData = res?.payments || res?.data || [];
-      cache.current.payments = paymentsData;
+      // ---------------- PAYMENTS CACHE ----------------
+      let paymentsData = cache.current.payments;
+
+      if (!paymentsData) {
+        const res = await getAllPayments();
+        paymentsData = res?.payments || res?.data || [];
+        cache.current.payments = paymentsData;
+      }
+
+      // ---------------- USERS CACHE ----------------
+      let usersData = cache.current.users;
+
+      if (!usersData) {
+        const res = await getAllUsers();
+        usersData = res?.users || [];
+        cache.current.users = usersData;
+      }
+
+      // ---------------- CHILD CACHE ----------------
+      let childrenData;
+      let totalPagesData = totalPages;
+      let totalChildrenData = totalChildren;
+
+      if (cache.current.children.has(page)) {
+        childrenData = cache.current.children.get(page);
+      } else {
+        const res = await getAllChild(page);
+
+        childrenData = res?.data || [];
+        cache.current.children.set(page, childrenData);
+
+        totalPagesData = res?.totalPages || 1;
+        totalChildrenData = res?.totalChildren || 0;
+      }
+
+      setPayments(paymentsData);
+      setUsers(usersData);
+      setChildren(childrenData);
+
+      setTotalPages(totalPagesData);
+      setTotalChildren(totalChildrenData);
+
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+      setTableLoading(false);
     }
-
-    // ---------------- USERS CACHE ----------------
-    let usersData = cache.current.users;
-
-    if (!usersData) {
-      const res = await getAllUsers();
-      usersData = res?.users || [];
-      cache.current.users = usersData;
-    }
-
-    // ---------------- CHILD CACHE ----------------
-    let childrenData;
-    let totalPagesData = totalPages;
-    let totalChildrenData = totalChildren;
-
-    if (cache.current.children.has(page)) {
-      childrenData = cache.current.children.get(page);
-    } else {
-      const res = await getAllChild(page);
-
-      childrenData = res?.data || [];
-      cache.current.children.set(page, childrenData);
-
-      totalPagesData = res?.totalPages || 1;
-      totalChildrenData = res?.totalChildren || 0;
-    }
-
-    setPayments(paymentsData);
-    setUsers(usersData);
-    setChildren(childrenData);
-
-    setTotalPages(totalPagesData);
-    setTotalChildren(totalChildrenData);
-
-  } catch (err) {
-    console.log(err);
-  } finally {
-    setLoading(false);
-    setTableLoading(false);
-  }
-};
+  };
 
   const monthlyData = [
     { month: "Jan", total: 0 },
@@ -152,7 +152,7 @@ export default function Dashboard() {
 
           {/* Total Students */}
           <div className="col-md-3">
-            <div className={`card shadow ${styles.statsCard} ${styles.red1} ${styles.barCard}`}>
+            <div className={`card shadow ${styles.statsCard} ${styles.red1}`}>
               <div className="card-body">
                 <h6>Total Students</h6>
                 <h3>{totalChildren}</h3>
@@ -265,7 +265,7 @@ export default function Dashboard() {
                         width: 3,
                       },
 
-                      colors: ["#EF4444"],
+                      colors: ["#198bcd"],
 
                       xaxis: {
                         categories: months,
@@ -285,10 +285,14 @@ export default function Dashboard() {
                         enabled: false,
                       },
 
+
+
+
+
                       markers: {
                         size: 4,
-                        colors: ["#ff0000"],
-                        strokeColors: "#EF4444",
+                        colors: ["#004ed5"],
+                        strokeColors: "#00164a",
                         strokeWidth: 2,
                         hover: {
                           size: 6,
@@ -344,17 +348,18 @@ export default function Dashboard() {
                     },
                   },
 
-                  colors: ["#fe2e2e"],
+                  // Bar Chart
+                  colors: ["#ce6161"],
 
                   fill: {
                     type: "gradient",
                     gradient: {
                       shade: "light",
                       type: "vertical",
-                      shadeIntensity: 0.5,
-                      gradientToColors: ["#ff2f2f"],
-                      opacityFrom: 0.9,
-                      opacityTo: 0.7,
+                      shadeIntensity: 0.3,
+                      gradientToColors: ["#082e5d"],
+                      opacityFrom: 0.95,
+                      opacityTo: 0.8,
                     },
                   },
 

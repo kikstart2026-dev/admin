@@ -1,213 +1,216 @@
 .container {
   width: 100%;
-  padding: 20px;
-  background-color: #fff8f8;
-  min-height: calc(100vh - 100px);
-  box-sizing: border-box;
+  min-height: 100vh;
+  padding: 24px;
+  background: linear-gradient(
+    135deg,
+    #fff4f4 0%,
+    #ffffff 50%,
+    #ffeded 100%
+  );
 }
 
-/* ================= STATS ================= */
+/* Main Content Cards */
+.card,
+.pieCard,
+.barCard {
+  background: #fff;
+  border: none;
+  border-radius: 18px;
+  box-shadow: 0 20px 40px rgba(50, 50, 93, 0.08),
+              0 8px 16px rgba(0, 0, 0, 0.05);
+}
+
+/* Dashboard Header */
+.pageTitle {
+  color: white;
+  font-weight: 700;
+  font-size: 28px;
+  margin-bottom: 25px;
+}
+
+/* Stat Cards */
 .statsCard {
-  text-align: center;
-  color: #fff;
-  font-weight: 500;
+  border-radius: 14px;
+  padding: 5px;
+  color: white;
+  overflow: hidden;
+  // position: relative;
+  transition: all 0.3s ease;
+
 
   h6 {
     font-size: 14px;
+    text-transform: uppercase;
+    opacity: 0.9;
+    letter-spacing: 1px;
   }
 
   h3 {
-    margin-top: 5px;
+    font-size: 28px;
+    font-weight: 700;
+    margin-top: 8px;
+  }
+
+  &:hover {
+    transform: translateY(-4px);
   }
 }
 
-/* different stat colors (moved from JSX inline styles) */
 .red1 {
-  background-color: #ff4d4d;
+  background: linear-gradient(
+    87deg,
+    #5e72e4 0,
+    #825ee4 100%
+  );
 }
 
 .red2 {
-  background-color: #fa3939;
+  background: linear-gradient(
+    87deg,
+    #11cdef 0,
+    #1171ef 100%
+  );
 }
 
 .red3 {
-  background-color: #ff2424;
+  background: linear-gradient(
+    87deg,
+    #f5365c 0,
+    #f56036 100%
+  );
 }
 
 .red4 {
-  background-color: #e60000;
+  background: linear-gradient(
+    87deg,
+    #172b4d 0,
+    #1a174d 100%
+  );
 }
 
-/* ================= PIE ================= */
-.pieCard {
-  border: 2px solid #ff3333;
-  padding: 20px;
-  border-radius: 10px;
+/* Chart Cards */
+.title,
+.barHeading {
+  color: #32325d;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 20px;
 }
 
-.title {
-  text-align: center;
-  color: #b30000;
-  margin-bottom: 15px;
-}
-
-.realPie {
-  width: 260px;
-  height: 260px;
-  border-radius: 50%;
-  margin: 20px auto;
-  position: relative;
-  cursor: pointer;
-  transition: 0.3s ease;
-}
-
-.realPie:hover {
-  transform: scale(1.03);
-}
-
-.tooltip {
-  position: absolute;
-  background: #ffffff;
-  color: #ed2727;
-  padding: 6px 10px;
-  border-radius: 6px;
-  font-size: 12px;
-  white-space: nowrap;
-  transform: translate(-50%, -120%);
-  pointer-events: none;
-  z-index: 10;
-}
-
-tr {
-  text-align: left;
-  margin: 0 20px;
-  // max-width: 25%;
-}
-
-td {
-  margin: 0 20px;
-
-}
-
-th{
-   margin: 0 20px;
-}
-
-
-/* ================= LEGEND ================= */
-.legend {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 15px;
-  flex-wrap: wrap;
-
-  span {
-    font-size: 12px;
-    display: flex;
-    align-items: center;
-  }
-}
-
-.fade {
-  opacity: 0.5;
-  transition: 0.2s ease;
-}
-
-/* ================= BAR CHART ================= */
+.pieCard,
 .barCard {
-  border: 2px solid #ff3333;
-  border-radius: 10px;
-  height: 100% !important;
+  padding: 25px;
+}
 
-  h5.barHeading {
-    text-align: center;
-    color: #b30000;
-    margin-bottom: 15px;
+/* Table */
+.table {
+  margin-bottom: 0;
+
+  thead {
+    background: #f6f9fc;
+
+    th {
+      border: none;
+        color: #093464;
+    font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 700;
+    }
   }
 
+  tbody {
+    td {
+      border-top: 1px solid #edf2f9;
+      color: #525f7f;
+      font-size: 14px;
+    }
+
+    tr:hover {
+      background: #f8f9fe;
+    }
+  }
 }
 
-.bars {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  height: 100%;
-
-}
-
-
-.barItem {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-  width: 40px;
-}
-
-.singleBar {
-  width: 30px;
-  border-radius: 8px 8px 0 0;
-  background: linear-gradient(to top, #ff1a1a, #ff8080);
-  transition: 0.4s ease;
-}
-
-.singleBar:hover {
-  transform: scaleY(1.05);
-}
-
+/* Status Badge */
 .badgeActive {
-  color: rgb(1, 148, 1);
-  background-color: #d6ffd7;
-  padding: 5px 8px;
-  border-radius: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: rgba(45, 206, 137, 0.15);
+  color: #2dce89;
+  border-radius: 30px;
+    padding: 4px 20px;
+  font-weight: 600;
 }
 
 .badgeFailed {
-  color: #ed1c24;
-  background-color: #ffd6d6;
-  padding: 0 8px;
-  border-radius: 15px;
+  background: rgba(245, 54, 92, 0.15);
+  color: #f5365c;
+  border-radius: 30px;
+  padding: 6px 14px;
+  font-weight: 600;
+}
+
+/* Pagination */
+.pagination {
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+  gap: 8px;
+
+  button {
+    background: transparent;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    transition: all 0.3s ease;
+
+    &:hover:not(:disabled) {
+      border-color: #ed1c24;
+      color: #ed1c24;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.3;
+    }
+  }
+
+  .activePage {
+    border: 1px solid #ed1c24 !important; 
+    color: #ed1c24 !important;
+    background-color: transparent; 
+  }
+
+  .arrowBtn {
+    border: none; 
+    font-size: 16px;
+    color: #999;
+    
+    &:hover:not(:disabled) {
+      color: #333;
+    }
+  }
+
 }
 
 
-.customPagination {
-  margin-top: 30px;
+/* Global Bootstrap Cards */
+:global(.card) {
+  border: none;
+  border-radius: 18px;
+  overflow: hidden;
+}
 
-  :global(.page-link) {
-    width: 34px;
-    height: 34px;
-    border-radius: 8px;
-    border: 2px solid #e1e1e1;
-    background: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 6px;
-    font-weight: 600;
-    transition: 0.2s;
-  }
-
-  :global(.page-item.active .page-link) {
-    border-color: #ef4444;
-    color: #ef4444;
-  }
-
-  :global(.page-link:hover) {
-    border-color: #ef4444;
-    color: #ef4444;
-  }
-
-  :global(.page-item.disabled .page-link) {
-    background: #f5f5f5;
-    color: #bbb;
-    cursor: not-allowed;
-  }
+:global(.shadow) {
+  box-shadow: 0 20px 40px rgba(50, 50, 93, 0.08),
+              0 8px 16px rgba(0, 0, 0, 0.05) !important;
 }

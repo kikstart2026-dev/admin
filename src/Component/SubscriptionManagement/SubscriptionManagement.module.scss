@@ -42,6 +42,28 @@
 .tableWrapper {
   width: 100%;
   overflow-x: auto;
+
+
+   &::-webkit-scrollbar {
+    height: 6px; // horizontal scrollbar thickness
+
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #ffffff;
+    border-radius: 20px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #fd0000;
+    border-radius: 20px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #e50606;
+
+  }
+
 }
 
 .table {
@@ -324,3 +346,12 @@ align-items: center;
 gap: 14px;
 flex-wrap: wrap;
 }
+
+
+
+
+
+/* ================= SCROLLBAR CLEAN ================= */
+
+
+ 
