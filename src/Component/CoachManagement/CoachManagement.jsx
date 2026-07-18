@@ -390,40 +390,53 @@ const CoachManagement = () => {
 
                   <td>{coach.location}</td>
 
-                  <td className={styles.assignColumn}>
+                 <td className={styles.assignColumn}>
 
-                    <i
-                      className={`bi ${openAssignId === coach._id
-                        ? "bi-chevron-up"
-                        : "bi-chevron-down"
-                        } ${styles.assign}`}
-                      onClick={async () => {
+  <div className={styles.assignWrapper}>
 
-                        try {
+    <i
+      className={`bi ${
+        openAssignId === coach._id
+          ? "bi-chevron-up"
+          : "bi-chevron-down"
+      } ${styles.assign}`}
+      onClick={async () => {
 
-                          if (openAssignId === coach._id) {
-                            setOpenAssignId(null);
-                            return;
-                          }
+        try {
 
-                          const res = await getCoachById(coach._id);
+          if (openAssignId === coach._id) {
+            setOpenAssignId(null);
+            return;
+          }
 
-                          setSelectedCoachId(coach._id);
+          const res = await getCoachById(coach._id);
 
-                          setSelectedPrograms(
-                            res.data.programs?.map((p) => p._id) || []
-                          );
+          setSelectedCoachId(coach._id);
 
-                          setOpenAssignId(coach._id);
+          setSelectedPrograms(
+            res.data.programs?.map((p) => p._id) || []
+          );
 
-                        } catch (err) {
-                          console.log(err);
-                        }
+          setOpenAssignId(coach._id);
 
-                      }}
-                    ></i>
+        } catch (err) {
+          console.log(err);
+        }
 
-                  </td>
+      }}
+    ></i>
+
+
+    <span className={styles.programBadge}>
+      {coach.programs?.length || 0} Assigned
+    </span>
+
+
+  </div>
+
+</td>
+
+                  
 
                   <td className={styles.actions}>
 
