@@ -197,4 +197,12 @@ export const endpoints = {
   getAllPlans: "/subscription/all",
 
   getSinglePlan: (id) => `/subscription/single/${id}`,
+
+
+
+  createCoach: "admin/coach/create",
+  getAllCoaches: "admin/coach",
+  getCoachById: (id) => `admin/coach/${id}`,
+  deleteCoach: (id) => `admin/coach/${id}`,
+  exportCoachesCSV: "admin/coach/export",
 };

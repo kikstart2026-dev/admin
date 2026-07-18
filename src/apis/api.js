@@ -880,3 +880,39 @@ export const getAllChild = async (page = 1) => {
 
   return res.data;
 };
+
+
+// CREATE COACH
+export const createCoach = async (payload) => {
+  const res = await axiosInstance.post(endpoints.createCoach, payload);
+  return res.data;
+};
+
+// GET ALL COACHES
+export const getAllCoaches = async (params) => {
+  const res = await axiosInstance.get(endpoints.getAllCoaches, {
+    params,
+  });
+  return res.data;
+};
+
+// GET COACH
+export const getCoachById = async (id) => {
+  const res = await axiosInstance.get(endpoints.getCoachById(id));
+  return res.data;
+};
+
+// DELETE COACH
+export const deleteCoach = async (id) => {
+  const res = await axiosInstance.delete(endpoints.deleteCoach(id));
+  return res.data;
+};
+
+// EXPORT CSV
+export const exportCoachesCSV = async () => {
+  const res = await axiosInstance.get(endpoints.exportCoachesCSV, {
+    responseType: "blob",
+  });
+
+  return res.data;
+};

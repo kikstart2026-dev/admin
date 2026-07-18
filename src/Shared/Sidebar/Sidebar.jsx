@@ -130,6 +130,16 @@ export default function Sidebar() {
             </NavLink>
           </li>
 
+           <li>
+            <NavLink
+              to="/coach-management"
+              className={({ isActive }) => (isActive ? styles.active : "")}
+            >
+              <i className={`bi bi-people ${styles.icon}`}></i>
+              <span>Coach Management</span>
+            </NavLink>
+          </li>
+
           {/* ROLE MANAGEMENT (ONLY ADMIN) */}
           {role !== "subadmin" && (
             <li>
