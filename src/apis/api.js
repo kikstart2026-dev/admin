@@ -916,3 +916,16 @@ export const exportCoachesCSV = async () => {
 
   return res.data;
 };
+
+// ASSIGN PROGRAMS TO COACH
+export const assignProgramsToCoach = async (
+  id,
+  payload
+) => {
+  const res = await axiosInstance.patch(
+    endpoints.assignProgramsToCoach(id),
+    payload
+  );
+
+  return res.data;
+};

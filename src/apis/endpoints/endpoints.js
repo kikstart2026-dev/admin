@@ -205,4 +205,5 @@ export const endpoints = {
   getCoachById: (id) => `admin/coach/${id}`,
   deleteCoach: (id) => `admin/coach/${id}`,
   exportCoachesCSV: "admin/coach/export",
+  assignProgramsToCoach: (id) => `admin/coach/assign-programs/${id}`,
 };

@@ -7,6 +7,8 @@ import {
   getCoachById,
   deleteCoach,
   exportCoachesCSV,
+  assignProgramsToCoach,
+  getAllService,
 } from "../../apis/api";
 
 import styles from "./CoachManagement.module.scss";
@@ -21,6 +23,8 @@ const CoachManagement = () => {
 
   const [deleteModal, setDeleteModal] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
+
+  const [assignLoading, setAssignLoading] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -39,6 +43,13 @@ const CoachManagement = () => {
     phone: "",
     location: "",
   });
+
+
+
+  const [selectedCoachId, setSelectedCoachId] = useState("");
+
+  const [selectedPrograms, setSelectedPrograms] = useState([]);
+  const [openAssignId, setOpenAssignId] = useState(null);
 
   const {
     data: coachesData,
@@ -64,6 +75,13 @@ const CoachManagement = () => {
 
     placeholderData: (previousData) => previousData,
   });
+
+  const { data: servicesData } = useQuery({
+    queryKey: ["services"],
+    queryFn: () => getAllService(),
+  });
+
+  const services = servicesData?.data || [];
 
   const coaches = coachesData?.data || [];
 
@@ -143,6 +161,29 @@ const CoachManagement = () => {
     }
   };
 
+  const handleAssign = async () => {
+    try {
+      setAssignLoading(true);
+
+      await assignProgramsToCoach(selectedCoachId, {
+        programIds: selectedPrograms,
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["coaches"],
+      });
+
+      setOpenAssignId(null);
+      setSelectedPrograms([]);
+      setSelectedCoachId("");
+
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setAssignLoading(false);
+    }
+  };
+
   // ===========================
   // EXPORT CSV
   // ===========================
@@ -176,7 +217,11 @@ const CoachManagement = () => {
   // ===========================
 
   useEffect(() => {
-    if (openModal || viewModal || deleteModal) {
+    if (
+      openModal ||
+      viewModal ||
+      deleteModal
+    ) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "auto";
@@ -185,10 +230,14 @@ const CoachManagement = () => {
     return () => {
       document.body.style.overflow = "auto";
     };
-  }, [openModal, viewModal, deleteModal]);
+  }, [
+    openModal,
+    viewModal,
+    deleteModal,
+  ]);
 
 
-    return (
+  return (
     <div className={styles.wrap}>
 
       {/* HEADER */}
@@ -291,6 +340,8 @@ const CoachManagement = () => {
 
             <th>Location</th>
 
+            <th>Assign</th>
+
             <th>Actions</th>
 
           </tr>
@@ -302,71 +353,152 @@ const CoachManagement = () => {
           {isLoading || isFetching ? (
 
             <tr>
-
               <td colSpan="5" align="center">
-
                 Loading...
-
               </td>
-
             </tr>
 
           ) : coaches.length === 0 ? (
 
             <tr>
-
               <td colSpan="5" align="center">
-
                 No Coach Found
-
               </td>
-
             </tr>
 
           ) : (
 
             coaches.map((coach) => (
 
-              <tr
-                key={coach._id}
-                className={styles.row}
-              >
+              <React.Fragment key={coach._id}>
 
-                <td>
+                <tr className={styles.row}>
 
-                  <div className={styles.userCell}>
+                  <td>
+                    <div className={styles.userCell}>
+                      <div className={styles.avatar}>
+                        <i className={`bi bi-person-fill ${styles.person}`}></i>
+                      </div>
 
-                    <div className={styles.avatar}>
-                      <i className={`bi bi-person-fill ${styles.person}`}></i>
+                      {coach.fullname}
                     </div>
+                  </td>
 
-                    {coach.fullname}
+                  <td>{coach.email}</td>
 
-                  </div>
+                  <td>{coach.phone}</td>
 
-                </td>
+                  <td>{coach.location}</td>
 
-                <td>{coach.email}</td>
+                  <td className={styles.assignColumn}>
 
-                <td>{coach.phone}</td>
+                    <i
+                      className={`bi ${openAssignId === coach._id
+                        ? "bi-chevron-up"
+                        : "bi-chevron-down"
+                        } ${styles.assign}`}
+                      onClick={async () => {
 
-                <td>{coach.location}</td>
+                        try {
 
-                <td className={styles.actions}>
+                          if (openAssignId === coach._id) {
+                            setOpenAssignId(null);
+                            return;
+                          }
 
-                  <i
-                    className={`bi bi-eye ${styles.view}`}
-                    onClick={() => handleView(coach._id)}
-                  ></i>
+                          const res = await getCoachById(coach._id);
 
-                  <i
-                    className={`bi bi-trash ${styles.delete}`}
-                    onClick={() => handleDelete(coach._id)}
-                  ></i>
+                          setSelectedCoachId(coach._id);
 
-                </td>
+                          setSelectedPrograms(
+                            res.data.programs?.map((p) => p._id) || []
+                          );
 
-              </tr>
+                          setOpenAssignId(coach._id);
+
+                        } catch (err) {
+                          console.log(err);
+                        }
+
+                      }}
+                    ></i>
+
+                  </td>
+
+                  <td className={styles.actions}>
+
+                    <i
+                      className={`bi bi-eye ${styles.view}`}
+                      onClick={() => handleView(coach._id)}
+                    ></i>
+
+                    <i
+                      className={`bi bi-trash ${styles.delete}`}
+                      onClick={() => handleDelete(coach._id)}
+                    ></i>
+
+                  </td>
+
+                </tr>
+
+                {openAssignId === coach._id && (
+                  <tr>
+                    <td colSpan="6">
+
+                      <div className={styles.assignDropdown}>
+
+                        {services.map((service) => (
+
+                          <label
+                            key={service._id}
+                            className={styles.checkboxItem}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={selectedPrograms.includes(service._id)}
+                              onChange={(e) => {
+
+                                if (e.target.checked) {
+
+                                  setSelectedPrograms((prev) => [
+                                    ...prev,
+                                    service._id,
+                                  ]);
+
+                                } else {
+
+                                  setSelectedPrograms((prev) =>
+                                    prev.filter(
+                                      (id) => id !== service._id
+                                    )
+                                  );
+
+                                }
+
+                              }}
+                            />
+
+                            {service.title}
+
+                          </label>
+
+                        ))}
+
+                        <button
+                          className={styles.submitBtn}
+                          onClick={handleAssign}
+                          disabled={assignLoading}
+                        >
+                          {assignLoading ? "Saving..." : "Save"}
+                        </button>
+
+                      </div>
+
+                    </td>
+                  </tr>
+                )}
+
+              </React.Fragment>
 
             ))
 
@@ -439,7 +571,7 @@ const CoachManagement = () => {
 
       </nav>
 
-            {/* ================= CREATE COACH MODAL ================= */}
+      {/* ================= CREATE COACH MODAL ================= */}
 
       {openModal && (
         <div className={styles.modalOverlay}>
@@ -572,6 +704,15 @@ const CoachManagement = () => {
               </p>
 
               <p>
+                <b>Programs :</b>{" "}
+                {selectedCoach.programs?.length
+                  ? selectedCoach.programs
+                    .map((program) => program.title)
+                    .join(", ")
+                  : "No Program Assigned"}
+              </p>
+
+              <p>
                 <b>Created :</b>{" "}
                 {new Date(
                   selectedCoach.createdAt
@@ -639,6 +780,8 @@ const CoachManagement = () => {
 
         </div>
       )}
+
+
 
     </div>
   );

@@ -137,6 +137,17 @@
 
 }
 
+.assign {
+  color: #0d6efd;
+  cursor: pointer;
+  font-size: 18px;
+  transition: .3s;
+}
+
+.assign:hover{
+  color:#084298;
+  transform: scale(1.15);
+}
 /* Eye icon */
 .view {
     color: #24c24b;
@@ -244,6 +255,99 @@
     color: #222;
 }
 
+
+.assignColumn {
+
+    .assign{
+        margin-left: 15px;
+    }
+}
+// .CoachManagement_assign__o4u67 {
+//     cursor: pointer;
+//     font-size: 20px;
+// }
+.assign{
+  cursor:pointer;
+  font-size:20px;
+}
+
+.assignDropdown {
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 12px;
+  padding: 18px;
+  margin: 12px 0;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+
+  animation: dropdown .25s ease;
+}
+
+@keyframes dropdown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.checkboxItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 12px 14px;
+  border: 1px solid #ececec;
+  border-radius: 10px;
+  background: #fafafa;
+
+  cursor: pointer;
+  transition: .25s;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.checkboxItem:hover {
+  background: #f3f8ff;
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+}
+
+.checkboxItem input {
+  width: 18px;
+  height: 18px;
+  accent-color: #2563eb;
+  cursor: pointer;
+}
+
+.submitBtn {
+  grid-column: 1/-1;
+
+  width: 180px;
+  margin: 10px auto 0;
+
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+
+  background: #2563eb;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: .3s;
+}
+
+.submitBtn:hover {
+  background: #1d4ed8;
+}
 
 
 @keyframes fadeIn {
