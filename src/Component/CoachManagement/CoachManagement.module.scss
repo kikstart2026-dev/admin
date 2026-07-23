@@ -5,7 +5,8 @@
 /* ================= HEADER ================= */
 .header {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
+    margin-left: auto;
     align-items: center;
     margin-bottom: 25px;
 

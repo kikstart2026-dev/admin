@@ -244,7 +244,7 @@ const CoachManagement = () => {
 
       <div className={styles.header}>
 
-        <h2>Coach Management</h2>
+
 
         <div className={styles.allBtn}>
 
@@ -390,53 +390,52 @@ const CoachManagement = () => {
 
                   <td>{coach.location}</td>
 
-                 <td className={styles.assignColumn}>
+                  <td className={styles.assignColumn}>
 
-  <div className={styles.assignWrapper}>
+                    <div className={styles.assignWrapper}>
 
-    <i
-      className={`bi ${
-        openAssignId === coach._id
-          ? "bi-chevron-up"
-          : "bi-chevron-down"
-      } ${styles.assign}`}
-      onClick={async () => {
+                      <i
+                        className={`bi ${openAssignId === coach._id
+                            ? "bi-chevron-up"
+                            : "bi-chevron-down"
+                          } ${styles.assign}`}
+                        onClick={async () => {
 
-        try {
+                          try {
 
-          if (openAssignId === coach._id) {
-            setOpenAssignId(null);
-            return;
-          }
+                            if (openAssignId === coach._id) {
+                              setOpenAssignId(null);
+                              return;
+                            }
 
-          const res = await getCoachById(coach._id);
+                            const res = await getCoachById(coach._id);
 
-          setSelectedCoachId(coach._id);
+                            setSelectedCoachId(coach._id);
 
-          setSelectedPrograms(
-            res.data.programs?.map((p) => p._id) || []
-          );
+                            setSelectedPrograms(
+                              res.data.programs?.map((p) => p._id) || []
+                            );
 
-          setOpenAssignId(coach._id);
+                            setOpenAssignId(coach._id);
 
-        } catch (err) {
-          console.log(err);
-        }
+                          } catch (err) {
+                            console.log(err);
+                          }
 
-      }}
-    ></i>
-
-
-    <span className={styles.programBadge}>
-      {coach.programs?.length || 0} Assigned
-    </span>
+                        }}
+                      ></i>
 
 
-  </div>
+                      <span className={styles.programBadge}>
+                        {coach.programs?.length || 0} Assigned
+                      </span>
 
-</td>
 
-                  
+                    </div>
+
+                  </td>
+
+
 
                   <td className={styles.actions}>
 
