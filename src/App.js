@@ -35,6 +35,7 @@ import User from "./Pages/User/User";
 import SubscriptionManagementPage from "./Pages/SubscriptionManagementPage/SubscriptionManagementPage";
 import RevenueManagement from "./Pages/ReveueManagement/ReveueManagement";
 import CoachManagementPage from "./Pages/CoachManagementPage/CoachManagementPage";
+import Children from "./Pages/Childen/Children";
 
 // ================= 🔐 ADMIN PROTECTED ROUTE =================
 function AdminProtectedRoute({ children, blockSubadmin = false }) {
@@ -176,6 +177,14 @@ function Layout() {
             element={
               <AdminProtectedRoute blockSubadmin={true}>
                 <CoachManagementPage />
+              </AdminProtectedRoute>
+            }
+          />
+           <Route
+            path="/children-management"
+            element={
+              <AdminProtectedRoute blockSubadmin={true}>
+                <Children />
               </AdminProtectedRoute>
             }
           />

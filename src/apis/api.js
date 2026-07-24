@@ -870,17 +870,81 @@ export const getSinglePlan = async (id) => {
   return res.data;
 };
 
+/* ==================================
+        CHILD MANAGEMENT
+================================== */
 
-
-
-export const getAllChild = async (page = 1) => {
+// GET ALL
+export const getAllChild = async (params = {}) => {
   const res = await axiosInstance.get(
-    `${endpoints.getAllChild}?page=${page}`
+    endpoints.getAllChild,
+    {
+      params,
+    }
   );
 
   return res.data;
 };
 
+// GET SINGLE
+export const getChildById = async (id) => {
+  const res = await axiosInstance.get(
+    endpoints.getChildById(id)
+  );
+
+  return res.data;
+};
+
+// CREATE
+export const createChild = async (payload) => {
+  const res = await axiosInstance.post(
+    endpoints.createChild,
+    payload,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+
+  return res.data;
+};
+
+// UPDATE
+export const updateChild = async (
+  id,
+  payload
+) => {
+  const res = await axiosInstance.put(
+    endpoints.updateChild(id),
+    payload,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+
+  return res.data;
+};
+
+// DELETE SINGLE
+export const deleteChild = async (id) => {
+  const res = await axiosInstance.delete(
+    endpoints.deleteChild(id)
+  );
+
+  return res.data;
+};
+
+// DELETE ALL
+export const deleteAllChild = async () => {
+  const res = await axiosInstance.delete(
+    endpoints.deleteAllChild
+  );
+
+  return res.data;
+};
 
 // CREATE COACH
 export const createCoach = async (payload) => {

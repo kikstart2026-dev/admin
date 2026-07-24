@@ -129,7 +129,7 @@ export default function Sidebar() {
               <span>User Control</span>
             </NavLink>
           </li>
-
+          {/* COACH MANAGEMENT (ONLY ADMIN) */}
            <li>
             <NavLink
               to="/coach-management"
@@ -139,7 +139,16 @@ export default function Sidebar() {
               <span>Coach Management</span>
             </NavLink>
           </li>
-
+          {/* CHILDREN MANAGEMENT (ONLY ADMIN) */}
+           <li>
+            <NavLink
+              to="/children-management"
+              className={({ isActive }) => (isActive ? styles.active : "")}
+            >
+              <i className={`bi bi-people ${styles.icon}`}></i>
+              <span>Children Management</span>
+            </NavLink>
+          </li>
           {/* ROLE MANAGEMENT (ONLY ADMIN) */}
           {role !== "subadmin" && (
             <li>

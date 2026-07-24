@@ -225,7 +225,6 @@ export default function ServiceControl() {
     const file = e.target.files[0];
 
     if (!file) return;
-
     setImageFile(file);
     setPreview(URL.createObjectURL(file));
   };

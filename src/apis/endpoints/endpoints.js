@@ -189,9 +189,6 @@ export const endpoints = {
   getMonthlyPlanRevenue:
     "/subscription-payment/monthly-plan-revenue",
 
-  // ALL CHILDREN ---------------------->
-  getAllChild: "/children/getAllChild",
-
   // SUBSCRIPTION --------------------------------------->>
 
   getAllPlans: "/subscription/all",
@@ -206,4 +203,22 @@ export const endpoints = {
   deleteCoach: (id) => `admin/coach/${id}`,
   exportCoachesCSV: "admin/coach/export",
   assignProgramsToCoach: (id) => `admin/coach/assign-programs/${id}`,
+
+  // ================================
+// CHILD MANAGEMENT
+// ================================
+
+getAllChild: "/children/getAllChild",
+
+getChildById: (id) => `/children/getChildById/${id}`,
+
+deleteChild: (id) => `/children/deleteChild/${id}`,
+
+deleteAllChild: "/children/deleteAllChild",
+
+updateChild: (id) => `/children/updateChild/${id}`,
+
+createChild: "/children/createChild",
 };
+
+
