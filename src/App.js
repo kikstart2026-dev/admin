@@ -42,9 +42,9 @@ function AdminProtectedRoute({ children, blockSubadmin = false }) {
 
   const token = Cookies.get("token");
 
-  if (!token) {
-    return <Navigate to="/login" replace />;
-  }
+  // if (!token) {
+  //   return <Navigate to="/login" replace />;
+  // }
 
   const user = JSON.parse(localStorage.getItem("adminUser"));
   const role = user?.role;
