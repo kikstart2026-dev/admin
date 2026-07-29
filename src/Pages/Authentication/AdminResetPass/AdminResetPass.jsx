@@ -23,21 +23,29 @@ export default function AdminResetPass() {
 
     if (!storedEmail) {
       navigate("/admin-forgot");
-    } else {
-      setEmail(storedEmail);
+      return;
+    }
+
+    setEmail(storedEmail);
+
+    // ✅ Demo OTP Auto Fill
+    const savedOtp = localStorage.getItem("demoOtp");
+
+    if (savedOtp) {
+      setOtp(savedOtp);
     }
   }, [navigate]);
 
   const { mutate, isPending } = useMutation({
     mutationKey: ["admin-reset-pass"],
     mutationFn: adminResetPass,
-
     onSuccess: (data) => {
       console.log("Admin Reset Response:", data);
 
       handleSuccess("Password updated successfully ✅");
 
       localStorage.removeItem("adminResetEmail");
+      localStorage.removeItem("demoOtp");
 
       navigate("/login");
     },
