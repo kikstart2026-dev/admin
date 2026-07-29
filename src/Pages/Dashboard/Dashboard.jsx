@@ -47,16 +47,21 @@ export default function Dashboard() {
   });
 
   const fetchDashboardData = async (page, isInitial) => {
+
     try {
       if (isInitial) setLoading(true);
       else setTableLoading(true);
 
+    
       // ---------------- PAYMENTS CACHE ----------------
       let paymentsData = cache.current.payments;
 
       if (!paymentsData) {
-        const res = await getAllPayments();
-        paymentsData = res?.payments || res?.data || [];
+        const res = await getAllPayments({
+          limit: 100000, // অথবা backend যদি limit=0 support করে তাহলে limit:0
+        });
+
+        paymentsData = res?.payments || [];
         cache.current.payments = paymentsData;
       }
 
@@ -75,15 +80,27 @@ export default function Dashboard() {
       let totalChildrenData = totalChildren;
 
       if (cache.current.children.has(page)) {
-        childrenData = cache.current.children.get(page);
+        const cached = cache.current.children.get(page);
+
+        childrenData = cached.children;
+        totalPagesData = cached.totalPages;
+        totalChildrenData = cached.totalChildren;
       } else {
-        const res = await getAllChild(page);
+        const res = await getAllChild({
+          page,
+          limit: 10,
+        });
 
         childrenData = res?.data || [];
-        cache.current.children.set(page, childrenData);
 
         totalPagesData = res?.totalPages || 1;
         totalChildrenData = res?.totalChildren || 0;
+
+        cache.current.children.set(page, {
+          children: childrenData,
+          totalPages: totalPagesData,
+          totalChildren: totalChildrenData,
+        });
       }
 
       setPayments(paymentsData);
@@ -99,6 +116,7 @@ export default function Dashboard() {
       setLoading(false);
       setTableLoading(false);
     }
+
   };
 
   const monthlyData = [

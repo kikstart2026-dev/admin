@@ -184,6 +184,24 @@ body.modalOpen {
   height: 100vh;
 }
 
+
+.sidebar {
+  position: fixed;
+  top: 100px; // header height
+  left: 0;
+  height: calc(100vh - 100px);
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.sidebar::-webkit-scrollbar {
+  display: none;
+}
+
 /* RESPONSIVE */
 @media (max-width: 992px) {
   .sidebar {
