@@ -57,6 +57,8 @@ export default function AdminOtpVerify() {
       localStorage.removeItem("otpExpiryTime");
       localStorage.removeItem("resendEnableTime");
       localStorage.removeItem("adminEmail");
+      localStorage.removeItem("demoOtp");
+
 
       handleSuccess("Admin login successful ✅");
 
@@ -75,12 +77,22 @@ export default function AdminOtpVerify() {
   const { mutate: resendMutate, isPending: isResendPending } = useMutation({
     mutationKey: ["admin-resend-otp"],
     mutationFn: adminResendOtp,
-
+    
     onSuccess: (data) => {
-      handleSuccess(data?.message || "OTP resent successfully ✅");
 
-      setOtp(["", "", "", "", "", ""]);
-      if (inputsRef.current[0]) inputsRef.current[0].focus();
+      if (data?.otp) {
+        localStorage.setItem("demoOtp", String(data.otp));
+
+        const otpArray = String(data.otp).split("");
+
+        setOtp(otpArray);
+
+        setTimeout(() => {
+          inputsRef.current[5]?.focus();
+        }, 100);
+      }
+
+      handleSuccess(data?.message || "OTP resent successfully ✅");
 
       const newExpiry = Date.now() + 90000;
       const newResend = Date.now() + 30000;
@@ -164,6 +176,19 @@ export default function AdminOtpVerify() {
   const handleResendOtp = () => {
     resendMutate({ email });
   };
+
+  // =================otp save in localstorage======================
+  useEffect(() => {
+    const savedOtp = localStorage.getItem("demoOtp");
+
+    if (savedOtp && savedOtp.length === 6) {
+      setOtp(savedOtp.split(""));
+
+      setTimeout(() => {
+        inputsRef.current[5]?.focus();
+      }, 100);
+    }
+  }, []);
 
   // ================= GUARD =================
   useEffect(() => {

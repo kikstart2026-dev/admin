@@ -21,18 +21,21 @@ export default function AdminLogin() {
     onSuccess: (data) => {
       console.log("Admin Login Response:", data);
 
-      // ❌ Extra safety check (optional)
       if (!data?.email) {
         handleError("Admin not found ❌");
         return;
       }
 
-      // ✅ OTP flow
+      // ✅ Save email
       localStorage.setItem("adminEmail", data.email);
 
-      handleSuccess("OTP sent to admin email 📩");
+      // ✅ Save OTP for auto fill (Demo)
+      if (data?.otp) {
+        localStorage.setItem("demoOtp", String(data.otp));
+      }
 
-      // 👉 OTP page e jao
+      handleSuccess("OTP generated successfully 📩");
+
       navigate("/admin-otp");
     },
 

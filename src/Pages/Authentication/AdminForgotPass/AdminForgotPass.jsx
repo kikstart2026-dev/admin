@@ -17,17 +17,21 @@ export default function AdminForgotPass() {
     mutationKey: ["admin-forgot-pass"],
     mutationFn: adminForgotPass,
 
-    onSuccess: (data) => {
-      console.log("Admin Forgot Pass Response:", data);
+   onSuccess: (data) => {
+  console.log("Admin Forgot Pass Response:", data);
 
-      // ✅ store admin email
-      localStorage.setItem("adminResetEmail", email);
+  // ✅ Store email
+  localStorage.setItem("adminResetEmail", email);
 
-      handleSuccess("OTP sent to admin email 📩");
+  // ✅ Store OTP for auto fill (Demo)
+  if (data?.otp) {
+    localStorage.setItem("demoOtp", String(data.otp));
+  }
 
-      // 👉 next page (admin reset page)
-      navigate("/admin-reset");
-    },
+  handleSuccess("OTP sent to admin email 📩");
+
+  navigate("/admin-reset");
+},
 
     onError: (error) => {
       handleError(
