@@ -3,6 +3,7 @@ import Cookies from "js-cookie";
 
 export const axiosInstance = axios.create({
   baseURL: "https://backend-8e6g.onrender.com/api/v1",
+  //  baseURL:"http://localhost:8008/api/v1",
 });
 
 axiosInstance.interceptors.request.use(
