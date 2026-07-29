@@ -44,7 +44,7 @@ export default function Header({ title = "Dashboard" }) {
         </div>
 
         <div className={`d-flex align-items-center ${styles.rightSection}`}>
-          <FaBell className={styles.icon} />
+          {/* <FaBell className={styles.icon} /> */}
 
           <div
             className="d-flex align-items-center ms-3"

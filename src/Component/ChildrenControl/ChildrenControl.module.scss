@@ -174,13 +174,19 @@
 
 
 .tableWrapper {
+  width: 100%;
+  overflow-x: auto;
 
-  width:100%;
+  /* Firefox */
+  scrollbar-width: none;
 
-  overflow-x:auto;
-
+  /* IE & Edge */
+  -ms-overflow-style: none;
 }
 
+.tableWrapper::-webkit-scrollbar {
+  display: none;
+}
 
 
 .table {
@@ -787,6 +793,8 @@
  font-weight:700;
 
 }
+
+
 
 
 
