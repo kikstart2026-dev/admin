@@ -132,6 +132,8 @@ export default function Dashboard() {
     item.total === 0 ? 0 : item.total
   );
 
+  console.log(children.length,'-------------->')
+
 
 
 
@@ -212,6 +214,7 @@ export default function Dashboard() {
                 ];
 
                 const monthlyUsers = Array(12).fill(0);
+                
 
                 users.forEach((user) => {
                   const date = new Date(user.createdAt);
@@ -457,6 +460,7 @@ export default function Dashboard() {
 
                 <tbody className={tableLoading ? styles.fade : ""}>
                   {children?.length > 0 ? (
+                    
                     children.map((item, index) => {
                       const studentPayment = payments.find(
                         (pay) =>
