@@ -184,7 +184,7 @@ export default function AboutSectionControl() {
 
       const aboutRes = await createAboutSection({
         headingId: newHeadingId,
-        image: "http://localhost:8008" + imageUrl,
+        image: "https://backend-8e6g.onrender.com" + imageUrl,
       });
 
       const newAboutId = aboutRes?.data?._id;
@@ -217,7 +217,7 @@ export default function AboutSectionControl() {
 
         const uploadRes = await createFile(fd);
         imageUrl =
-          "http://localhost:8008" + uploadRes.data[0].path;
+          "https://backend-8e6g.onrender.com" + uploadRes.data[0].path;
       }
 
       await updateAboutSection(aboutId, {

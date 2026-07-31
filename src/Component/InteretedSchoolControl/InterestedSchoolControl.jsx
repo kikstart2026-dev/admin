@@ -237,7 +237,7 @@ export default function InterestedSchoolsControl() {
         const res = await createFile(fd);
 
         imageUrl =
-          "http://localhost:8008" +
+          "https://backend-8e6g.onrender.com" +
           res.data[0].path;
       }
 
@@ -248,7 +248,7 @@ export default function InterestedSchoolsControl() {
         const res = await createFile(fd);
 
         authorImgUrl =
-          "http://localhost:8008" +
+          "https://backend-8e6g.onrender.com" +
           res.data[0].path;
       }
 

@@ -204,7 +204,7 @@ export default function HomeBannerControl() {
 
       const bannerRes = await createHomeBanner({
         headingId: newHeadingId,
-        image: "http://localhost:8008" + imageUrl,
+        image: "https://backend-8e6g.onrender.com" + imageUrl,
       });
 
       const newBannerId = bannerRes?.data?._id;
@@ -237,7 +237,7 @@ export default function HomeBannerControl() {
 
         const uploadRes = await createFile(fd);
         imageUrl =
-          "http://localhost:8008" + uploadRes.data[0].path;
+          "https://backend-8e6g.onrender.com" + uploadRes.data[0].path;
       }
 
       await updateHomeBanner(bannerId, {

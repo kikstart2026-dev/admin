@@ -269,7 +269,7 @@ export default function TestimonialControl() {
     const uploadRes = await createFile(fd);
 
     imageUrl =
-      "http://localhost:8008" +
+      "https://backend-8e6g.onrender.com" +
       uploadRes.data[0].path;
 
     await createTest({
@@ -304,7 +304,7 @@ export default function TestimonialControl() {
       const uploadRes = await createFile(fd);
 
       imageUrl =
-        "http://localhost:8008" +
+        "https://backend-8e6g.onrender.com" +
         uploadRes.data[0].path;
     }
 
