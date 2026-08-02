@@ -248,7 +248,7 @@ export default function ServiceControl() {
       const uploadRes = await createFile(fd);
 
       const imageUrl =
-        "http://localhost:8008" +
+        "https://backend-8e6g.onrender.com" +
         uploadRes.data[0].path;
 
       await createService({
@@ -289,7 +289,7 @@ export default function ServiceControl() {
         const uploadRes = await createFile(fd);
 
         imageUrl =
-          "http://localhost:8008" +
+          "https://backend-8e6g.onrender.com" +
           uploadRes.data[0].path;
       }
 

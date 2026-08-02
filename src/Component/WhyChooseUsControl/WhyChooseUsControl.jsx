@@ -236,7 +236,7 @@ export default function WhyChooseUsControl() {
       const uploadRes = await createFile(fd);
 
       const imageUrl =
-        "http://localhost:8008" + uploadRes.data[0].path;
+        "https://backend-8e6g.onrender.com" + uploadRes.data[0].path;
 
       await createWhyChooseUs({
         headingId: headingId || headingIdFromData,
@@ -271,7 +271,7 @@ export default function WhyChooseUsControl() {
         const uploadRes = await createFile(fd);
 
         imageUrl =
-          "http://localhost:8008" + uploadRes.data[0].path;
+          "https://backend-8e6g.onrender.com" + uploadRes.data[0].path;
       }
 
       await updateWhyChooseUs(cardId, {
